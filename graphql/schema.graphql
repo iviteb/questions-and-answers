@@ -1,0 +1,39 @@
+type Query {
+  questions: [Question] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+  answers: [Answer] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+  search(keyword: String): [Question] @cacheControl(scope: PRIVATE)
+  config: Config @cacheControl(scope: PRIVATE)
+}
+
+type Config {
+  schema: Boolean
+  title: String
+  anonymous: Boolean
+  search: Boolean
+  maxQuestions: Int
+}
+
+type Mutation {
+  addQuestion(question: String, name: String, email: String, anonymous: Boolean): Boolean
+  addAnswer(answer: String, name: String, email: String, anonymous: Boolean): Boolean
+  voteQuestion(email: String, id: ID, vote: Int): Boolean
+  voteAnswer(email: String, id: ID): Boolean
+  moderateQuestion(id: ID, accepted: Boolean): Boolean
+  moderateAnswer(id: ID, accepted: Boolean): Boolean
+  deleteQuestion(id: ID): Boolean
+  deleteAnswer(id: ID): Boolean
+}
+
+type Question {
+  question: String
+  name: String
+  email: String
+  anonymous: Boolean
+  answers: [Answer]
+  votes: Int
+}
+
+type Answer {
+  answer: String
+  votes: Int
+}

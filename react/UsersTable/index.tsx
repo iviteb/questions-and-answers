@@ -163,6 +163,7 @@ export default class UsersTable extends Component {
     }: any = this.state
     return (
       <div>
+        TEST Beta
         <Table
           fullWidth
           updateTableKey={tableDensity}
