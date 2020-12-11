@@ -136,12 +136,27 @@ export const resolvers = {
     search: async (
       _: any,
       args: { keyword: string },
+      ctx: Context
     ) => {
-    // where: `question=*${args.keyword}*`,
-      return [{
-        question: `Test ${args.keyword}`,
-        votes: 100
-      }]
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'qna',
+        fields: ['question', 'name', 'email','anonymous', 'answers', 'votes', 'creationDate'],
+        where: `question=*${args.keyword}*`,
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
+
+      console.log('result =>', result)
+      return result
     },
     answers: async (_: any, __: {}) => {
       return [{
