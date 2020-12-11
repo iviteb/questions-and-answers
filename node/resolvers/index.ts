@@ -27,16 +27,16 @@ const schemaQuestions = {
       type: 'integer',
       title: 'Votes',
     },
-    status: {
-      type: 'string',
-      title: 'Status',
+    allowed: {
+      type: 'boolean',
+      title: 'allowed',
     },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'question', 'creationDate', 'status'],
+  'v-indexed': ['email', 'question', 'creationDate', 'allowed'],
   'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -66,16 +66,16 @@ const schemaAnswers = {
       type: 'integer',
       title: 'Votes',
     },
-    status: {
-      type: 'string',
-      title: 'Status',
+    allowed: {
+      type: 'boolean',
+      title: 'allowed',
     },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'answer', 'questionId', 'status', 'creationDate'],
+  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate'],
   'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -174,7 +174,7 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
-        fields: ['question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate'],
+        fields: ['question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed'],
         pagination: {
           page: 1,
           pageSize: 99,
@@ -186,20 +186,53 @@ export const resolvers = {
     },
     search: async (
       _: any,
-      args: { keyword: string },
+      args: any,
+      ctx: Context
     ) => {
-  // where: `question=*${args.keyword}*`,
-      return [{
-        question: `Test ${args.keyword}`,
-        votes: 100
-      }]
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'qna',
+        fields: ['question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate'],
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        where: `question=*${args.keyword}*`,
+        schema: SCHEMA_VERSION,
+      })
+
+      return result
     },
-    answers: async (_: any, __: {}) => {
-      return [{
-        answer: 'Test',
-        votes: 99
-      } ]
-    },
+    answers: async (
+      _: any,
+      __: any,
+      ctx: Context
+    ) => {
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+    
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'answer',
+        fields: ['answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
+
+      console.log(result)
+
+      return result
+    }
   },
   Mutation: {
     addQuestion: (_:any, args: any, ctx: Context) => {
@@ -212,6 +245,7 @@ export const resolvers = {
       return masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           console.log('Adding', res)
+          console.log('Question ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
           console.log('Error Adding', err)
@@ -228,6 +262,7 @@ export const resolvers = {
       return masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           console.log('Add Answer', res)
+          console.log('Answer ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
           console.log('Error Adding answer', err)
@@ -267,13 +302,106 @@ export const resolvers = {
       return result
 
     },
-    voteAnswer: (_:any) => {
+    voteAnswer: async (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata,
+          hub,
+        },
+        vtex: {
+          account,
+          authToken,
+        }
+      } = ctx
+
+      console.log('answerId => ', args.id)
+
+      const answer:any = await masterdata.getDocument({
+        dataEntity: 'answer',
+        id: args.id,
+        fields: ['votes']
+      })
+
+      const votes:number = answer?.votes ?? 0
+      const newVote = votes + 1
+
+      const headers = defaultHeaders(authToken)
+      const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          votes: newVote
+      }, headers).then((ret: any) => {
+        console.log('Return =>', ret)
+        return newVote
+      })
+
+      console.log('Votes', votes)
+      console.log('New Vote', newVote)
+      return result
 
     },
-    moderateQuestion: (_:any) => {
+    moderateQuestion: async (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata,
+          hub,
+        },
+        vtex: {
+          account,
+          authToken,
+        }
+      } = ctx
+
+      const question:any = await masterdata.getDocument({
+        dataEntity: 'qna',
+        id: args.id,
+        fields: ['allowed']
+      })
+
+      console.log(question.allowed)
+      const newAllowed = args.allowed
+
+      const headers = defaultHeaders(authToken)
+      const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          allowed: newAllowed
+      }, headers).then((ret: any) => {
+        console.log('Return =>', ret)
+        return newAllowed
+      })
+
+      return result
+      
 
     },
-    moderateAnswer: (_:any) => {
+    moderateAnswer: async (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata,
+          hub,
+        },
+        vtex: {
+          account,
+          authToken,
+        }
+      } = ctx
+
+      const answer:any = await masterdata.getDocument({
+        dataEntity: 'answer',
+        id: args.id,
+        fields: ['allowed']
+      })
+
+      console.log(answer.allowed)
+      const newAllowed = args.allowed
+
+      const headers = defaultHeaders(authToken)
+      const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          allowed: newAllowed
+      }, headers).then((ret: any) => {
+        console.log('Return =>', ret)
+        return newAllowed
+      })
+
+      return result
+      
 
     },
     deleteQuestion: (_:any) => {

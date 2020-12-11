@@ -14,12 +14,12 @@ type Config {
 }
 
 type Mutation {
-  addQuestion(question: String, name: String, email: String, anonymous: Boolean): String
-  addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean): String
+  addQuestion(question: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
+  addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
   voteQuestion(email: String, id: ID, vote: Int): Int
   voteAnswer(email: String, id: ID): Int
-  moderateQuestion(id: ID, accepted: Boolean): Boolean
-  moderateAnswer(id: ID, accepted: Boolean): Boolean
+  moderateQuestion(id: ID, allowed: Boolean): Boolean
+  moderateAnswer(id: ID, allowed: Boolean): Boolean
   deleteQuestion(id: ID): Boolean
   deleteAnswer(id: ID): Boolean
 }
@@ -31,10 +31,16 @@ type Question {
   anonymous: Boolean
   answers: [Answer]
   votes: Int
+  allowed: Boolean
 }
 
 type Answer {
   answer: String
   votes: Int
+  questionId: ID
+  name: String
+  email: String
+  anonymous: Boolean
+  allowed: Boolean
 }
 
