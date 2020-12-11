@@ -4,8 +4,8 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.2'
-const schema = {
+const SCHEMA_VERSION = 'v0.4'
+const schemaQuestions = {
   properties: {
     question: {
       type: 'string',
@@ -23,39 +23,77 @@ const schema = {
       type: 'boolean',
       title: 'Anonymous',
     },
-    answers: {
-      type: 'array',
-      title: 'Answers',
-    },
     votes: {
       type: 'integer',
       title: 'Votes',
+    },
+    status: {
+      type: 'string',
+      title: 'Status',
     },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'question', 'creationDate'],
-  'v-default-fields': ['email', 'cart', 'creationDate', 'cartLifeSpan'],
+  'v-indexed': ['email', 'question', 'creationDate', 'status'],
+  'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
+const schemaAnswers = {
+  properties: {
+    questionId: {
+      type: 'string',
+      title: 'Question ID',
+    },
+    answer: {
+      type: 'string',
+      title: 'Name',
+    },
+    name: {
+      type: 'string',
+      title: 'Name',
+    },
+    email: {
+      type: 'string',
+      title: 'Email',
+    },
+    anonymous: {
+      type: 'boolean',
+      title: 'Anonymous',
+    },
+    votes: {
+      type: 'integer',
+      title: 'Votes',
+    },
+    status: {
+      type: 'string',
+      title: 'Status',
+    },
+    creationDate: {
+      type: 'string',
+      title: 'Creation Date',
+    },
+  },
+  'v-indexed': ['email', 'answer', 'questionId', 'status', 'creationDate'],
+  'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
+  'v-cache': false,
+}
+
 const routes = {
   baseUrl: (account: string) =>
     `http://${account}.vtexcommercestable.com.br/api`,
-  questionEntity: (account: string) =>
+    questionEntity: (account: string) =>
     `${routes.baseUrl(account)}/dataentities/qna`,
-  listQuestions: (account: string, email: string) =>
-    `${routes.questionEntity(
-      account
-    )}/search?email=${email}&_schema=${SCHEMA_VERSION}&_fields=id,name,question,email,votes,answers,creationDate&_sort=creationDate DESC`,
-  getQuestion: (account: string, id: string) =>
-    `${routes.questionEntity(
-      account
-    )}/documents/${id}?_fields=id,name,question,email,votes,answers,creationDate`,
 
-  saveSchema: (account: string) =>
+    answerEntity: (account: string) =>
+    `${routes.baseUrl(account)}/dataentities/answer`,
+
+  saveSchemaQuestion: (account: string) =>
     `${routes.questionEntity(account)}/schemas/${SCHEMA_VERSION}`,
+
+    saveSchemaAnswer: (account: string) =>
+    `${routes.answerEntity(account)}/schemas/${SCHEMA_VERSION}`,
 
 }
 
@@ -92,10 +130,23 @@ export const resolvers = {
 
       if (!settings.schema || settings.schemaVersion !== SCHEMA_VERSION) {
           try {
-            const url = routes.saveSchema(account)
+            const url = routes.saveSchemaQuestion(account)
             const headers = defaultHeaders(authToken)
 
-            await hub.put(url, schema, headers)
+            await hub.put(url, schemaQuestions, headers)
+
+            settings.schema = true
+            settings.schemaVersion = SCHEMA_VERSION
+          } catch (e) {
+            console.log('Error saving', e)
+            settings.schema = false
+          }
+
+          try {
+            const url = routes.saveSchemaAnswer(account)
+            const headers = defaultHeaders(authToken)
+
+            await hub.put(url, schemaAnswers, headers)
 
             settings.schema = true
             settings.schemaVersion = SCHEMA_VERSION
@@ -136,27 +187,12 @@ export const resolvers = {
     search: async (
       _: any,
       args: { keyword: string },
-      ctx: Context
     ) => {
-      const {
-        clients: {
-          masterdata
-        }
-      } = ctx
-
-      const result = await masterdata.searchDocuments({
-        dataEntity: 'qna',
-        fields: ['question', 'name', 'email','anonymous', 'answers', 'votes', 'creationDate'],
-        where: `question=*${args.keyword}*`,
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        schema: SCHEMA_VERSION,
-      })
-
-      console.log('result =>', result)
-      return result
+  // where: `question=*${args.keyword}*`,
+      return [{
+        question: `Test ${args.keyword}`,
+        votes: 100
+      }]
     },
     answers: async (_: any, __: {}) => {
       return [{
@@ -173,18 +209,62 @@ export const resolvers = {
         },
       } = ctx
 
-      masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
+      return masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
-          console.log('Add Question', res)
+          console.log('Adding', res)
+          return res.DocumentId
         }).catch((err: any) => {
           console.log('Error Adding', err)
         })
 
     },
-    addAnswer: (_:any) => {
+    addAnswer: (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata
+        },
+      } = ctx
+
+      return masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
+        }).then((res: any) => {
+          console.log('Add Answer', res)
+          return res.DocumentId
+        }).catch((err: any) => {
+          console.log('Error Adding answer', err)
+        })
 
     },
-    voteQuestion: (_:any) => {
+    voteQuestion: async (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata,
+          hub,
+        },
+        vtex: {
+          account,
+          authToken,
+        }
+      } = ctx
+
+      const question:any = await masterdata.getDocument({
+        dataEntity: 'qna',
+        id: args.id,
+        fields: ['votes']
+      })
+      const votes:number = question?.votes ?? 0
+
+      const newVote = votes + parseInt(args.vote, 10)
+      const headers = defaultHeaders(authToken)
+      const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          votes: newVote
+      }, headers).then((ret: any) => {
+        console.log('Return =>', ret)
+        return newVote
+      })
+
+      console.log('Votes', votes)
+      console.log('New Vote', newVote)
+      return result
 
     },
     voteAnswer: (_:any) => {

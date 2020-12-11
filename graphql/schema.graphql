@@ -14,10 +14,10 @@ type Config {
 }
 
 type Mutation {
-  addQuestion(question: String, name: String, email: String, anonymous: Boolean): Boolean
-  addAnswer(answer: String, name: String, email: String, anonymous: Boolean): Boolean
-  voteQuestion(email: String, id: ID, vote: Int): Boolean
-  voteAnswer(email: String, id: ID): Boolean
+  addQuestion(question: String, name: String, email: String, anonymous: Boolean): String
+  addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean): String
+  voteQuestion(email: String, id: ID, vote: Int): Int
+  voteAnswer(email: String, id: ID): Int
   moderateQuestion(id: ID, accepted: Boolean): Boolean
   moderateAnswer(id: ID, accepted: Boolean): Boolean
   deleteQuestion(id: ID): Boolean

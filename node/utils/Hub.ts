@@ -36,6 +36,12 @@ export default class RequestHub extends ExternalClient {
     })
   }
 
+  public patch(url: string, data: any, headers?: any) {
+    return this.http.patch(url, data, {
+      headers,
+    })
+  }
+
   public delete(url: string) {
     return this.http.delete(url)
   }
