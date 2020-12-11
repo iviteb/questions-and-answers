@@ -401,7 +401,6 @@ export const resolvers = {
       })
 
       return result
-      
 
     },
     deleteQuestion: (_:any) => {
