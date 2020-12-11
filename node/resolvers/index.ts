@@ -229,8 +229,6 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
-      console.log(result)
-
       return result
     }
   },
@@ -248,7 +246,7 @@ export const resolvers = {
           console.log('Question ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
-          console.log('Error Adding', err)
+          console.log('Error Adding Question', err)
         })
 
     },
@@ -265,7 +263,7 @@ export const resolvers = {
           console.log('Answer ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
-          console.log('Error Adding answer', err)
+          console.log('Error Adding Answer', err)
         })
 
     },
@@ -295,6 +293,8 @@ export const resolvers = {
       }, headers).then((ret: any) => {
         console.log('Return =>', ret)
         return newVote
+      }).catch((err: any) => {
+        console.log('Error Voting', err)
       })
 
       console.log('Votes', votes)
@@ -331,6 +331,8 @@ export const resolvers = {
       }, headers).then((ret: any) => {
         console.log('Return =>', ret)
         return newVote
+      }).catch((err: any) => {
+        console.log('Error Voting', err)
       })
 
       console.log('Votes', votes)
@@ -399,14 +401,39 @@ export const resolvers = {
         console.log('Return =>', ret)
         return newAllowed
       })
-
+      console.log(result)
       return result
 
     },
-    deleteQuestion: (_:any) => {
+    deleteQuestion: (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata
+        },
+      } = ctx
 
+      return masterdata.deleteDocument({dataEntity: 'qna', id: args.id
+        }).then(() => {
+          console.log('Delete Success')
+        }).catch((err: any) => {
+          console.log('Error Deleting Question', err)
+        })
+
+      
     },
-    deleteAnswer: (_:any) => {
+    deleteAnswer: (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata
+        },
+      } = ctx
+
+      return masterdata.deleteDocument({dataEntity: 'answer', id: args.id
+        }).then(() => {
+          console.log('Delete Success')
+        }).catch((err: any) => {
+          console.log('Error Deleting Answer', err)
+        })
 
     },
   }
