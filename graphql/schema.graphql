@@ -32,6 +32,7 @@ type Question {
   answers: [Answer]
   votes: Int
   allowed: Boolean
+  productId: String
 }
 
 type Answer {
