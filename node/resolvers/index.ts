@@ -210,7 +210,7 @@ export const resolvers = {
     },
     answers: async (
       _: any,
-      __: any,
+      args: any,
       ctx: Context
     ) => {
       const {
@@ -226,6 +226,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
+        where: `questionId=*${args.questionId}*`,
         schema: SCHEMA_VERSION,
       })
 
@@ -352,13 +353,6 @@ export const resolvers = {
         }
       } = ctx
 
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.id,
-        fields: ['allowed']
-      })
-
-      console.log(question.allowed)
       const newAllowed = args.allowed
 
       const headers = defaultHeaders(authToken)
@@ -385,13 +379,6 @@ export const resolvers = {
         }
       } = ctx
 
-      const answer:any = await masterdata.getDocument({
-        dataEntity: 'answer',
-        id: args.id,
-        fields: ['allowed']
-      })
-
-      console.log(answer.allowed)
       const newAllowed = args.allowed
 
       const headers = defaultHeaders(authToken)
