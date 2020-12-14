@@ -1,7 +1,6 @@
 type Query {
   questions: [Question] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
-  # answers: [Answer] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
-  answers(questionId: ID): [Answer] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+  answers(questionId: ID!): [Answer] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
   search(keyword: String): [Question] @cacheControl(scope: PRIVATE)
   config: Config @cacheControl(scope: PRIVATE)
 }

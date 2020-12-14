@@ -226,7 +226,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `questionId=*${args.questionId}*`,
+        where: `questionId=${args.questionId}`,
         schema: SCHEMA_VERSION,
       })
 
