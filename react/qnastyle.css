@@ -2,6 +2,10 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+div {
+    box-sizing: border-box;
+}
+
 .qna-header {
     font-family: Arial, Helvetica, sans-serif;
     color: #0F1111;
@@ -10,7 +14,7 @@ body {
 .qna-search-container {
     width: 100%;
     background-color: #fff;
-    height: 31px;
+    height: 35px;
     padding: 3px 7px;
 }
 
@@ -28,9 +32,9 @@ body {
 
 .votes-question-container {
     display: flex;
-    padding: 5px;
-    margin: 10px;
-    height: 125px;
+    padding: 10px;
+    margin: 15px;
+    min-height: 100px;
 }
 
 .votes {
@@ -40,6 +44,11 @@ body {
     font-size: 14px;
     text-align: center;
     justify-content: space-evenly;
+    border-right: 1px solid #d1d4d4;
+}
+
+.button-container, .vote-count, .vote-text {
+    padding-bottom: 5px; 
 }
 
 .question-container {
@@ -47,5 +56,17 @@ body {
 }
 
 .question-label {
-    
+    width: 100px;
+    padding: 5px;
+
+}
+
+.question-text {
+    padding: 5px;
+}
+
+.no-answer{
+    margin-left: 100px;
+    padding: 5px;
+    margin-top: 5px;
 }
