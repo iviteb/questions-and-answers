@@ -14,7 +14,7 @@ type Config {
 }
 
 type Mutation {
-  addQuestion(question: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
+  addQuestion(question: String, name: String, email: String, anonymous: Boolean, allowed: Boolean, productId: String!): String
   addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
   voteQuestion(email: String, id: ID, vote: Int): Int
   voteAnswer(email: String, id: ID): Int
