@@ -4,9 +4,13 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.4'
+const SCHEMA_VERSION = 'v0.5'
 const schemaQuestions = {
   properties: {
+    productId: {
+      type: 'string',
+      title: 'Product ID',
+    },
     question: {
       type: 'string',
       title: 'Question',
@@ -128,36 +132,40 @@ export const resolvers = {
         settings = defaultSettings
       }
 
+      let schemaError = false
+
       if (!settings.schema || settings.schemaVersion !== SCHEMA_VERSION) {
-          try {
-            const url = routes.saveSchemaQuestion(account)
-            const headers = defaultHeaders(authToken)
+        try {
+          const url = routes.saveSchemaQuestion(account)
+          const headers = defaultHeaders(authToken)
 
-            await hub.put(url, schemaQuestions, headers)
+          await hub.put(url, schemaQuestions, headers)
 
-            settings.schema = true
-            settings.schemaVersion = SCHEMA_VERSION
-          } catch (e) {
-            console.log('Error saving', e)
-            settings.schema = false
+        } catch (e) {
+          if(e.response.status >= 400) {
+            schemaError = true
           }
+        }
 
+        if(!schemaError) {
           try {
             const url = routes.saveSchemaAnswer(account)
             const headers = defaultHeaders(authToken)
 
             await hub.put(url, schemaAnswers, headers)
 
-            settings.schema = true
-            settings.schemaVersion = SCHEMA_VERSION
           } catch (e) {
-            console.log('Error saving', e)
-            settings.schema = false
+            if(e.response.status >= 400) {
+              schemaError = true
+            }
           }
+        }
+
+        settings.schema = !schemaError
+        settings.schemaVersion = !schemaError ? SCHEMA_VERSION : null
 
         await apps.saveAppSettings(app, settings)
       }
-      console.log('settings AFTER =>', settings)
 
       return settings
     },
@@ -218,7 +226,7 @@ export const resolvers = {
           masterdata
         }
       } = ctx
-    
+
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
@@ -243,11 +251,9 @@ export const resolvers = {
 
       return masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
-          console.log('Adding', res)
-          console.log('Question ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
-          console.log('Error Adding Question', err)
+          return err.response.message
         })
 
     },
@@ -260,11 +266,9 @@ export const resolvers = {
 
       return masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
-          console.log('Add Answer', res)
-          console.log('Answer ID', args.id)
           return res.DocumentId
         }).catch((err: any) => {
-          console.log('Error Adding Answer', err)
+          return err.response.message
         })
 
     },
@@ -291,15 +295,11 @@ export const resolvers = {
       const headers = defaultHeaders(authToken)
       const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
           votes: newVote
-      }, headers).then((ret: any) => {
-        console.log('Return =>', ret)
+      }, headers).then(() => {
         return newVote
-      }).catch((err: any) => {
-        console.log('Error Voting', err)
+      }).catch(() => {
+        return votes
       })
-
-      console.log('Votes', votes)
-      console.log('New Vote', newVote)
       return result
 
     },
@@ -315,8 +315,6 @@ export const resolvers = {
         }
       } = ctx
 
-      console.log('answerId => ', args.id)
-
       const answer:any = await masterdata.getDocument({
         dataEntity: 'answer',
         id: args.id,
@@ -329,15 +327,12 @@ export const resolvers = {
       const headers = defaultHeaders(authToken)
       const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
           votes: newVote
-      }, headers).then((ret: any) => {
-        console.log('Return =>', ret)
+      }, headers).then(() => {
         return newVote
-      }).catch((err: any) => {
-        console.log('Error Voting', err)
+      }).catch(() => {
+        return votes
       })
 
-      console.log('Votes', votes)
-      console.log('New Vote', newVote)
       return result
 
     },
@@ -352,18 +347,15 @@ export const resolvers = {
         }
       } = ctx
 
-      const newAllowed = args.allowed
-
       const headers = defaultHeaders(authToken)
       const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: newAllowed
-      }, headers).then((ret: any) => {
-        console.log('Return =>', ret)
-        return newAllowed
+          allowed: args.allowed
+      }, headers).then(() => {
+        return args.allowed
       })
 
       return result
-      
+
 
     },
     moderateAnswer: async (_:any, args: any, ctx: Context) => {
@@ -377,16 +369,12 @@ export const resolvers = {
         }
       } = ctx
 
-      const newAllowed = args.allowed
-
       const headers = defaultHeaders(authToken)
       const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: newAllowed
-      }, headers).then((ret: any) => {
-        console.log('Return =>', ret)
-        return newAllowed
+          allowed: args.allowed
+      }, headers).then(() => {
+        return args.allowed
       })
-      console.log(result)
       return result
 
     },
@@ -399,12 +387,10 @@ export const resolvers = {
 
       return masterdata.deleteDocument({dataEntity: 'qna', id: args.id
         }).then(() => {
-          console.log('Delete Success')
-        }).catch((err: any) => {
-          console.log('Error Deleting Question', err)
+          return true
+        }).catch(() => {
+          return false
         })
-
-      
     },
     deleteAnswer: (_:any, args: any, ctx: Context) => {
       const {
@@ -415,9 +401,9 @@ export const resolvers = {
 
       return masterdata.deleteDocument({dataEntity: 'answer', id: args.id
         }).then(() => {
-          console.log('Delete Success')
-        }).catch((err: any) => {
-          console.log('Error Deleting Answer', err)
+          return true
+        }).catch(() => {
+          return false
         })
 
     },
