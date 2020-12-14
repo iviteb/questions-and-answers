@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Customer Questions and Answers</title>
+    </head>
+
+    <body>
+        <h1>Customer Questions and Answers</h1>
+
+        <input type="search" name="qna-search" className="qna-search" placeholder="Have a question? Search for answers">
+
+        <div className="votes">
+            <div className="increment up"></div>
+            <div className="vote-count">{vote-count}</div>
+            <div className="increment down"></div>
+        </div>
+
+        <div className="question-no-answer">
+            <div className="question-label">Question:</div>
+            <div className="question">{question}</div>
+            <div className = "no-answer">No answers yet</div>
+        </div>
+
+        <div className="question-one-answer">
+            <div className="question-label">Question:</div>
+            <div className="question">{question}</div>
+            <div className = "answer-label">Answer:</div>
+            <div className="answer">{answer}</div>
+            <div className="additional-info">By {answer.name} on {answer.creationDate}</div>
+        </div>
+
+        <div className="question-multiple-answers">
+            <div className="question-label">Question:</div>
+            <div className="question">{question}</div>
+            <div className = "answer-label">Answer:</div>
+            <div className="answer">{answer}</div>
+            <div className="additional-info">By {answer.name} on {answer.creationDate}</div>
+            <select name="questions-dropdown" className="questions-dropdown">See more answers({numAnswers})</a>
+            <button className="collapse">Collapse all answers</button>
+        </div>
+
+        <button className="more-questions">See more answered questions({questions.length})</button>
+    </body>
+
+
+</html>
