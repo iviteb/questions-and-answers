@@ -344,7 +344,6 @@ export const resolvers = {
     moderateQuestion: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
-          masterdata,
           hub,
         },
         vtex: {
@@ -370,7 +369,6 @@ export const resolvers = {
     moderateAnswer: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
-          masterdata,
           hub,
         },
         vtex: {
