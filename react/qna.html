@@ -1,47 +1,88 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 
 <html>
 
     <head>
-        <title>Customer Questions and Answers</title>
+        <title>Questions & Answers</title>
+        <link rel="stylesheet" href="qnastyle.css">
+
     </head>
 
     <body>
-        <h1>Customer Questions and Answers</h1>
-
-        <input type="search" name="qna-search" className="qna-search" placeholder="Have a question? Search for answers">
-
-        <div className="votes">
-            <button className="increment up"></button>
-            <div className="vote-count">{vote-count}</div>
-            <button className="increment down"></button>
+        <h2 class="qna-header">Customer Questions & Answers</h2>
+        
+        <div class="qna-search-container">
+            <input type="search" name="qna-search" class="qna-search" placeholder="Have a question? Search for answers">
         </div>
 
-        <div className="question-no-answer">
-            <div className="question-label">Question:</div>
-            <a href url="" className="question-text">{question}</a>
-            <div className = "no-answer">No answers yet</div>
+        <div class="votes-question-container">
+            <div class="votes">
+                <div class="button-container">
+                    <button class="increment"></button>
+                </div>
+                <div class="vote-count">1</div>
+                <div class="vote-text">vote</div>
+                <div class="button-container">
+                    <button class="decrement"></button>
+                </div>
+            </div>
+            
+            <div class="question-answer-container">
+                <div class="question-container">
+                    <div class="question-label">Question:</div>
+                    <a href url="" class="question-text">Does the stand detach from the microphone body?</a>
+                </div>
+                
+                <div class = "no-answer">No answers yet. Be the first!</div>
+            </div>
         </div>
 
-        <div className="question-one-answer">
-            <div className="question-label">Question:</div>
-            <a href url="" className="question-text">{question}</a>
-            <div className = "answer-label">Answer:</div>
-            <div className="answer-text">{answer}</div>
-            <div className="additional-info">By {answer.name} on {answer.creationDate}</div>
+        <div class="votes-question-container">
+            <div class="votes">
+                <div class="button-container">
+                    <button class="increment"></button>
+                </div>
+                <div class="vote-count">1</div>
+                <div class="vote-text">vote</div>
+                <div class="button-container">
+                    <button class="decrement"></button>
+                </div>
+            </div>
+
+            <div class="question-answer-container">
+                <div class="question-label">Question:</div>
+                <a href url="" class="question-text">{question}</a>
+                <div class = "answer-label">Answer:</div>
+                <div class="answer-text">{answer}</div>
+                <div class="additional-info">By {answer.name} on {answer.creationDate}</div>
+            </div> 
         </div>
 
-        <div className="question-multiple-answers">
-            <div className="question-label">Question:</div>
-            <a href url="" className="question-text">{question}</a>
-            <div className = "answer-label">Answer:</div>
-            <div className="answer-text">{answer}</div>
-            <div className="additional-info">By {answer.name} on {answer.creationDate}</div>
-            <select name="questions-dropdown" className="questions-dropdown">See more answers({numAnswers})</a>
-            <button className="collapse">Collapse all answers</button>
+        <div class="votes-question-container">
+            <div class="votes">
+                <div class="button-container">
+                    <button class="increment"></button>
+                </div>
+                <div class="vote-count">1</div>
+                <div class="vote-text">vote</div>
+                <div class="button-container">
+                    <button class="decrement"></button>
+                </div>
+            </div>
+
+            <div class="question-answer-container">
+                <div class="question-label">Question:</div>
+                <a href url="" class="question-text">{question}</a>
+                <div class = "answer-label">Answer:</div>
+                <div class="answer-text">{answer}</div>
+                <div class="additional-info">By {answer.name} on {answer.creationDate}</div>
+                <a href url="" class="questions-dropdown">See more answers({numAnswers})</a>
+                <button class="collapse">Collapse all answers</button>
+            </div>
         </div>
 
-        <button className="more-questions">See more answered questions({questions.length})</button>
+        <button class="more-questions">See more answered questions(10)</button>
     </body>
 
 
