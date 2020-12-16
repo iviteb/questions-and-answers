@@ -157,3 +157,64 @@ div {
     cursor: pointer;
 }
 
+.create-question-container {
+    background: #f0f2f2;
+    padding: 20px;
+    margin: 20px;
+    display: flex;
+    border-radius: 8px;
+    height: 80px;
+}
+
+.create-question-text {
+    font-size: 14px;
+    font-weight: 700;
+    margin: auto 0;
+    padding-left: 10px;
+    margin-right: 20px;
+}
+
+.open-modal-button {
+    font-size: 12px;
+    padding: 5px 10px;
+    border: none;
+}
+
+.question-text-box {
+    margin-bottom: 20px;
+}
+
+.modal-buttons-container {
+    margin-top: 20px;
+    padding: 5px;
+}
+
+.submit-question-button {
+    float: right;
+    font-size: 13px;
+    padding: 5px 5px;
+    background-color: #123e99;
+    width: 60px;
+    color: white;
+    border-radius: 3px;
+    border: none;
+    height: 30px;
+}
+
+.close-modal-button {
+    float: right;
+    margin-right: 10px;
+    background-color: f1f2f5;
+    font-size: 13px;
+    padding: 5px 5px;
+    width: 60px;
+    height: 30px;
+}
+
+.submit-question-button:hover {
+    cursor: pointer;
+}
+
+.close-modal-button:hover {
+    cursor: pointer;
+}

@@ -149,45 +149,42 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
       </button>
 
       <div className={styles['create-question-container']}>
-        <Button onClick={() => handleModalToggle()}>Open modal</Button>
+        <div className={styles['create-question-text']}>Don't see the answer you're looking for?</div>
+        <Button onClick={() => handleModalToggle()} className={styles['open-modal-button']}>Ask a question</Button>
       </div>
 
       <div className={styles['modal-container']}>
         <Modal
           isOpen={isModalOpen}
           centered
+          title="Post your question"
           onClose={() => {
             handleModalToggle()
           }}
         >
           <div className="dark-gray">
-            <p>
-              The Payments module is the system responsible for managing all
-              actions regarding your store's cash flow.
-            </p>
+            
+            <form action="#" method="POST" id="question-form">
+              <textarea name="" id="" placeholder="Please enter a question." rows={4} cols={50} className={styles['question-text-box']}></textarea>
 
-            <p>
-              Before we explore the features within VTEX Admin Payments, let's
-              clarify some important concepts regarding the payment flow of an
-              order. This process is performed by some actors within the
-              Brazilian financial system, which make up the Payments module
-              architecture.
-            </p>
-            <div
-              style={{
-                backgroundColor: '#edf4fa',
-                borderRadius: '4px',
-                border: 'solid #368df7',
-                borderWidth: '0 0 0 4px',
-                boxSizing: 'border-box',
-                padding: '12px 16px',
-              }}
-            >
-              It is important to remember that each store has its own
-              particularities and its own operation, which influence how to
-              build your business' Payment module. To set up your cash flow, it
-              is therefore crucial to keep in mind the real needs and purposes
-              of the retailer and of the desired project.
+              <div
+                style={{
+                  backgroundColor: '#edf4fa',
+                  borderRadius: '4px',
+                  border: 'solid #368df7',
+                  borderWidth: '0 0 0 4px',
+                  boxSizing: 'border-box',
+                  padding: '12px 16px',
+                }}
+              >
+                Your question might be answered by sellers, manufacturers, or customers who bought this product.
+              </div>
+
+            </form>
+
+            <div className={styles['modal-buttons-container']}>
+              <button type="submit" className={styles['submit-question-button']}>Post</button>
+              <button onClick={() => handleModalToggle()} className={styles['close-modal-button']}>Cancel</button>  
             </div>
           </div>
         </Modal>
