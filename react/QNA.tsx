@@ -4,21 +4,19 @@ import { compose, graphql } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, ModalDialog } from 'vtex.styleguide'
+import { Button, Modal } from 'vtex.styleguide'
 
 import QUERY_CONFIG from './queries/config.gql'
 
 import styles from './qnastyle.css'
 
-
 const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
-  
   const [state, setState] = useState<any>({
     isModalOpen: false,
   })
-  
-  const {isModalOpen} = state
-  
+
+  const { isModalOpen } = state
+
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
   }
@@ -26,11 +24,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
   console.log('QuestionsAndAnswers =>', ProductContext)
   const { product } = useContext(ProductContext) as any
 
-  
   console.log('Config =>', config)
   console.log('Product =>', product)
-
-  
 
   if (!config) return null
 
@@ -158,11 +153,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
       </div>
 
       <div className={styles['modal-container']}>
-
-        <ModalDialog
-          centered
+        <Modal
           isOpen={isModalOpen}
-          onClose={handleModalToggle}>
+          centered
+          onClose={() => {
+            handleModalToggle()
+          }}
+        >
           <div className="dark-gray">
             <p>
               The Payments module is the system responsible for managing all
@@ -184,7 +181,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
                 borderWidth: '0 0 0 4px',
                 boxSizing: 'border-box',
                 padding: '12px 16px',
-              }}>
+              }}
+            >
               It is important to remember that each store has its own
               particularities and its own operation, which influence how to
               build your business' Payment module. To set up your cash flow, it
@@ -192,9 +190,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
               of the retailer and of the desired project.
             </div>
           </div>
-        </ModalDialog>
+        </Modal>
       </div>
-
     </div>
   )
 }
