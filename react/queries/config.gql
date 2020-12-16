@@ -1,0 +1,8 @@
+query Config {
+  config {
+    title
+    anonymous
+    search
+    maxQuestions
+  }
+}
