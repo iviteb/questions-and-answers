@@ -6583,9 +6583,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vtex.questions-and-answers@https://questions--sandboxusdev.myvtex.com/_v/private/typings/linked/v1/vtex.questions-and-answers@0.0.2+build1608061528/public/@types/vtex.questions-and-answers":
-  version "0.0.2"
-  resolved "https://questions--sandboxusdev.myvtex.com/_v/private/typings/linked/v1/vtex.questions-and-answers@0.0.2+build1608061528/public/@types/vtex.questions-and-answers#633c383f1bf830f338c51ad7dae9a45c15727419"
+"vtex.product-context@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.9.6/public/@types/vtex.product-context":
+  version "0.9.6"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.9.6/public/@types/vtex.product-context#0d516252cdd7a4e66b422e4784206999afb53e0d"
 
 "vtex.styleguide@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.134.0/public/@types/vtex.styleguide":
   version "9.134.0"
