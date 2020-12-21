@@ -75,7 +75,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           </div>
 
           <div className={styles['no-answer']}>
-            No answers yet. Be the first!
+            <FormattedMessage
+                id="store/question.no-answer.text"
+                defaultMessage="No answers yet. Be the first!"
+            />
           </div>
         </div>
       </div>
@@ -94,13 +97,25 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
         <div className={styles['question-answer-container']}>
           <div className={styles['question-container']}>
-            <div className={styles['question-label']}>Question:</div>
+            <div className={styles['question-label']}>
+              <FormattedMessage
+                id="store/question.label"
+                defaultMessage="Question"
+              />
+              :
+            </div>
             <a className={styles['question-text']}>
               Does the stand detach from the microphone body?
             </a>
           </div>
           <div className={styles['answer-container']}>
-            <div className={styles['answer-label']}>Answer:</div>
+            <div className={styles['answer-label']}>
+              <FormattedMessage
+                id="store/answer.label"
+                defaultMessage="Answer"
+              />
+              :
+            </div>
             <div className={styles['answer-text']}>
               Thanks for your question! It is important that you store your
               brewer in a safe and frost free environment. If your brewer has
@@ -110,7 +125,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             </div>
           </div>
           <div className={styles['additional-info']}>
-            By Chris on March 29, 2020
+            <FormattedMessage id="store/question.additional-info.by"/> Chris <FormattedMessage id="store/question.additional-info.on"/> March 29, 2020
           </div>
         </div>
       </div>
@@ -129,13 +144,25 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
         <div className={styles['question-answer-container']}>
           <div className={styles['question-container']}>
-            <div className={styles['question-label']}>Question:</div>
+            <div className={styles['question-label']}>
+              <FormattedMessage
+                id="store/question.label"
+                defaultMessage="Question"
+              />
+              :
+            </div>
             <a className={styles['question-text']}>
               Does the stand detach from the microphone body?
             </a>
           </div>
           <div className={styles['answer-container']}>
-            <div className={styles['answer-label']}>Answer:</div>
+            <div className={styles['answer-label']}>
+              <FormattedMessage
+                id="store/answer.label"
+                defaultMessage="Answer"
+              />
+              :
+            </div>
             <div className={styles['answer-text']}>
               Thanks for your question! It is important that you store your
               brewer in a safe and frost free environment. If your brewer has
@@ -145,28 +172,44 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             </div>
           </div>
           <div className={styles['additional-info']}>
-            By Chris on March 29, 2020
+            <FormattedMessage id="store/question.additional-info.by"/> Chris <FormattedMessage id="store/question.additional-info.on"/> March 29, 2020
           </div>
-          <a className={styles['questions-dropdown']}>See more answers (2)</a>
+          <a className={styles['questions-dropdown']}>
+            <FormattedMessage
+                id="store/question.more-answers.label"
+                defaultMessage="See more answers"
+              /> (2)</a>
           <button className={styles['collapse-button']}>
-            Collapse all answers
+            <FormattedMessage
+                id="store/question.collapse.label"
+                defaultMessage="Collapse all answers"
+            />
           </button>
         </div>
       </div>
 
       <button className={styles['more-questions-button']}>
-        See more answered questions (10)
+        <FormattedMessage
+          id="store/question.more-questions.label"
+          defaultMessage="See more answered questions"
+        /> (10)
       </button>
 
       <div className={styles['create-question-container']}>
         <div className={styles['create-question-text']}>
-          Don't see the answer you're looking for?
+          <FormattedMessage
+            id="store/question.create-question.label"
+            defaultMessage="Don't see the answer you're looking for?"
+          />
         </div>
         <Button
           onClick={() => handleModalToggle()}
           className={styles['open-modal-button']}
         >
-          Ask a question
+          <FormattedMessage
+            id="store/question.create-question-button.label"
+            defaultMessage="Ask a question"
+          />
         </Button>
       </div>
 
@@ -174,7 +217,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <Modal
           isOpen={isModalOpen}
           centered
-          title="Post your question"
+          title={intl.formatMessage({
+            id: 'store/question.modal.title',
+            defaultMessage: 'Have a question? Search for answers',
+          })}
           onClose={() => {
             handleModalToggle()
           }}
@@ -184,7 +230,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
               <textarea
                 name=""
                 id=""
-                placeholder="Please enter a question."
+                placeholder={intl.formatMessage({
+                  id: "store/question.modal.search.placeholder",
+                  defaultMessage: "Please enter a question.",
+                })}
                 rows={4}
                 cols={50}
                 className={styles['question-text-box']}
@@ -200,8 +249,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   padding: '12px 16px',
                 }}
               >
-                Your question might be answered by sellers, manufacturers, or
-                customers who bought this product.
+                <FormattedMessage
+                  id="store/question.modal.text"
+                  defaultMessage="Your question might be answered by sellers, manufacturers, or customers who bought this product."
+                />
               </div>
             </form>
 
@@ -210,13 +261,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 type="submit"
                 className={styles['submit-question-button']}
               >
-                Post
+                <FormattedMessage
+                  id="store/question.modal.post-button.label"
+                  defaultMessage="Post"
+                />
               </button>
               <button
                 onClick={() => handleModalToggle()}
                 className={styles['close-modal-button']}
               >
-                Cancel
+                <FormattedMessage
+                  id="store/question.modal.cancel-button.label"
+                  defaultMessage="Cancel"
+                />
               </button>
             </div>
           </div>
