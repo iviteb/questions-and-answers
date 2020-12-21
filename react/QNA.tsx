@@ -2,6 +2,7 @@
 import React, { FC, useContext, useState } from 'react'
 import { compose, graphql } from 'react-apollo'
 import { injectIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
 import { Button, Modal } from 'vtex.styleguide'
@@ -10,7 +11,7 @@ import QUERY_CONFIG from './queries/config.gql'
 
 import styles from './qnastyle.css'
 
-const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
+const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [state, setState] = useState<any>({
     isModalOpen: false,
   })
@@ -39,7 +40,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
             type="search"
             name="qna-search"
             className={styles['qna-search']}
-            placeholder="Have a question? Search for answers"
+            placeholder={intl.formatMessage({
+              id: 'store/question.search.placeholder',
+              defaultMessage: 'Have a question? Search for answers',
+            })}
           />
         </div>
       )}
@@ -58,7 +62,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
 
         <div className={styles['question-answer-container']}>
           <div className={styles['question-container']}>
-            <div className={styles['question-label']}>Question:</div>
+            <div className={styles['question-label']}>
+              <FormattedMessage
+                id="store/question.label"
+                defaultMessage="Question"
+              />
+              :
+            </div>
             <a className={styles['question-text']}>
               Does the stand detach from the microphone body?
             </a>
@@ -149,8 +159,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
       </button>
 
       <div className={styles['create-question-container']}>
-        <div className={styles['create-question-text']}>Don't see the answer you're looking for?</div>
-        <Button onClick={() => handleModalToggle()} className={styles['open-modal-button']}>Ask a question</Button>
+        <div className={styles['create-question-text']}>
+          Don't see the answer you're looking for?
+        </div>
+        <Button
+          onClick={() => handleModalToggle()}
+          className={styles['open-modal-button']}
+        >
+          Ask a question
+        </Button>
       </div>
 
       <div className={styles['modal-container']}>
@@ -163,9 +180,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
           }}
         >
           <div className="dark-gray">
-            
             <form action="#" method="POST" id="question-form">
-              <textarea name="" id="" placeholder="Please enter a question." rows={4} cols={50} className={styles['question-text-box']}></textarea>
+              <textarea
+                name=""
+                id=""
+                placeholder="Please enter a question."
+                rows={4}
+                cols={50}
+                className={styles['question-text-box']}
+              ></textarea>
 
               <div
                 style={{
@@ -177,14 +200,24 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config } }) => {
                   padding: '12px 16px',
                 }}
               >
-                Your question might be answered by sellers, manufacturers, or customers who bought this product.
+                Your question might be answered by sellers, manufacturers, or
+                customers who bought this product.
               </div>
-
             </form>
 
             <div className={styles['modal-buttons-container']}>
-              <button type="submit" className={styles['submit-question-button']}>Post</button>
-              <button onClick={() => handleModalToggle()} className={styles['close-modal-button']}>Cancel</button>  
+              <button
+                type="submit"
+                className={styles['submit-question-button']}
+              >
+                Post
+              </button>
+              <button
+                onClick={() => handleModalToggle()}
+                className={styles['close-modal-button']}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </Modal>

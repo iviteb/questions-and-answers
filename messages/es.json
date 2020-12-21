@@ -1,4 +1,6 @@
 {
+  "store/question.label": "Pregunta",
+  "store/question.search.placeholder": "¿Tengo una pregunta? Buscar respuestas",
   "admin-example.navigation.label-group": "Admins de ejemplo",
   "admin-example.navigation.label-details": "Ejemplo de detalhes",
   "admin-example.navigation.label-table": "Ejemplo de tabela",

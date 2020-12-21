@@ -1,4 +1,6 @@
 {
+  "store/question.label": "store/question.label",
+  "store/question.search.placeholder": "store/question.search.placeholder",
   "admin-example.navigation.label": "Example admin",
   "admin-example.hello-world": "",
   "appframe.navigation.example": ""
