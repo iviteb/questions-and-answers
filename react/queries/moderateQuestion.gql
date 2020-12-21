@@ -1,0 +1,3 @@
+mutation ModerateQuestion($questionId: ID, $allowed: Boolean) {
+  moderateQuestion(questionId: $questionId, allowed: $allowed)
+}

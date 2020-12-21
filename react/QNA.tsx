@@ -5,11 +5,17 @@ import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, Modal, Spinner, Textarea } from 'vtex.styleguide'
+import { Button, Modal, Spinner, Textarea, ButtonGroup } from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
 
 import QUERY_CONFIG from './queries/config.gql'
 import ADD_QUESTION from './queries/addQuestion.gql'
+import ADD_ANSWER from './queries/addAnswer.gql'
+import VOTE_QUESTION from './queries/voteQuestion.gql'
+import VOTE_ANSWER from './queries/voteAnswer.gql'
+import MODERATE_QUESTION from './queries/moderateQuestion.gql'
+import MODERATE_ANSWER from './queries/moderateAnswer.gql'
+
 
 import styles from './qnastyle.css'
 
@@ -21,9 +27,30 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     question: null,
   })
 
-  const [addQuestion, { loading: addLoading, called, error }] = useMutation(
+  const [addQuestion, { loading: addLoading, called: questionCalled, error: questionError }] = useMutation(
     ADD_QUESTION
   )
+
+  const [addAnswer, {loading: ansLoading, called: answerCalled, error: answerError}] = useMutation(
+    ADD_ANSWER
+  )
+
+  const [voteQuestion, {loading: voteQuestionLoading, called: voteQuestionCalled, error: voteQuestionError}] = useMutation(
+    VOTE_QUESTION
+  )
+
+  const [voteAnswer, {loading: voteAnswerLoading, called: voteAnswerCalled, error: voteAnswerError}] = useMutation(
+    VOTE_ANSWER
+  )
+
+  const [moderateQuestion, {loading: moderateQuestionLoading, called: moderateQuestionCalled, error: moderateQuestionError}] = useMutation(
+    MODERATE_QUESTION
+  )
+
+  const [moderateAnswer, {loading: moderateAnswerLoading, called: moderateAnswerCalled, error: moderateAnswerError}] = useMutation(
+    MODERATE_ANSWER
+  )
+  
 
   const handles = useCssHandles(CSS_HANDLES)
 
@@ -33,7 +60,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     setState({ ...state, isModalOpen: !isModalOpen })
   }
 
-  if (!addLoading && called && !error && isModalOpen) {
+  if (!addLoading && questionCalled && !questionError && isModalOpen) {
     setState({ ...state, isModalOpen: false })
   }
 
@@ -65,22 +92,45 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
       <div className={styles['votes-question-container']}>
         <div className={styles.votes}>
-          <div className={styles['button-container']}>
-            <button className={styles.increment}></button>
-          </div>
-          <div className={styles['vote-count']}>3</div>
-          <div className={styles['vote-text']}>
-            <FormattedMessage
-              id="store/question.votes.label"
-              values={{
-                quantity: 3,
-              }}
-              defaultMessage="vote"
-            />
-          </div>
-          <div className={styles['button-container']}>
-            <button className={styles.decrement}></button>
-          </div>
+            
+            <div className={styles['button-container']}>
+              <Button 
+                className={styles.increment}
+                onClick={() => {
+                  voteQuestion({
+                    variables: {
+                      questionId: question.questionId,
+                      email: 'test@test.com',
+                      vote: 1,
+                    },
+                  })
+                }}
+              />
+            </div>
+            <div className={styles['vote-text']}>
+              <FormattedMessage
+                id="store/question.votes.label"
+                values={{
+                  quantity: 3,
+                }}
+                defaultMessage="vote"
+              />
+            </div>
+            <div className={styles['button-container']}>
+            <Button 
+                className={styles.decrement}
+                onClick={() => {
+                  voteQuestion({
+                    variables: {
+                      questionId: question.questionId,
+                      email: 'test@test.com',
+                      vote: -1,
+                    },
+                  })
+                }}
+              />
+            </div>
+
         </div>
 
         <div className={styles['question-answer-container']}>
