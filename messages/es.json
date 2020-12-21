@@ -14,6 +14,7 @@
   "store/question.modal.search.placeholder": "",
   "store/question.modal.text": "",
   "store/question.modal.post-button.label": "",
+  "store/question.votes.label": "",
   "store/question.modal.cancel-button.label": "Cancelar",
   "admin-example.navigation.label-group": "Admins de ejemplo",
   "admin-example.navigation.label-details": "Ejemplo de detalhes",

@@ -15,6 +15,7 @@
   "store/question.modal.text": "store/question.modal.text",
   "store/question.modal.post-button.label": "store/question.modal.post-button.label",
   "store/question.modal.cancel-button.label": "store/question.modal.cancel-button.label",
+  "store/question.votes.label": "store/question.votes.label",
   "admin-example.navigation.label": "Example admin",
   "admin-example.hello-world": "",
   "appframe.navigation.example": ""

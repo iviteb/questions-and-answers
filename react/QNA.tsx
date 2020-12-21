@@ -136,7 +136,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             <button className={styles.increment}></button>
           </div>
           <div className={styles['vote-count']}>1</div>
-          <div className={styles['vote-text']}>vote</div>
+          <div className={styles['vote-text']}>
+            <FormattedMessage
+              id="store/question.votes.label"
+              defaultMessage="vote"
+            />
+          </div>
           <div className={styles['button-container']}>
             <button className={styles.decrement}></button>
           </div>
