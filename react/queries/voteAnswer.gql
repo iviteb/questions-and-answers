@@ -1,0 +1,3 @@
+mutation VoteAnswer($email: String, $answerId: ID) {
+  voteAnswer(email: $email, id: $answerId)
+}

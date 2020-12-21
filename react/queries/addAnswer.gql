@@ -1,0 +1,3 @@
+mutation AddAnswer($answer:String, $name: String, $email: String, $anonymous: Boolean, $questionId: ID, $allowed: Boolean) {
+  addAnswer(answer: $answer, name: $name, email:$email, anonymous: $anonymous, questionId: $questionId, allowed: $allowed)
+}
