@@ -14,7 +14,7 @@
   "store/question.modal.search.placeholder": "",
   "store/question.modal.text": "",
   "store/question.modal.post-button.label": "",
-  "store/question.votes.label": "",
+  "store/question.votes.label": "{quantity, plural, =1{voto} other {votos}}",
   "store/question.modal.cancel-button.label": "Cancelar",
   "admin-example.navigation.label-group": "Admins de exemplo",
   "admin-example.navigation.label-details": "Exemplo de detalhes",

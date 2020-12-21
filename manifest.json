@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "vtex.styleguide": "9.x",
-    "vtex.product-context": "0.x"
+    "vtex.product-context": "0.x",
+    "vtex.css-handles": "0.x"
   },
   "builders": {
     "react": "3.x",

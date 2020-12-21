@@ -1,25 +1,40 @@
 /* eslint-disable no-console */
 import React, { FC, useContext, useState } from 'react'
-import { compose, graphql } from 'react-apollo'
+import { compose, graphql, useMutation } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, Modal } from 'vtex.styleguide'
+import { Button, Modal, Spinner, Textarea } from 'vtex.styleguide'
+import { useCssHandles } from 'vtex.css-handles'
 
 import QUERY_CONFIG from './queries/config.gql'
+import ADD_QUESTION from './queries/addQuestion.gql'
 
 import styles from './qnastyle.css'
+
+const CSS_HANDLES = ['formContainer'] as const
 
 const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [state, setState] = useState<any>({
     isModalOpen: false,
+    question: null,
   })
 
-  const { isModalOpen } = state
+  const [addQuestion, { loading: addLoading, called, error }] = useMutation(
+    ADD_QUESTION
+  )
+
+  const handles = useCssHandles(CSS_HANDLES)
+
+  const { isModalOpen, question } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
+  }
+
+  if (!addLoading && called && !error && isModalOpen) {
+    setState({ ...state, isModalOpen: false })
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -53,8 +68,16 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           <div className={styles['button-container']}>
             <button className={styles.increment}></button>
           </div>
-          <div className={styles['vote-count']}>1</div>
-          <div className={styles['vote-text']}>vote</div>
+          <div className={styles['vote-count']}>3</div>
+          <div className={styles['vote-text']}>
+            <FormattedMessage
+              id="store/question.votes.label"
+              values={{
+                quantity: 3,
+              }}
+              defaultMessage="vote"
+            />
+          </div>
           <div className={styles['button-container']}>
             <button className={styles.decrement}></button>
           </div>
@@ -76,56 +99,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
           <div className={styles['no-answer']}>
             <FormattedMessage
-                id="store/question.no-answer.text"
-                defaultMessage="No answers yet. Be the first!"
+              id="store/question.no-answer.text"
+              defaultMessage="No answers yet. Be the first!"
             />
-          </div>
-        </div>
-      </div>
-
-      <div className={styles['votes-question-container']}>
-        <div className={styles.votes}>
-          <div className={styles['button-container']}>
-            <button className={styles.increment}></button>
-          </div>
-          <div className={styles['vote-count']}>1</div>
-          <div className={styles['vote-text']}>vote</div>
-          <div className={styles['button-container']}>
-            <button className={styles.decrement}></button>
-          </div>
-        </div>
-
-        <div className={styles['question-answer-container']}>
-          <div className={styles['question-container']}>
-            <div className={styles['question-label']}>
-              <FormattedMessage
-                id="store/question.label"
-                defaultMessage="Question"
-              />
-              :
-            </div>
-            <a className={styles['question-text']}>
-              Does the stand detach from the microphone body?
-            </a>
-          </div>
-          <div className={styles['answer-container']}>
-            <div className={styles['answer-label']}>
-              <FormattedMessage
-                id="store/answer.label"
-                defaultMessage="Answer"
-              />
-              :
-            </div>
-            <div className={styles['answer-text']}>
-              Thanks for your question! It is important that you store your
-              brewer in a safe and frost free environment. If your brewer has
-              been in an environment below freezing, let it warm to room
-              temperature for at least 2 hours before using. We hope this is
-              helpful!
-            </div>
-          </div>
-          <div className={styles['additional-info']}>
-            <FormattedMessage id="store/question.additional-info.by"/> Chris <FormattedMessage id="store/question.additional-info.on"/> March 29, 2020
           </div>
         </div>
       </div>
@@ -139,6 +115,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           <div className={styles['vote-text']}>
             <FormattedMessage
               id="store/question.votes.label"
+              values={{
+                quantity: 1,
+              }}
               defaultMessage="vote"
             />
           </div>
@@ -177,17 +156,78 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             </div>
           </div>
           <div className={styles['additional-info']}>
-            <FormattedMessage id="store/question.additional-info.by"/> Chris <FormattedMessage id="store/question.additional-info.on"/> March 29, 2020
+            <FormattedMessage id="store/question.additional-info.by" /> Chris{' '}
+            <FormattedMessage id="store/question.additional-info.on" /> March
+            29, 2020
+          </div>
+        </div>
+      </div>
+
+      <div className={styles['votes-question-container']}>
+        <div className={styles.votes}>
+          <div className={styles['button-container']}>
+            <button className={styles.increment}></button>
+          </div>
+          <div className={styles['vote-count']}>0</div>
+          <div className={styles['vote-text']}>
+            <FormattedMessage
+              id="store/question.votes.label"
+              values={{
+                quantity: 0,
+              }}
+              defaultMessage="vote"
+            />
+          </div>
+          <div className={styles['button-container']}>
+            <button className={styles.decrement}></button>
+          </div>
+        </div>
+
+        <div className={styles['question-answer-container']}>
+          <div className={styles['question-container']}>
+            <div className={styles['question-label']}>
+              <FormattedMessage
+                id="store/question.label"
+                defaultMessage="Question"
+              />
+              :
+            </div>
+            <a className={styles['question-text']}>
+              Does the stand detach from the microphone body?
+            </a>
+          </div>
+          <div className={styles['answer-container']}>
+            <div className={styles['answer-label']}>
+              <FormattedMessage
+                id="store/answer.label"
+                defaultMessage="Answer"
+              />
+              :
+            </div>
+            <div className={styles['answer-text']}>
+              Thanks for your question! It is important that you store your
+              brewer in a safe and frost free environment. If your brewer has
+              been in an environment below freezing, let it warm to room
+              temperature for at least 2 hours before using. We hope this is
+              helpful!
+            </div>
+          </div>
+          <div className={styles['additional-info']}>
+            <FormattedMessage id="store/question.additional-info.by" /> Chris{' '}
+            <FormattedMessage id="store/question.additional-info.on" /> March
+            29, 2020
           </div>
           <a className={styles['questions-dropdown']}>
             <FormattedMessage
-                id="store/question.more-answers.label"
-                defaultMessage="See more answers"
-              /> (2)</a>
+              id="store/question.more-answers.label"
+              defaultMessage="See more answers"
+            />{' '}
+            (2)
+          </a>
           <button className={styles['collapse-button']}>
             <FormattedMessage
-                id="store/question.collapse.label"
-                defaultMessage="Collapse all answers"
+              id="store/question.collapse.label"
+              defaultMessage="Collapse all answers"
             />
           </button>
         </div>
@@ -197,7 +237,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <FormattedMessage
           id="store/question.more-questions.label"
           defaultMessage="See more answered questions"
-        /> (10)
+        />{' '}
+        (10)
       </button>
 
       <div className={styles['create-question-container']}>
@@ -230,48 +271,59 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             handleModalToggle()
           }}
         >
-          <div className="dark-gray">
-            <form action="#" method="POST" id="question-form">
-              <textarea
-                name=""
-                id=""
-                placeholder={intl.formatMessage({
-                  id: "store/question.modal.search.placeholder",
-                  defaultMessage: "Please enter a question.",
-                })}
-                rows={4}
-                cols={50}
-                className={styles['question-text-box']}
-              ></textarea>
+          <div className={`${handles.formContainer} dark-gray`}>
+            {addLoading && <Spinner />}
+            <Textarea
+              placeholder={intl.formatMessage({
+                id: 'store/question.modal.search.placeholder',
+                defaultMessage: 'Please enter a question.',
+              })}
+              rows={4}
+              onChange={(e: any) =>
+                setState({ ...state, question: e.target.value.trim() })
+              }
+              value={question}
+              className={styles['question-text-box']}
+            />
 
-              <div
-                style={{
-                  backgroundColor: '#edf4fa',
-                  borderRadius: '4px',
-                  border: 'solid #368df7',
-                  borderWidth: '0 0 0 4px',
-                  boxSizing: 'border-box',
-                  padding: '12px 16px',
-                }}
-              >
-                <FormattedMessage
-                  id="store/question.modal.text"
-                  defaultMessage="Your question might be answered by sellers, manufacturers, or customers who bought this product."
-                />
-              </div>
-            </form>
+            <div
+              style={{
+                backgroundColor: '#edf4fa',
+                borderRadius: '4px',
+                border: 'solid #368df7',
+                borderWidth: '0 0 0 4px',
+                boxSizing: 'border-box',
+                padding: '12px 16px',
+              }}
+            >
+              <FormattedMessage
+                id="store/question.modal.text"
+                defaultMessage="Your question might be answered by sellers, manufacturers, or customers who bought this product."
+              />
+            </div>
 
             <div className={styles['modal-buttons-container']}>
-              <button
-                type="submit"
+              <Button
                 className={styles['submit-question-button']}
+                isLoading={addLoading}
+                onClick={() => {
+                  addQuestion({
+                    variables: {
+                      productId: product.productId,
+                      question,
+                      name: 'Test',
+                      email: 'test@test.com',
+                      anonymous: false,
+                    },
+                  })
+                }}
               >
                 <FormattedMessage
                   id="store/question.modal.post-button.label"
                   defaultMessage="Post"
                 />
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleModalToggle()}
                 className={styles['close-modal-button']}
               >
@@ -279,7 +331,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   id="store/question.modal.cancel-button.label"
                   defaultMessage="Cancel"
                 />
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>

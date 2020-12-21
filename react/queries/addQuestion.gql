@@ -1,0 +1,3 @@
+mutation AddQuestion($productId: String!, $question: String, $name: String, $email: String, $anonymous: Boolean) {
+  addQuestion(productId: $productId, question: $question, name: $name, email: $email, anonymous: $anonymous)
+}

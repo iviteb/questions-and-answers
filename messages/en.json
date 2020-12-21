@@ -15,7 +15,7 @@
   "store/question.modal.text": "Your question might be answered by sellers, manufacturers, or customers who bought this product.",
   "store/question.modal.post-button.label": "Post",
   "store/question.modal.cancel-button.label": "Cancel",
-  "store/question.votes.label": "vote",
+  "store/question.votes.label": "{quantity, plural, =1{vote} other {votes}}",
   "admin-example.navigation.label-group": "Example admins",
   "admin-example.navigation.label-details": "Example details",
   "admin-example.navigation.label-table": "Example table",
