@@ -95,6 +95,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             
             <div className={styles['button-container']}>
               <Button 
+                size="small"
                 className={styles.increment}
                 onClick={() => {
                   voteQuestion({
@@ -107,6 +108,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 }}
               />
             </div>
+            <div className={styles['vote-count']}>1</div> 
             <div className={styles['vote-text']}>
               <FormattedMessage
                 id="store/question.votes.label"
@@ -128,6 +130,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     },
                   })
                 }}
+                size="small"
+
               />
             </div>
 
