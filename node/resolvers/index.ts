@@ -301,7 +301,7 @@ export const resolvers = {
       }).catch(() => {
         return votes
       })
-      return result
+      return {votes: result, id: args.id}
 
     },
     voteAnswer: async (_:any, args: any, ctx: Context) => {

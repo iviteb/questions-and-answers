@@ -5,6 +5,11 @@ type Query {
   config: Config @cacheControl(scope: PRIVATE)
 }
 
+type Votes {
+  id: String
+  votes: Int
+}
+
 type Config {
   schema: Boolean
   title: String
@@ -16,7 +21,7 @@ type Config {
 type Mutation {
   addQuestion(question: String, name: String, email: String, anonymous: Boolean, allowed: Boolean, productId: String!): String
   addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
-  voteQuestion(email: String, id: ID, vote: Int): Int
+  voteQuestion(email: String, id: ID, vote: Int): Votes
   voteAnswer(email: String, id: ID): Int
   moderateQuestion(id: ID, allowed: Boolean): Boolean
   moderateAnswer(id: ID, allowed: Boolean): Boolean
