@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.5'
+const SCHEMA_VERSION = 'v0.7'
 const schemaQuestions = {
   properties: {
     productId: {
@@ -40,7 +40,7 @@ const schemaQuestions = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'question', 'creationDate', 'allowed'],
+  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed'],
   'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -171,7 +171,7 @@ export const resolvers = {
     },
     questions: async (
       _: any,
-      __: any,
+      args: any,
       ctx: Context
     ) => {
       const {
@@ -182,7 +182,8 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
-        fields: ['question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        where: `productId=${args.productId}`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -205,7 +206,7 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
-        fields: ['question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate'],
+        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
         pagination: {
           page: 1,
           pageSize: 99,

@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import React, { FC, useContext, useState } from 'react'
-import { compose, graphql, useMutation } from 'react-apollo'
+import { compose, graphql, useMutation, useLazyQuery } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, Modal, Spinner, Textarea, ButtonGroup } from 'vtex.styleguide'
+import { Button, Modal, Spinner, Textarea } from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
 
 import QUERY_CONFIG from './queries/config.gql'
@@ -15,11 +15,11 @@ import VOTE_QUESTION from './queries/voteQuestion.gql'
 import VOTE_ANSWER from './queries/voteAnswer.gql'
 import MODERATE_QUESTION from './queries/moderateQuestion.gql'
 import MODERATE_ANSWER from './queries/moderateAnswer.gql'
-
+import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 
 import styles from './qnastyle.css'
 
-const CSS_HANDLES = ['formContainer'] as const
+const CSS_HANDLES = ['formContainer', 'questionsList'] as const
 
 const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [state, setState] = useState<any>({
@@ -27,30 +27,56 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     question: null,
   })
 
-  const [addQuestion, { loading: addLoading, called: questionCalled, error: questionError }] = useMutation(
-    ADD_QUESTION
-  )
+  const [
+    getQuestions,
+    { loading: loadingQuestions, data: questionsData, called: questionsCalled },
+  ] = useLazyQuery(QUERY_GET_QUESTIONS)
 
-  const [addAnswer, {loading: ansLoading, called: answerCalled, error: answerError}] = useMutation(
-    ADD_ANSWER
-  )
+  const [
+    addQuestion,
+    { loading: addLoading, called: questionCalled, error: questionError },
+  ] = useMutation(ADD_QUESTION)
 
-  const [voteQuestion, {loading: voteQuestionLoading, called: voteQuestionCalled, error: voteQuestionError}] = useMutation(
-    VOTE_QUESTION
-  )
+  const [
+    addAnswer,
+    { loading: ansLoading, called: answerCalled, error: answerError },
+  ] = useMutation(ADD_ANSWER)
 
-  const [voteAnswer, {loading: voteAnswerLoading, called: voteAnswerCalled, error: voteAnswerError}] = useMutation(
-    VOTE_ANSWER
-  )
+  const [
+    voteQuestion,
+    {
+      loading: voteQuestionLoading,
+      called: voteQuestionCalled,
+      error: voteQuestionError,
+    },
+  ] = useMutation(VOTE_QUESTION)
 
-  const [moderateQuestion, {loading: moderateQuestionLoading, called: moderateQuestionCalled, error: moderateQuestionError}] = useMutation(
-    MODERATE_QUESTION
-  )
+  const [
+    voteAnswer,
+    {
+      loading: voteAnswerLoading,
+      called: voteAnswerCalled,
+      error: voteAnswerError,
+    },
+  ] = useMutation(VOTE_ANSWER)
 
-  const [moderateAnswer, {loading: moderateAnswerLoading, called: moderateAnswerCalled, error: moderateAnswerError}] = useMutation(
-    MODERATE_ANSWER
-  )
-  
+  const [
+    moderateQuestion,
+    {
+      loading: moderateQuestionLoading,
+      called: moderateQuestionCalled,
+      error: moderateQuestionError,
+    },
+  ] = useMutation(MODERATE_QUESTION)
+
+  const [
+    moderateAnswer,
+    {
+      loading: moderateAnswerLoading,
+      called: moderateAnswerCalled,
+      error: moderateAnswerError,
+    },
+  ] = useMutation(MODERATE_ANSWER)
 
   const handles = useCssHandles(CSS_HANDLES)
 
@@ -69,8 +95,17 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   console.log('Config =>', config)
   console.log('Product =>', product)
+  console.log('questionsData =>', questionsData)
 
   if (!config) return null
+
+  if (product && !questionsCalled) {
+    getQuestions({
+      variables: {
+        productId: product.productId,
+      },
+    })
+  }
 
   return (
     <div>
@@ -90,211 +125,86 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         </div>
       )}
 
-      <div className={styles['votes-question-container']}>
-        <div className={styles.votes}>
-            
-            <div className={styles['button-container']}>
-              <Button 
-                size="small"
-                className={styles.increment}
-                onClick={() => {
-                  voteQuestion({
-                    variables: {
-                      questionId: question.questionId,
-                      email: 'test@test.com',
-                      vote: 1,
-                    },
-                  })
-                }}
-              />
-            </div>
-            <div className={styles['vote-count']}>1</div> 
-            <div className={styles['vote-text']}>
-              <FormattedMessage
-                id="store/question.votes.label"
-                values={{
-                  quantity: 3,
-                }}
-                defaultMessage="vote"
-              />
-            </div>
-            <div className={styles['button-container']}>
-            <Button 
-                className={styles.decrement}
-                onClick={() => {
-                  voteQuestion({
-                    variables: {
-                      questionId: question.questionId,
-                      email: 'test@test.com',
-                      vote: -1,
-                    },
-                  })
-                }}
-                size="small"
+      {loadingQuestions && <Spinner />}
+      {!loadingQuestions && questionsData?.questions.length && (
+        <div className={handles.questionsList}>
+          {questionsData.questions.map((row: any) => {
+            return (
+              <div key={row.id} className={styles['votes-question-container']}>
+                <div className={styles.votes}>
+                  <div className={styles['button-container']}>
+                    <Button
+                      size="small"
+                      className={styles.increment}
+                      onClick={() => {
+                        voteQuestion({
+                          variables: {
+                            questionId: '1',
+                            email: 'test@test.com',
+                            vote: 1,
+                          },
+                        })
+                      }}
+                    />
+                  </div>
+                  <div className={styles['vote-count']}>{row.votes || 0}</div>
+                  <div className={styles['vote-text']}>
+                    <FormattedMessage
+                      id="store/question.votes.label"
+                      values={{
+                        quantity: 3,
+                      }}
+                      defaultMessage="vote"
+                    />
+                  </div>
+                  <div className={styles['button-container']}>
+                    <Button
+                      className={styles.decrement}
+                      onClick={() => {
+                        voteQuestion({
+                          variables: {
+                            questionId: '1',
+                            email: 'test@test.com',
+                            vote: -1,
+                          },
+                        })
+                      }}
+                      size="small"
+                    />
+                  </div>
+                </div>
+                <div className={styles['question-answer-container']}>
+                  <div className={styles['question-container']}>
+                    <div className={styles['question-label']}>
+                      <FormattedMessage
+                        id="store/question.label"
+                        defaultMessage="Question"
+                      />
+                      :
+                    </div>
+                    <a className={styles['question-text']}>{row.question}</a>
+                  </div>
 
-              />
-            </div>
+                  <div className={styles['no-answer']}>
+                    <FormattedMessage
+                      id="store/question.no-answer.text"
+                      defaultMessage="No answers yet. Be the first!"
+                    />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
 
-        </div>
-
-        <div className={styles['question-answer-container']}>
-          <div className={styles['question-container']}>
-            <div className={styles['question-label']}>
-              <FormattedMessage
-                id="store/question.label"
-                defaultMessage="Question"
-              />
-              :
-            </div>
-            <a className={styles['question-text']}>
-              Does the stand detach from the microphone body?
-            </a>
-          </div>
-
-          <div className={styles['no-answer']}>
+          <button className={styles['more-questions-button']}>
             <FormattedMessage
-              id="store/question.no-answer.text"
-              defaultMessage="No answers yet. Be the first!"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className={styles['votes-question-container']}>
-        <div className={styles.votes}>
-          <div className={styles['button-container']}>
-            <button className={styles.increment}></button>
-          </div>
-          <div className={styles['vote-count']}>1</div>
-          <div className={styles['vote-text']}>
-            <FormattedMessage
-              id="store/question.votes.label"
-              values={{
-                quantity: 1,
-              }}
-              defaultMessage="vote"
-            />
-          </div>
-          <div className={styles['button-container']}>
-            <button className={styles.decrement}></button>
-          </div>
-        </div>
-
-        <div className={styles['question-answer-container']}>
-          <div className={styles['question-container']}>
-            <div className={styles['question-label']}>
-              <FormattedMessage
-                id="store/question.label"
-                defaultMessage="Question"
-              />
-              :
-            </div>
-            <a className={styles['question-text']}>
-              Does the stand detach from the microphone body?
-            </a>
-          </div>
-          <div className={styles['answer-container']}>
-            <div className={styles['answer-label']}>
-              <FormattedMessage
-                id="store/answer.label"
-                defaultMessage="Answer"
-              />
-              :
-            </div>
-            <div className={styles['answer-text']}>
-              Thanks for your question! It is important that you store your
-              brewer in a safe and frost free environment. If your brewer has
-              been in an environment below freezing, let it warm to room
-              temperature for at least 2 hours before using. We hope this is
-              helpful!
-            </div>
-          </div>
-          <div className={styles['additional-info']}>
-            <FormattedMessage id="store/question.additional-info.by" /> Chris{' '}
-            <FormattedMessage id="store/question.additional-info.on" /> March
-            29, 2020
-          </div>
-        </div>
-      </div>
-
-      <div className={styles['votes-question-container']}>
-        <div className={styles.votes}>
-          <div className={styles['button-container']}>
-            <button className={styles.increment}></button>
-          </div>
-          <div className={styles['vote-count']}>0</div>
-          <div className={styles['vote-text']}>
-            <FormattedMessage
-              id="store/question.votes.label"
-              values={{
-                quantity: 0,
-              }}
-              defaultMessage="vote"
-            />
-          </div>
-          <div className={styles['button-container']}>
-            <button className={styles.decrement}></button>
-          </div>
-        </div>
-
-        <div className={styles['question-answer-container']}>
-          <div className={styles['question-container']}>
-            <div className={styles['question-label']}>
-              <FormattedMessage
-                id="store/question.label"
-                defaultMessage="Question"
-              />
-              :
-            </div>
-            <a className={styles['question-text']}>
-              Does the stand detach from the microphone body?
-            </a>
-          </div>
-          <div className={styles['answer-container']}>
-            <div className={styles['answer-label']}>
-              <FormattedMessage
-                id="store/answer.label"
-                defaultMessage="Answer"
-              />
-              :
-            </div>
-            <div className={styles['answer-text']}>
-              Thanks for your question! It is important that you store your
-              brewer in a safe and frost free environment. If your brewer has
-              been in an environment below freezing, let it warm to room
-              temperature for at least 2 hours before using. We hope this is
-              helpful!
-            </div>
-          </div>
-          <div className={styles['additional-info']}>
-            <FormattedMessage id="store/question.additional-info.by" /> Chris{' '}
-            <FormattedMessage id="store/question.additional-info.on" /> March
-            29, 2020
-          </div>
-          <a className={styles['questions-dropdown']}>
-            <FormattedMessage
-              id="store/question.more-answers.label"
-              defaultMessage="See more answers"
+              id="store/question.more-questions.label"
+              defaultMessage="See more answered questions"
             />{' '}
-            (2)
-          </a>
-          <button className={styles['collapse-button']}>
-            <FormattedMessage
-              id="store/question.collapse.label"
-              defaultMessage="Collapse all answers"
-            />
+            (10)
           </button>
         </div>
-      </div>
-
-      <button className={styles['more-questions-button']}>
-        <FormattedMessage
-          id="store/question.more-questions.label"
-          defaultMessage="See more answered questions"
-        />{' '}
-        (10)
-      </button>
-
+      )}
       <div className={styles['create-question-container']}>
         <div className={styles['create-question-text']}>
           <FormattedMessage

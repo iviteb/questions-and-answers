@@ -1,0 +1,19 @@
+query GetQuestions($productId: String!){
+  questions(productId: $productId) {
+    id
+    question
+    name
+    email
+    anonymous
+    votes
+    allowed
+    answers {
+      answer
+      votes
+      name
+      email
+      anonymous
+      allowed
+    }
+  }
+}
