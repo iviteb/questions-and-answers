@@ -26,7 +26,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     isModalOpen: false,
     question: null,
     votes: {},
-    anonymousCheck: false
+    anonymousCheck: false,
+    email: ""
   })
 
   const [
@@ -335,7 +336,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       question,
                       name: 'Test',
                       email: 'test@test.com',
-                      anonymous: false,
+                      anonymous: state.anonymousCheck,
                     },
                   })
                 }}
