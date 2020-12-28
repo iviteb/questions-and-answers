@@ -7,6 +7,11 @@ type Query {
   config: Config @cacheControl(scope: PRIVATE)
 }
 
+type Votes {
+  id: String
+  votes: Int
+}
+
 type Config {
   schema: Boolean
   title: String

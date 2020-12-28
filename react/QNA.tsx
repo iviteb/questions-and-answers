@@ -25,6 +25,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [state, setState] = useState<any>({
     isModalOpen: false,
     question: null,
+    votes: {},
   })
 
   const [
@@ -49,7 +50,23 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       called: voteQuestionCalled,
       error: voteQuestionError,
     },
-  ] = useMutation(VOTE_QUESTION)
+  ] = useMutation(VOTE_QUESTION, {
+    onCompleted: (res: any) => {
+      console.log("res =>", res)
+      const newVotes = state.votes
+      newVotes[res.voteQuestion.id] = res.voteQuestion.votes
+      console.log("onCompleted =>", res.voteQuestion.votes)
+      setState({
+        ...state,
+        votes: newVotes,
+      })
+      console.log('Mutation response =>', res)
+    },
+  })
+
+  // User is authenticated
+  // Search query for productId/UserEmail/QuestionId
+  // Return same number of votes if already voted, exception will increment vote
 
   const [
     voteAnswer,
@@ -80,7 +97,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question } = state
+  const { isModalOpen, question, votes } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
@@ -130,6 +147,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <div className={handles.questionsList}>
           {questionsData.questions.map((row: any) => {
             return (
+
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
                   <div className={styles['button-container']}>
@@ -139,7 +157,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       onClick={() => {
                         voteQuestion({
                           variables: {
-                            questionId: '1',
+                            id: row.id,
                             email: 'test@test.com',
                             vote: 1,
                           },
@@ -147,12 +165,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       }}
                     />
                   </div>
-                  <div className={styles['vote-count']}>{row.votes || 0}</div>
+                  <div className={styles['vote-count']}>{votes[row.id] || row.votes}</div>
                   <div className={styles['vote-text']}>
                     <FormattedMessage
                       id="store/question.votes.label"
                       values={{
-                        quantity: 3,
+                        quantity: votes[row.id] || row.votes,
                       }}
                       defaultMessage="vote"
                     />
@@ -163,7 +181,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       onClick={() => {
                         voteQuestion({
                           variables: {
-                            questionId: '1',
+                            id: row.id,
                             email: 'test@test.com',
                             vote: -1,
                           },
