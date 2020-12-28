@@ -1,12 +1,20 @@
 /* eslint-disable no-console */
-import React, { FC, useContext, useState } from 'react'
+import React, { FC, useContext, useState, useEffect } from 'react'
 import { compose, graphql, useMutation, useLazyQuery } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, Modal, Spinner, Textarea, Input, Checkbox } from 'vtex.styleguide'
+import {
+  Button,
+  Modal,
+  Spinner,
+  Textarea,
+  Input,
+  Checkbox,
+} from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
+import { getSession } from './modules/session'
 
 import QUERY_CONFIG from './queries/config.gql'
 import ADD_QUESTION from './queries/addQuestion.gql'
@@ -21,13 +29,33 @@ import styles from './qnastyle.css'
 
 const CSS_HANDLES = ['formContainer', 'questionsList'] as const
 
+const useSessionResponse = () => {
+  const [session, setSession] = useState()
+  const sessionPromise = getSession()
+
+  useEffect(() => {
+    if (!sessionPromise) {
+      return
+    }
+
+    sessionPromise.then(sessionResponse => {
+      const { response } = sessionResponse
+
+      setSession(response)
+    })
+  }, [sessionPromise])
+
+  return session
+}
+
 const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [state, setState] = useState<any>({
     isModalOpen: false,
     question: null,
     votes: {},
     anonymousCheck: false,
-    email: ""
+    email: '',
+    name: '',
   })
 
   const [
@@ -54,10 +82,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     },
   ] = useMutation(VOTE_QUESTION, {
     onCompleted: (res: any) => {
-      console.log("res =>", res)
+      console.log('res =>', res)
       const newVotes = state.votes
       newVotes[res.voteQuestion.id] = res.voteQuestion.votes
-      console.log("onCompleted =>", res.voteQuestion.votes)
+      console.log('onCompleted =>', res.voteQuestion.votes)
       setState({
         ...state,
         votes: newVotes,
@@ -96,21 +124,21 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       error: moderateAnswerError,
     },
   ] = useMutation(MODERATE_ANSWER)
-
+  const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, votes } = state
+  const { isModalOpen, question, votes, email, name, anonymousCheck } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
   }
 
+  console.log('QuestionsAndAnswers =>', ProductContext)
+  const { product } = useContext(ProductContext) as any
+
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
     setState({ ...state, isModalOpen: false })
   }
-
-  console.log('QuestionsAndAnswers =>', ProductContext)
-  const { product } = useContext(ProductContext) as any
 
   console.log('Config =>', config)
   console.log('Product =>', product)
@@ -125,6 +153,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       },
     })
   }
+
+  console.log('questionsData =>', questionsData)
+
+  console.log('sessionResponse =>', sessionResponse)
 
   return (
     <div>
@@ -149,7 +181,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <div className={handles.questionsList}>
           {questionsData.questions.map((row: any) => {
             return (
-
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
                   <div className={styles['button-container']}>
@@ -167,7 +198,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       }}
                     />
                   </div>
-                  <div className={styles['vote-count']}>{votes[row.id] || row.votes}</div>
+                  <div className={styles['vote-count']}>
+                    {votes[row.id] || row.votes}
+                  </div>
                   <div className={styles['vote-text']}>
                     <FormattedMessage
                       id="store/question.votes.label"
@@ -261,55 +294,65 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             <div className="question-email-container">
               <Input
                 placeholder=""
-                dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label={intl.formatMessage({
                   id: 'store/question.modal.name.label',
                   defaultMessage: 'Name',
                 })}
+                value={name}
+                onChange={(e: any) =>
+                  setState({ ...state, name: e.target.value })
+                }
                 required="true"
-                />
+              />
             </div>
 
-            <div className="question-email-container">
+            <div className="question-email-container mt4">
               <Input
                 placeholder=""
-                dataAttributes={{ 'hj-white-list': true, test: 'string' }}
+                helpText="Get notified when someone replies"
                 label={intl.formatMessage({
                   id: 'store/question.modal.email.label',
                   defaultMessage: 'Email',
                 })}
+                onChange={(e: any) =>
+                  setState({ ...state, email: e.target.value.trim() })
+                }
+                value={email}
                 required="true"
-                />
+              />
             </div>
 
-            <Textarea
-              placeholder={intl.formatMessage({
-                id: 'store/question.modal.search.placeholder',
-                defaultMessage: 'Please enter a question.',
-              })}
-              rows={4}
-              onChange={(e: any) =>
-                setState({ ...state, question: e.target.value.trim() })
-              }
-              value={question}
-              className={styles['question-text-box']}
-            />
-
-            <div className="anonymousCheck">
+            <div className="mt4">
+              <Textarea
+                placeholder={intl.formatMessage({
+                  id: 'store/question.modal.search.placeholder',
+                  defaultMessage: 'Please enter a question.',
+                })}
+                rows={4}
+                onChange={(e: any) =>
+                  setState({ ...state, question: e.target.value })
+                }
+                value={question}
+                className={styles['question-text-box']}
+              />
+            </div>
+            <div className="anonymousCheck mt4">
               <Checkbox
-                checked={state.anonymousCheck}
+                checked={anonymousCheck}
                 id=""
                 label={intl.formatMessage({
                   id: 'store/question.modal.anonymous-check.label',
                   defaultMessage: 'Ask anonymously',
                 })}
                 name=""
-                onChange={() => setState({ ...state, anonymousCheck: !state.anonymousCheck })}
-                value=""
+                onChange={() =>
+                  setState({ ...state, anonymousCheck: !anonymousCheck })
+                }
               />
             </div>
 
             <div
+              className="mt4"
               style={{
                 backgroundColor: '#edf4fa',
                 borderRadius: '4px',
@@ -334,8 +377,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     variables: {
                       productId: product.productId,
                       question,
-                      name: 'Test',
-                      email: 'test@test.com',
+                      name,
+                      email,
                       anonymous: state.anonymousCheck,
                     },
                   })
@@ -347,6 +390,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 />
               </Button>
               <Button
+                variation="tertiary"
                 onClick={() => handleModalToggle()}
                 className={styles['close-modal-button']}
               >
