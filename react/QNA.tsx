@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
 
 import { ProductContext } from 'vtex.product-context'
-import { Button, Modal, Spinner, Textarea } from 'vtex.styleguide'
+import { Button, Modal, Spinner, Textarea, Input, Checkbox } from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
 
 import QUERY_CONFIG from './queries/config.gql'
@@ -26,6 +26,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     isModalOpen: false,
     question: null,
     votes: {},
+    anonymousCheck: false
   })
 
   const [
@@ -255,6 +256,31 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         >
           <div className={`${handles.formContainer} dark-gray`}>
             {addLoading && <Spinner />}
+
+            <div className="question-email-container">
+              <Input
+                placeholder=""
+                dataAttributes={{ 'hj-white-list': true, test: 'string' }}
+                label={intl.formatMessage({
+                  id: 'store/question.modal.name.label',
+                  defaultMessage: 'Name',
+                })}
+                required="true"
+                />
+            </div>
+
+            <div className="question-email-container">
+              <Input
+                placeholder=""
+                dataAttributes={{ 'hj-white-list': true, test: 'string' }}
+                label={intl.formatMessage({
+                  id: 'store/question.modal.email.label',
+                  defaultMessage: 'Email',
+                })}
+                required="true"
+                />
+            </div>
+
             <Textarea
               placeholder={intl.formatMessage({
                 id: 'store/question.modal.search.placeholder',
@@ -267,6 +293,20 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
               value={question}
               className={styles['question-text-box']}
             />
+
+            <div className="anonymousCheck">
+              <Checkbox
+                checked={state.anonymousCheck}
+                id=""
+                label={intl.formatMessage({
+                  id: 'store/question.modal.anonymous-check.label',
+                  defaultMessage: 'Ask anonymously',
+                })}
+                name=""
+                onChange={() => setState({ ...state, anonymousCheck: !state.anonymousCheck })}
+                value=""
+              />
+            </div>
 
             <div
               style={{
