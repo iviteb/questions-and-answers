@@ -1,4 +1,4 @@
-query GetQuestions($productId: String!){
+query GetQuestions($productId: String!) {
   questions(productId: $productId) {
     id
     question

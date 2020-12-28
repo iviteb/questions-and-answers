@@ -1,6 +1,8 @@
 type Query {
-  questions(productId: String!): [Question] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
-  answers(questionId: ID!): [Answer] @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+  questions(productId: String!): [Question]
+    @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+  answers(questionId: ID!): [Answer]
+    @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
   search(keyword: String): [Question] @cacheControl(scope: PRIVATE)
   config: Config @cacheControl(scope: PRIVATE)
 }
@@ -14,8 +16,22 @@ type Config {
 }
 
 type Mutation {
-  addQuestion(question: String, name: String, email: String, anonymous: Boolean, allowed: Boolean, productId: String!): String
-  addAnswer(questionId: ID, answer: String, name: String, email: String, anonymous: Boolean, allowed: Boolean): String
+  addQuestion(
+    question: String
+    name: String
+    email: String
+    anonymous: Boolean
+    allowed: Boolean
+    productId: String!
+  ): String
+  addAnswer(
+    questionId: ID
+    answer: String
+    name: String
+    email: String
+    anonymous: Boolean
+    allowed: Boolean
+  ): String
   voteQuestion(email: String, id: ID, vote: Int): Int
   voteAnswer(email: String, id: ID): Int
   moderateQuestion(id: ID, allowed: Boolean): Boolean
@@ -45,4 +61,3 @@ type Answer {
   anonymous: Boolean
   allowed: Boolean
 }
-
