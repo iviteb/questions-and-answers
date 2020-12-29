@@ -56,6 +56,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     anonymousCheck: false,
     email: '',
     name: '',
+    isAnswerModalOpen: false,
+    answer: ""
   })
 
   const [
@@ -97,6 +99,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   // User is authenticated
   // Search query for productId/UserEmail/QuestionId
   // Return same number of votes if already voted, exception will increment vote
+  // Anonymous question text
+  // Answer modal
 
   const [
     voteAnswer,
@@ -127,10 +131,14 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, votes, email, name, anonymousCheck } = state
+  const { isModalOpen, question, votes, email, name, anonymousCheck, isAnswerModalOpen, answer } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
+  }
+
+  const handleAnswerModalToggle = () => {
+    setState({...state, isAnswerModalOpen: !isAnswerModalOpen})
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -138,6 +146,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
     setState({ ...state, isModalOpen: false })
+  }
+
+  if (!ansLoading && answerCalled && !answerError && isAnswerModalOpen) {
+    setState({ ...state, isAnswerModalOpen: false })
   }
 
   console.log('Config =>', config)
@@ -157,6 +169,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   console.log('questionsData =>', questionsData)
 
   console.log('sessionResponse =>', sessionResponse)
+
+  if (sessionResponse?.namespaces?.profile?.email?.value && !email) {
+    setState({
+      ...state,
+      email: sessionResponse?.namespaces?.profile?.email?.value,
+    })
+  }
 
   return (
     <div>
@@ -191,7 +210,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         voteQuestion({
                           variables: {
                             id: row.id,
-                            email: 'test@test.com',
+                            email,
                             vote: 1,
                           },
                         })
@@ -217,7 +236,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         voteQuestion({
                           variables: {
                             id: row.id,
-                            email: 'test@test.com',
+                            email,
                             vote: -1,
                           },
                         })
@@ -226,6 +245,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     />
                   </div>
                 </div>
+
+                {row.answers?.map((answerItem: any) => {
+                  return(
+                    answerItem.answer
+                  )
+                })}
+
                 <div className={styles['question-answer-container']}>
                   <div className={styles['question-container']}>
                     <div className={styles['question-label']}>
@@ -244,6 +270,132 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       defaultMessage="No answers yet. Be the first!"
                     />
                   </div>
+
+                  <div className={styles['open-answer-modal-container mt4']}>
+                    <Button
+                      onClick={() => handleAnswerModalToggle()}
+                      className={styles['open-answer-modal-button']}
+                      size="small"
+                    >
+                      <FormattedMessage
+                        id="store/question.create-answer-button.label"
+                        defaultMessage="Answer question"
+                      />
+                    </Button>
+                  </div>
+
+                  <div className={styles['answer-modal-container']}>
+                    <Modal
+                      key={row.id}
+                      isOpen={isAnswerModalOpen}
+                      centered
+                      title={intl.formatMessage({
+                        id: 'store/answer.modal.title',
+                        defaultMessage: 'Post your answer',
+                      })}
+                      onClose={() => {
+                        handleAnswerModalToggle()
+                      }}
+                    >
+                      <div className={`${handles.formContainer} dark-gray`}>
+                        {ansLoading && <Spinner />}
+
+                        <div className="answer-email-container">
+                          <Input
+                            placeholder={row.id}
+                            label={intl.formatMessage({
+                              id: 'store/question.modal.name.label',
+                              defaultMessage: 'Name',
+                            })}
+                            value={name}
+                            onChange={(e: any) =>
+                              setState({ ...state, name: e.target.value })
+                            }
+                            required={true}
+                          />
+                        </div>
+
+                        <div className="answer-email-container mt4">
+                          <Input
+                            placeholder=""
+                            label={intl.formatMessage({
+                              id: 'store/question.modal.email.label',
+                              defaultMessage: 'Email',
+                            })}
+                            onChange={(e: any) =>
+                              setState({ ...state, email: e.target.value.trim() })
+                            }
+                            value={email}
+                            required={true}
+                          />
+                        </div>
+
+                        <div className="mt4">
+                          <Textarea
+                            placeholder={intl.formatMessage({
+                              id: 'store/answer.modal.search.placeholder',
+                              defaultMessage: 'Please enter your answer',
+                            })}
+                            rows={4}
+                            onChange={(e: any) =>
+                              setState({ ...state, answer: e.target.value })
+                            }
+                            value={answer}
+                            className={styles['answer-text-box']}
+                          />
+                        </div>
+                        <div className="anonymousCheck mt4">
+                          <Checkbox
+                            checked={anonymousCheck}
+                            id=""
+                            label={intl.formatMessage({
+                              id: 'store/question.modal.anonymous-check.label',
+                              defaultMessage: 'Ask anonymously',
+                            })}
+                            name=""
+                            onChange={() =>
+                              setState({ ...state, anonymousCheck: !anonymousCheck })
+                            }
+                          />
+                        </div>
+
+                        <div className={styles['modal-buttons-container']}>
+                          <Button
+                            className={styles['submit-answer-button']}
+                            isLoading={ansLoading}
+                            onClick={() => {
+                              addAnswer({
+                                variables: {
+                                  questionId: row.id,
+                                  answer,
+                                  name,
+                                  email,
+                                  anonymous: anonymousCheck,
+                                },
+                              })
+                            }}
+                          >
+                            <FormattedMessage
+                              id="store/question.modal.post-button.label"
+                              defaultMessage="Post"
+                            />
+                          </Button>
+                          <Button
+                            variation="tertiary"
+                            onClick={() => handleAnswerModalToggle()}
+                            className={styles['close-modal-button']}
+                          >
+                            <FormattedMessage
+                              id="store/question.modal.cancel-button.label"
+                              defaultMessage="Cancel"
+                            />
+                          </Button>
+                        </div>
+                      </div>
+                    </Modal>
+
+                  </div>
+
                 </div>
               </div>
             )
@@ -282,7 +434,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           centered
           title={intl.formatMessage({
             id: 'store/question.modal.title',
-            defaultMessage: 'Have a question? Search for answers',
+            defaultMessage: 'Post your question',
           })}
           onClose={() => {
             handleModalToggle()
@@ -302,7 +454,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 onChange={(e: any) =>
                   setState({ ...state, name: e.target.value })
                 }
-                required="true"
+                required={true}
               />
             </div>
 
@@ -318,7 +470,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   setState({ ...state, email: e.target.value.trim() })
                 }
                 value={email}
-                required="true"
+                required={true}
               />
             </div>
 
@@ -368,27 +520,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
               />
             </div>
 
-            <div className={styles['modal-buttons-container']}>
-              <Button
-                className={styles['submit-question-button']}
-                isLoading={addLoading}
-                onClick={() => {
-                  addQuestion({
-                    variables: {
-                      productId: product.productId,
-                      question,
-                      name,
-                      email,
-                      anonymous: state.anonymousCheck,
-                    },
-                  })
-                }}
-              >
-                <FormattedMessage
-                  id="store/question.modal.post-button.label"
-                  defaultMessage="Post"
-                />
-              </Button>
+            <div className="mt4">
               <Button
                 variation="tertiary"
                 onClick={() => handleModalToggle()}
@@ -399,6 +531,28 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   defaultMessage="Cancel"
                 />
               </Button>
+
+              <Button
+                className={styles['submit-question-button']}
+                isLoading={addLoading}
+                onClick={() => {
+                  addQuestion({
+                    variables: {
+                      productId: product.productId,
+                      question,
+                      name,
+                      email,
+                      anonymous: anonymousCheck,
+                    },
+                  })
+                }}
+              >
+                <FormattedMessage
+                  id="store/question.modal.post-button.label"
+                  defaultMessage="Post"
+                />
+              </Button>
+
             </div>
           </div>
         </Modal>

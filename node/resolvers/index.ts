@@ -258,20 +258,44 @@ export const resolvers = {
         })
 
     },
-    addAnswer: (_:any, args: any, ctx: Context) => {
+    addAnswer: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
-          masterdata
+          masterdata,
+          hub
         },
+        vtex: {
+          account,
+          authToken
+        }
       } = ctx
 
-      return masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
+      const result = masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
         }).catch((err: any) => {
           return err.response.message
         })
+      
+      const question:any = await masterdata.getDocument({
+        dataEntity: 'qna',
+        id: args.questionId,
+        fields: ['answers']
+      })
 
+      const answers = question.answers ?? []
+      answers.push(args)
+
+      const headers = defaultHeaders(authToken)
+      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+        answers: answers
+      }, headers).then(() => {
+        return answers
+      }).catch(() => {
+        return answers
+      })
+      
+      return result
     },
     voteQuestion: async (_:any, args: any, ctx: Context) => {
       const {
