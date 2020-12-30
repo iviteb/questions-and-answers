@@ -274,16 +274,32 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     </div>
                   )}
 
-                  {row.answers?.map((answerItem:any, index:any) => {
-                    return(
-                      <div className="mb6" key={index}>
-                        {console.log(answerItem)}
-                        {answerItem.answer}
+                  <div className={styles['answer-container']}>
+                    {row.answers?.length && (
+                      <div className={styles['answer-label']}>
+                        Answer:
                       </div>
-                    )
-                  })}
+                    )}
+                    <div className={styles['answer-items-container']}>
+                      {row.answers?.map((answerItem:any, index:any) => {
+                        return(
+                          <div className={styles['answer-item']} key={index}>
+                            <div className={styles['answer-item-text']}>
+                              {answerItem.answer}
+                            </div>
+                            <div className={styles['answer-item-info']}>
+                              By{" "}
+                              <span>
+                                {answerItem.anonymous ? "anonymous" : answerItem.name}
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
       
-                  <div className={styles['open-answer-modal-container ma6']}>
+                  <div className="open-answer-modal-container ma6">
                     <Button
                       onClick={() => {
                         updateCurrentQuestion(row)
