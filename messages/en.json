@@ -22,6 +22,7 @@
   "store/question.create-answer-button.label": "Answer question",
   "store/answer.modal.title": "Post your answer",
   "store/answer.modal.search.placeholder": "Please enter your answer",
+  "store/question.modal.answer-anonymous-check.label": "Answer anonymously",
   "admin-example.navigation.label-group": "Example admins",
   "admin-example.navigation.label-details": "Example details",
   "admin-example.navigation.label-table": "Example table",

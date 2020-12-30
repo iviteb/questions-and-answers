@@ -21,6 +21,7 @@
   "store/question.create-answer-button.label": "store/question.create-answer-button.label",
   "store/answer.modal.title": "store/answer.modal.title",
   "store/answer.modal.search.placeholder": "store/answer.modal.search.placeholder",
+  "store/question.modal.answer-anonymous-check.label": "store/question.modal.answer-anonymous-check.label",
   "store/question.votes.label": "store/question.votes.label",
   "admin-example.navigation.label": "Example admin",
   "admin-example.hello-world": "",

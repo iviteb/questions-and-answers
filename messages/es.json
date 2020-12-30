@@ -21,6 +21,7 @@
   "store/question.create-answer-button.label": "",
   "store/answer.modal.title": "",
   "store/answer.modal.search.placeholder": "",
+  "store/question.modal.answer-anonymous-check.label": "",
   "store/question.modal.cancel-button.label": "Cancelar",
   "admin-example.navigation.label-group": "Admins de ejemplo",
   "admin-example.navigation.label-details": "Ejemplo de detalhes",

@@ -26,6 +26,7 @@ import MODERATE_ANSWER from './queries/moderateAnswer.gql'
 import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 
 import styles from './qnastyle.css'
+import { date } from 'faker'
 
 const CSS_HANDLES = ['formContainer', 'questionsList'] as const
 
@@ -54,10 +55,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     question: null,
     votes: {},
     anonymousCheck: false,
+    answerAnonymousCheck: false,
     email: '',
     name: '',
     isAnswerModalOpen: false,
-    answer: ""
+    answer: "",
+    currentQuestion: null
   })
 
   const [
@@ -131,7 +134,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, votes, email, name, anonymousCheck, isAnswerModalOpen, answer } = state
+  const { isModalOpen, question, currentQuestion, votes, email, name, anonymousCheck, isAnswerModalOpen, answer, answerAnonymousCheck } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
@@ -139,6 +142,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const handleAnswerModalToggle = () => {
     setState({...state, isAnswerModalOpen: !isAnswerModalOpen})
+  }
+
+  const updateCurrentQuestion = (row:any) => {
+    setState({...state, isAnswerModalOpen: true, currentQuestion: row})
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -246,12 +253,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   </div>
                 </div>
 
-                {row.answers?.map((answerItem: any) => {
-                  return(
-                    answerItem.answer
-                  )
-                })}
-
                 <div className={styles['question-answer-container']}>
                   <div className={styles['question-container']}>
                     <div className={styles['question-label']}>
@@ -264,16 +265,29 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     <a className={styles['question-text']}>{row.question}</a>
                   </div>
 
-                  <div className={styles['no-answer']}>
-                    <FormattedMessage
-                      id="store/question.no-answer.text"
-                      defaultMessage="No answers yet. Be the first!"
-                    />
-                  </div>
+                  {!row.answers?.length && (
+                    <div className={styles['no-answer']}>
+                      <FormattedMessage
+                        id="store/question.no-answer.text"
+                        defaultMessage="No answers yet. Be the first!"
+                      />
+                    </div>
+                  )}
 
-                  <div className={styles['open-answer-modal-container mt4']}>
+                  {row.answers?.map((answerItem:any, index:any) => {
+                    return(
+                      <div className="mb6" key={index}>
+                        {console.log(answerItem)}
+                        {answerItem.answer}
+                      </div>
+                    )
+                  })}
+      
+                  <div className={styles['open-answer-modal-container ma6']}>
                     <Button
-                      onClick={() => handleAnswerModalToggle()}
+                      onClick={() => {
+                        updateCurrentQuestion(row)
+                      }}
                       className={styles['open-answer-modal-button']}
                       size="small"
                     >
@@ -286,7 +300,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
                   <div className={styles['answer-modal-container']}>
                     <Modal
-                      key={row.id}
                       isOpen={isAnswerModalOpen}
                       centered
                       title={intl.formatMessage({
@@ -302,7 +315,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
                         <div className="answer-email-container">
                           <Input
-                            placeholder={row.id}
+                            placeholder=""
                             label={intl.formatMessage({
                               id: 'store/question.modal.name.label',
                               defaultMessage: 'Name',
@@ -346,15 +359,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         </div>
                         <div className="anonymousCheck mt4">
                           <Checkbox
-                            checked={anonymousCheck}
+                            checked={answerAnonymousCheck}
                             id=""
                             label={intl.formatMessage({
-                              id: 'store/question.modal.anonymous-check.label',
-                              defaultMessage: 'Ask anonymously',
+                              id: 'store/question.modal.answer-anonymous-check.label',
+                              defaultMessage: 'Answer anonymously',
                             })}
                             name=""
                             onChange={() =>
-                              setState({ ...state, anonymousCheck: !anonymousCheck })
+                              setState({ ...state, answerAnonymousCheck: !answerAnonymousCheck })
                             }
                           />
                         </div>
@@ -366,11 +379,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             onClick={() => {
                               addAnswer({
                                 variables: {
-                                  questionId: row.id,
+                                  questionId: currentQuestion.id,
                                   answer,
                                   name,
                                   email,
-                                  anonymous: anonymousCheck,
+                                  anonymous: answerAnonymousCheck,
                                 },
                               })
                             }}
