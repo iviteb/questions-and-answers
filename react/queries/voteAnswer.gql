@@ -1,3 +1,6 @@
 mutation VoteAnswer($email: String, $answerId: ID) {
-  voteAnswer(email: $email, id: $answerId)
+  voteAnswer(email: $email, id: $answerId) {
+    votes
+    id
+  }
 }

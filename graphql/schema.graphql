@@ -37,8 +37,8 @@ type Mutation {
     anonymous: Boolean
     allowed: Boolean
   ): String
-  voteQuestion(email: String, id: ID, vote: Int): Int
-  voteAnswer(email: String, id: ID): Int
+  voteQuestion(email: String, id: ID, vote: Int): Votes
+  voteAnswer(email: String, id: ID): Votes
   moderateQuestion(id: ID, allowed: Boolean): Boolean
   moderateAnswer(id: ID, allowed: Boolean): Boolean
   deleteQuestion(id: ID): Boolean

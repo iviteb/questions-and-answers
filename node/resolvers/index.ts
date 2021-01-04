@@ -358,7 +358,7 @@ export const resolvers = {
         return votes
       })
 
-      return result
+      return {votes: result, id: args.id}
 
     },
     moderateQuestion: async (_:any, args: any, ctx: Context) => {

@@ -54,6 +54,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     isModalOpen: false,
     question: null,
     votes: {},
+    ansVotes: {},
     anonymousCheck: false,
     answerAnonymousCheck: false,
     email: '',
@@ -87,23 +88,14 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     },
   ] = useMutation(VOTE_QUESTION, {
     onCompleted: (res: any) => {
-      console.log('res =>', res)
       const newVotes = state.votes
       newVotes[res.voteQuestion.id] = res.voteQuestion.votes
-      console.log('onCompleted =>', res.voteQuestion.votes)
       setState({
         ...state,
         votes: newVotes,
       })
-      console.log('Mutation response =>', res)
     },
   })
-
-  // User is authenticated
-  // Search query for productId/UserEmail/QuestionId
-  // Return same number of votes if already voted, exception will increment vote
-  // Anonymous question text
-  // Answer modal
 
   const [
     voteAnswer,
@@ -112,7 +104,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       called: voteAnswerCalled,
       error: voteAnswerError,
     },
-  ] = useMutation(VOTE_ANSWER)
+  ] = useMutation(VOTE_ANSWER, {
+    onCompleted: (res: any) => {
+      console.log('res =>', res)
+      const newVotes = state.votes
+      newVotes[res.voteAnswer.id] = res.voteAnswer.votes
+      console.log('onCompleted =>', res.voteAnswer.votes)
+      setState({
+        ...state,
+        ansVotes: newVotes,
+      })
+      console.log('Mutation response =>', res)
+    },
+  })
 
   const [
     moderateQuestion,
@@ -131,10 +135,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       error: moderateAnswerError,
     },
   ] = useMutation(MODERATE_ANSWER)
+
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, currentQuestion, votes, email, name, anonymousCheck, isAnswerModalOpen, answer, answerAnonymousCheck } = state
+  const { isModalOpen, question, currentQuestion, votes, email, name, ansVotes, anonymousCheck, isAnswerModalOpen, answer, answerAnonymousCheck } = state
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
