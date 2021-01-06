@@ -129,7 +129,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     searchQuestions, { data: searchResults }
   ] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      setState({ ...state, questionList: res.search })
+      if (res) {setState({ ...state, questionList: res.search })}
     }
   })
 
