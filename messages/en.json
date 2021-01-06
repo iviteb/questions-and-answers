@@ -26,7 +26,7 @@
   "store/question.answer-helpful.text": "{quantity, plural, =1{person found this question helpful} other {people found this question helpful}}",
   "store/question.helpful-button.label": "Helpful",
   "store/question.less-questions.label": "Collapse questions",
-  "store/question.more-answers-button.label": "",
+  "store/question.more-answers-button.label": "{quantity, plural, =1{Collapse answers} other {Show all answers}}",
   "admin-example.navigation.label-group": "Example admins",
   "admin-example.navigation.label-details": "Example details",
   "admin-example.navigation.label-table": "Example table",

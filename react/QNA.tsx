@@ -428,28 +428,25 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       })}
                     </div>
                   </div>
-
-                  {(answerArray[1]) && (
-                    <div className="ml6 mt4">
-                      <Button
-                        size="small"
-                        variation="secondary"
-                        onClick={() => {
-                          toggleShowAnswers(row.id)
+                
+                  <div className="ml6 mt4">
+                    <Button
+                      size="small"
+                      variation="secondary"
+                      onClick={() => {
+                        toggleShowAnswers(row.id)
+                      }}
+                    >
+                      <FormattedMessage
+                        id="store/question.more-answers-button.label"
+                        defaultMessage="Show more answers"
+                        values={{
+                          quantity: !!showAllAnswers[row.id] ? 1 : 0,
                         }}
-                      >
-                        <FormattedMessage
-                          id="store/question.more-answers-button.label"
-                          defaultMessage="Show more answers"
-                          values={{
-                            value: !!showAllAnswers[row.id],
-                          }}
-                        />
-                      </Button>
-                    </div>
-                  )}
-
-
+                      />
+                    </Button>
+                  </div>
+                  
                   <div className="open-answer-modal-container ma6">
                     <Button
                       onClick={() => {
