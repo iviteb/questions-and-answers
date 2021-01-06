@@ -12,6 +12,10 @@ import {
   Textarea,
   Input,
   Checkbox,
+  ButtonWithIcon,
+  IconCaretUp,
+  IconCaretDown,
+  InputSearch
 } from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
 import { getSession } from './modules/session'
@@ -24,11 +28,14 @@ import VOTE_ANSWER from './queries/voteAnswer.gql'
 import MODERATE_QUESTION from './queries/moderateQuestion.gql'
 import MODERATE_ANSWER from './queries/moderateAnswer.gql'
 import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
+import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
 
+import storageFactory from './utils/storage'
 import styles from './qnastyle.css'
 import { date } from 'faker'
 
-const CSS_HANDLES = ['formContainer', 'questionsList'] as const
+const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon'] as const
+
 
 const useSessionResponse = () => {
   const [session, setSession] = useState()
@@ -61,13 +68,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     name: '',
     isAnswerModalOpen: false,
     answer: "",
-    currentQuestion: null
+    currentQuestion: null,
+    questionList: null,
+    showAllQuestions: false,
+    showAllAnswers: {},
+    search: '',
   })
 
   const [
     getQuestions,
-    { loading: loadingQuestions, data: questionsData, called: questionsCalled },
-  ] = useLazyQuery(QUERY_GET_QUESTIONS)
+    { loading: loadingQuestions, data: questionsData, called: questionsCalled, refetch },
+  ] = useLazyQuery(QUERY_GET_QUESTIONS, {
+    fetchPolicy: 'network-only'
+  })
 
   const [
     addQuestion,
@@ -81,11 +94,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const [
     voteQuestion,
-    {
-      loading: voteQuestionLoading,
-      called: voteQuestionCalled,
-      error: voteQuestionError,
-    },
   ] = useMutation(VOTE_QUESTION, {
     onCompleted: (res: any) => {
       const newVotes = state.votes
@@ -94,28 +102,35 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         ...state,
         votes: newVotes,
       })
+      localStore.setItem(res.voteQuestion.id, 'true')
     },
   })
 
   const [
-    voteAnswer,
-    {
-      loading: voteAnswerLoading,
-      called: voteAnswerCalled,
-      error: voteAnswerError,
-    },
+    voteAnswer
   ] = useMutation(VOTE_ANSWER, {
     onCompleted: (res: any) => {
       console.log('res =>', res)
-      const newVotes = state.votes
+      const newVotes = state.ansVotes
       newVotes[res.voteAnswer.id] = res.voteAnswer.votes
-      console.log('onCompleted =>', res.voteAnswer.votes)
+      console.log('onCompleted =>', res.voteAnswer)
       setState({
         ...state,
         ansVotes: newVotes,
       })
+      localStore.setItem(res.voteAnswer.id, 'true')
+      refetch()
       console.log('Mutation response =>', res)
+      console.log('state =>', state)
     },
+  })
+
+  const [
+    searchQuestions, { data: searchResults }
+  ] = useLazyQuery(SEARCH_QUESTIONS, {
+    onCompleted: (res: any) => {
+      setState({ ...state, questionList: res.search })
+    }
   })
 
   const [
@@ -139,18 +154,63 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, currentQuestion, votes, email, name, ansVotes, anonymousCheck, isAnswerModalOpen, answer, answerAnonymousCheck } = state
+  const { isModalOpen, question, showAllAnswers, currentQuestion, votes, search, email, name, ansVotes, anonymousCheck, isAnswerModalOpen, answer, showAllQuestions, answerAnonymousCheck, questionList } = state
+  const localStore = storageFactory(() => sessionStorage)
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
   }
 
   const handleAnswerModalToggle = () => {
-    setState({...state, isAnswerModalOpen: !isAnswerModalOpen})
+    setState({ ...state, isAnswerModalOpen: !isAnswerModalOpen })
   }
 
-  const updateCurrentQuestion = (row:any) => {
-    setState({...state, isAnswerModalOpen: true, currentQuestion: row})
+  const updateCurrentQuestion = (row: any) => {
+    setState({ ...state, isAnswerModalOpen: true, currentQuestion: row })
+  }
+
+  let timeout: any = null
+
+  const handleSearch = (e: any) => {
+    setState({ ...state, search: e.target.value })
+
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      searchQuestions({
+        variables: {
+          keyword: search
+        }
+      })
+    }, 1000)
+
+  }
+
+  const clearSearch = () => {
+    setState({ ...state, search: '', questionList: questionsData.questions })
+  }
+
+  let answerArray: any = []
+
+  const createAnswerArray = (question: any) => {
+    if (showAllAnswers[question.id]) {
+      answerArray = question.answers
+    } else if (question.answers) {
+      answerArray = [question.answers[0]]
+    } else {
+      answerArray = []
+    }
+  }
+
+  const toggleShowAnswers = (questionId: any) => {
+    if (showAllAnswers[questionId]) {
+      const answers = showAllAnswers
+      answers[questionId] = !answers[questionId]
+      setState({ ...state, showAllAnswers: answers })
+    } else {
+      const answers = showAllAnswers
+      answers[questionId] = true
+      setState({ ...state, showAllAnswers: answers })
+    }
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -178,6 +238,20 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     })
   }
 
+  if (questionsData && !questionList) {
+    setState({
+      ...state, questionList: questionsData.questions.filter((_: any, index: any) => {
+        return (
+          showAllQuestions ? true : index < 3
+        )
+      })
+    })
+  }
+
+  const checkFill = (answerId: any) => {
+    return !!localStore.getItem(answerId)
+  }
+
   console.log('questionsData =>', questionsData)
 
   console.log('sessionResponse =>', sessionResponse)
@@ -194,43 +268,45 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       <h2 className={styles['qna-header']}>{config.title}</h2>
 
       {config.search && (
-        <div className={styles['qna-search-container']}>
-          <input
-            type="search"
-            name="qna-search"
-            className={styles['qna-search']}
-            placeholder={intl.formatMessage({
-              id: 'store/question.search.placeholder',
-              defaultMessage: 'Have a question? Search for answers',
-            })}
-          />
-        </div>
+        <InputSearch
+          placeholder="Have a question? Search for answers"
+          value={search}
+          size="regular"
+          onChange={(e: any) => { handleSearch(e) }}
+          onClear={() => { clearSearch() }}
+        />
       )}
 
       {loadingQuestions && <Spinner />}
-      {!loadingQuestions && questionsData?.questions.length && (
+      {!loadingQuestions && questionList?.length && (
         <div className={handles.questionsList}>
-          {questionsData.questions.map((row: any) => {
+          {questionList.map((row: any) => {
             return (
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
                   <div className={styles['button-container']}>
-                    <Button
+                    <ButtonWithIcon
                       size="small"
+                      variation="tertiary"
                       className={styles.increment}
+                      icon={
+                        <IconCaretUp />
+                      }
                       onClick={() => {
-                        voteQuestion({
-                          variables: {
-                            id: row.id,
-                            email,
-                            vote: 1,
-                          },
-                        })
+                        if (!localStore.getItem(row.id)) {
+                          voteQuestion({
+                            variables: {
+                              id: row.id,
+                              email,
+                              vote: 1,
+                            },
+                          })
+                        }
                       }}
                     />
                   </div>
                   <div className={styles['vote-count']}>
-                    {votes[row.id] || row.votes}
+                    {votes[row.id] || row.votes || 0}
                   </div>
                   <div className={styles['vote-text']}>
                     <FormattedMessage
@@ -241,19 +317,25 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       defaultMessage="vote"
                     />
                   </div>
-                  <div className={styles['button-container']}>
-                    <Button
+                  <div className="mt3">
+                    <ButtonWithIcon
                       className={styles.decrement}
-                      onClick={() => {
-                        voteQuestion({
-                          variables: {
-                            id: row.id,
-                            email,
-                            vote: -1,
-                          },
-                        })
-                      }}
                       size="small"
+                      variation="tertiary"
+                      icon={
+                        <IconCaretDown />
+                      }
+                      onClick={() => {
+                        if (!localStore.getItem(row.id)) {
+                          voteQuestion({
+                            variables: {
+                              id: row.id,
+                              email,
+                              vote: -1,
+                            },
+                          })
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -282,12 +364,16 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   <div className={styles['answer-container']}>
                     {row.answers?.length && (
                       <div className={styles['answer-label']}>
-                        Answer:
+                        <FormattedMessage
+                          id="store/answer.label"
+                          defaultMessage="No answers yet. Be the first!"
+                        />:
                       </div>
                     )}
                     <div className={styles['answer-items-container']}>
-                      {row.answers?.map((answerItem:any, index:any) => {
-                        return(
+                      {createAnswerArray(row)}
+                      {answerArray?.map((answerItem: any, index: any) => {
+                        return (
                           <div className={styles['answer-item']} key={index}>
                             <div className={styles['answer-item-text']}>
                               {answerItem.answer}
@@ -298,12 +384,72 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                 {answerItem.anonymous ? "anonymous" : answerItem.name}
                               </span>
                             </div>
+                            <div className={styles['answer-item-button-container']}>
+                              {answerItem.votes || ansVotes[answerItem.id] && (
+                                <div className="mt4">
+                                  {ansVotes[answerItem.id] || answerItem.votes}
+                                  {" "}
+                                  <FormattedMessage
+                                    id="store/question.answer-helpful.text"
+                                    defaultMessage="people have found this helpful"
+                                    values={{
+                                      quantity: ansVotes[answerItem.id] || answerItem.votes,
+                                    }}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="mt3">
+                                <Button
+                                  size="small"
+                                  variation="tertiary"
+                                  className={styles.increment}
+                                  onClick={() => {
+                                    if (!localStore.getItem(answerItem.id)) {
+                                      voteAnswer({
+                                        variables: {
+                                          id: answerItem.id,
+                                          questionId: answerItem.questionId,
+                                          email
+                                        },
+                                      })
+                                    }
+                                  }}
+                                >
+                                  <span
+                                    className={`${handles.thumbsIcon} ${checkFill(answerItem.id) ? styles.fill : styles.outline
+                                      } ${styles.iconSize}`}
+                                  />
+                                </ Button>
+                              </div>
+                            </div>
                           </div>
                         )
                       })}
                     </div>
                   </div>
-      
+
+                  {(answerArray[1]) && (
+                    <div className="ml6 mt4">
+                      <Button
+                        size="small"
+                        variation="secondary"
+                        onClick={() => {
+                          toggleShowAnswers(row.id)
+                        }}
+                      >
+                        <FormattedMessage
+                          id="store/question.more-answers-button.label"
+                          defaultMessage="Show more answers"
+                          values={{
+                            value: !!showAllAnswers[row.id],
+                          }}
+                        />
+                      </Button>
+                    </div>
+                  )}
+
+
                   <div className="open-answer-modal-container ma6">
                     <Button
                       onClick={() => {
@@ -332,7 +478,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       }}
                     >
                       <div className={`${handles.formContainer} dark-gray`}>
-                        {ansLoading && <Spinner />}
 
                         <div className="answer-email-container">
                           <Input
@@ -435,13 +580,36 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             )
           })}
 
-          <button className={styles['more-questions-button']}>
-            <FormattedMessage
-              id="store/question.more-questions.label"
-              defaultMessage="See more answered questions"
-            />{' '}
-            (10)
-          </button>
+          {!showAllQuestions && (
+            <Button
+              className="ml6"
+              size="small"
+              onClick={() => {
+                setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
+              }}
+            >
+              <FormattedMessage
+                id="store/question.more-questions.label"
+                defaultMessage="See more answered questions"
+              />{' '}
+            </Button>
+          )}
+
+          {showAllQuestions && (
+            <Button
+              className="ml6"
+              size="small"
+              onClick={() => {
+                setState({ ...state, showAllQuestions: false, questionList: null })
+              }}
+            >
+              <FormattedMessage
+                id="store/question.less-questions.label"
+                defaultMessage="Collapse questions"
+              />
+            </Button>
+          )}
+
         </div>
       )}
       <div className={styles['create-question-container']}>

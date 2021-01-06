@@ -1,6 +1,6 @@
 type Query {
   questions(productId: String!): [Question]
-    @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
+    @cacheControl(scope: PRIVATE, maxAge: 0)
   answers(questionId: ID!): [Answer]
     @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
   search(keyword: String): [Question] @cacheControl(scope: PRIVATE)
@@ -38,7 +38,7 @@ type Mutation {
     allowed: Boolean
   ): String
   voteQuestion(email: String, id: ID, vote: Int): Votes
-  voteAnswer(email: String, id: ID): Votes
+  voteAnswer(email: String, id: ID, questionId: ID): Votes
   moderateQuestion(id: ID, allowed: Boolean): Boolean
   moderateAnswer(id: ID, allowed: Boolean): Boolean
   deleteQuestion(id: ID): Boolean
@@ -58,6 +58,7 @@ type Question {
 }
 
 type Answer {
+  id: String
   answer: String
   votes: Int
   questionId: ID

@@ -230,7 +230,7 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
-        fields: ['answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
         pagination: {
           page: 1,
           pageSize: 99,
@@ -238,7 +238,7 @@ export const resolvers = {
         where: `questionId=${args.questionId}`,
         schema: SCHEMA_VERSION,
       })
-
+      
       return result
     }
   },
@@ -270,7 +270,7 @@ export const resolvers = {
         }
       } = ctx
 
-      const result = masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
+      const result:any = await masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
         }).catch((err: any) => {
@@ -283,8 +283,10 @@ export const resolvers = {
         fields: ['answers']
       })
 
+      console.log(question)
       const answers = question.answers ?? []
-      answers.push(args)
+      answers.push({...args, id: result})
+
 
       const headers = defaultHeaders(authToken)
       await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
@@ -339,7 +341,7 @@ export const resolvers = {
           authToken,
         }
       } = ctx
-
+      
       const answer:any = await masterdata.getDocument({
         dataEntity: 'answer',
         id: args.id,
@@ -356,6 +358,29 @@ export const resolvers = {
         return newVote
       }).catch(() => {
         return votes
+      })
+
+      const answers = await masterdata.searchDocuments({
+        dataEntity: 'answer',
+        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        where: `questionId=${args.questionId}`,
+        schema: SCHEMA_VERSION,
+      })
+
+      console.log(answers)
+
+      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+        answers: answers
+      }, headers).then((e) => {
+        console.log("contents =>", e)
+        return answers
+      }).catch((e) => {
+        console.log("error =>", e)
+        return answers
       })
 
       return {votes: result, id: args.id}
@@ -380,8 +405,6 @@ export const resolvers = {
       })
 
       return result
-
-
     },
     moderateAnswer: async (_:any, args: any, ctx: Context) => {
       const {

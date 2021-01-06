@@ -1,5 +1,5 @@
-mutation VoteAnswer($email: String, $answerId: ID) {
-  voteAnswer(email: $email, id: $answerId) {
+mutation VoteAnswer($email: String, $id: ID, $questionId: ID) {
+  voteAnswer(email: $email, id: $id, questionId: $questionId) {
     votes
     id
   }
