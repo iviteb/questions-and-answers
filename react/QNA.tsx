@@ -35,7 +35,8 @@ import styles from './qnastyle.css'
 import { date } from 'faker'
 
 const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon'] as const
-
+let timeout: any = null
+const localStore = storageFactory(() => sessionStorage)
 
 const useSessionResponse = () => {
   const [session, setSession] = useState()
@@ -126,10 +127,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   })
 
   const [
-    searchQuestions, { data: searchResults }
+    searchQuestions,
   ] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      if (res) {setState({ ...state, questionList: res.search })}
+      if (res) { setState({ ...state, questionList: res.search }) }
     }
   })
 
@@ -155,7 +156,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const handles = useCssHandles(CSS_HANDLES)
 
   const { isModalOpen, question, showAllAnswers, currentQuestion, votes, search, email, name, ansVotes, anonymousCheck, isAnswerModalOpen, answer, showAllQuestions, answerAnonymousCheck, questionList } = state
-  const localStore = storageFactory(() => sessionStorage)
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
@@ -169,20 +169,31 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     setState({ ...state, isAnswerModalOpen: true, currentQuestion: row })
   }
 
-  let timeout: any = null
+  const hideAnswerButton = (question: any) => {
+    if (question.answers && question.answers.length > 1) {
+      return true
+    }
+
+    return false
+  }
+
 
   const handleSearch = (e: any) => {
     setState({ ...state, search: e.target.value })
 
     clearTimeout(timeout)
     timeout = setTimeout(() => {
-      searchQuestions({
-        variables: {
-          keyword: search
-        }
-      })
+      searchCaller()
     }, 1000)
+  }
 
+  const searchCaller = () => {
+    console.log("search =>", search)
+    // searchQuestions({
+    //   variables: {
+    //     keyword: search
+    //   }
+    // })
   }
 
   const clearSearch = () => {
@@ -362,7 +373,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   )}
 
                   <div className={styles['answer-container']}>
-                    {row.answers?.length && (
+                    {!!row.answers?.length && (
                       <div className={styles['answer-label']}>
                         <FormattedMessage
                           id="store/answer.label"
@@ -428,25 +439,28 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       })}
                     </div>
                   </div>
-                
-                  <div className="ml6 mt4">
-                    <Button
-                      size="small"
-                      variation="secondary"
-                      onClick={() => {
-                        toggleShowAnswers(row.id)
-                      }}
-                    >
-                      <FormattedMessage
-                        id="store/question.more-answers-button.label"
-                        defaultMessage="Show more answers"
-                        values={{
-                          quantity: !!showAllAnswers[row.id] ? 1 : 0,
+
+                  {hideAnswerButton(row) && (
+                    <div className="ml6 mt4">
+                      <Button
+                        size="small"
+                        variation="tertiary"
+                        onClick={() => {
+                          toggleShowAnswers(row.id)
                         }}
-                      />
-                    </Button>
-                  </div>
-                  
+                      >
+                        <FormattedMessage
+                          id="store/question.more-answers-button.label"
+                          defaultMessage="Show all answers"
+                          values={{
+                            quantity: !!showAllAnswers[row.id] ? 1 : 0,
+                          }}
+                        />
+                        {" "}{!showAllAnswers[row.id] && ('(' + (row.answers?.length - 1) + ')')}
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="open-answer-modal-container ma6">
                     <Button
                       onClick={() => {
@@ -454,6 +468,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       }}
                       className={styles['open-answer-modal-button']}
                       size="small"
+                      variation="secondary"
                     >
                       <FormattedMessage
                         id="store/question.create-answer-button.label"
@@ -577,34 +592,38 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             )
           })}
 
-          {!showAllQuestions && (
-            <Button
-              className="ml6"
-              size="small"
-              onClick={() => {
-                setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
-              }}
-            >
-              <FormattedMessage
-                id="store/question.more-questions.label"
-                defaultMessage="See more answered questions"
-              />{' '}
-            </Button>
+          {!showAllQuestions && (questionsData?.questions.length > 3) && (
+            <div className="ml8">
+              <Button
+                size="regular"
+                variation="danger-tertiary"
+                onClick={() => {
+                  setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
+                }}
+              >
+                <FormattedMessage
+                  id="store/question.more-questions.label"
+                  defaultMessage="See more answered questions"
+                />{' '}
+              </Button>
+            </div>
           )}
 
           {showAllQuestions && (
-            <Button
-              className="ml6"
-              size="small"
-              onClick={() => {
-                setState({ ...state, showAllQuestions: false, questionList: null })
-              }}
-            >
-              <FormattedMessage
-                id="store/question.less-questions.label"
-                defaultMessage="Collapse questions"
-              />
-            </Button>
+            <div className="ml8">
+              <Button
+                size="small"
+                variation="danger-tertiary"
+                onClick={() => {
+                  setState({ ...state, showAllQuestions: false, questionList: null })
+                }}
+              >
+                <FormattedMessage
+                  id="store/question.less-questions.label"
+                  defaultMessage="Collapse questions"
+                />
+              </Button>
+            </div>
           )}
 
         </div>
@@ -619,6 +638,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <Button
           onClick={() => handleModalToggle()}
           className={styles['open-modal-button']}
+          variation="danger"
         >
           <FormattedMessage
             id="store/question.create-question-button.label"
