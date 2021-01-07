@@ -173,10 +173,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     if (question.answers && question.answers.length > 1) {
       return true
     }
-
     return false
   }
-
 
   const handleSearch = (e: any) => {
     const { value } = e.target
@@ -202,12 +200,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   let answerArray:any = []
 
-  const createAnswerArray = (question: any) => {
-    if (showAllAnswers[question.id]) {
-      answerArray = question.answers
-    } else if (question.answers) {
-      const sortedAnswers = question.answers.reduce((prev:any, current:any) => (prev.votes > current.votes) ? prev : current)
-      answerArray = [sortedAnswers]
+  const createAnswerArray = (questionItem: any) => {
+    if (showAllAnswers[questionItem.id]) {
+      answerArray = questionItem.answers
+    } else if (questionItem.answers) {
+      const firstAnswer = questionItem.answers[0]
+      answerArray = [firstAnswer]
     } else {
       answerArray = []
     }
@@ -223,12 +221,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       answers[questionId] = true
       setState({ ...state, showAllAnswers: answers })
     }
-  }
-
-  const sortByVotes = (items:any) => {
-    items.sort((a:any, b:any) => {
-      return b.votes - a.votes
-    })
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -257,14 +249,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   if (questionsData && !questionList && !search) {
-    let newQuestionList = questionsData.questions.filter((_: any, index: any) => {
-      return (
-        showAllQuestions ? true : index < 3
-      )
-    })
-    sortByVotes(newQuestionList)
     setState({
-      ...state, questionList: newQuestionList
+      ...state, questionList: questionsData.questions.filter((_: any, index: any) => {
+        return (
+          showAllQuestions ? true : index < 3
+        )
+      })
     })
   }
 
@@ -611,8 +601,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 size="regular"
                 variation="danger-tertiary"
                 onClick={() => {
-                  const sortedQuestions = sortByVotes(questionsData.questions)
-                  setState({ ...state, showAllQuestions: true, questionList: sortedQuestions })
+                  setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
                 }}
               >
                 <FormattedMessage

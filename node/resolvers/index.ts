@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.7'
+const SCHEMA_VERSION = 'v0.9'
 const schemaQuestions = {
   properties: {
     productId: {
@@ -30,6 +30,7 @@ const schemaQuestions = {
     votes: {
       type: 'integer',
       title: 'Votes',
+      default: 0,
     },
     allowed: {
       type: 'boolean',
@@ -40,7 +41,7 @@ const schemaQuestions = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed'],
+  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed', 'votes'],
   'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -69,6 +70,7 @@ const schemaAnswers = {
     votes: {
       type: 'integer',
       title: 'Votes',
+      default: 0,
     },
     allowed: {
       type: 'boolean',
@@ -79,7 +81,7 @@ const schemaAnswers = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate'],
+  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate', 'votes'],
   'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -183,6 +185,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        sort: 'votes DESC',
         where: `productId=${args.productId}`,
         pagination: {
           page: 1,
@@ -207,6 +210,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        sort: 'votes DESC',
         pagination: {
           page: 1,
           pageSize: 99,
@@ -231,6 +235,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        sort: 'votes DESC',
         pagination: {
           page: 1,
           pageSize: 99,
@@ -238,7 +243,7 @@ export const resolvers = {
         where: `questionId=${args.questionId}`,
         schema: SCHEMA_VERSION,
       })
-      
+
       return result
     }
   },
@@ -276,27 +281,26 @@ export const resolvers = {
         }).catch((err: any) => {
           return err.response.message
         })
-      
+
       const question:any = await masterdata.getDocument({
         dataEntity: 'qna',
         id: args.questionId,
         fields: ['answers']
       })
 
-      console.log(question)
       const answers = question.answers ?? []
+      console.log(answers)
       answers.push({...args, id: result})
-
 
       const headers = defaultHeaders(authToken)
       await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
         answers: answers
-      }, headers).then(() => {
+      }, headers).then(() => {``
         return answers
       }).catch(() => {
         return answers
       })
-      
+
       return result
     },
     voteQuestion: async (_:any, args: any, ctx: Context) => {
@@ -341,7 +345,7 @@ export const resolvers = {
           authToken,
         }
       } = ctx
-      
+
       const answer:any = await masterdata.getDocument({
         dataEntity: 'answer',
         id: args.id,
@@ -363,6 +367,7 @@ export const resolvers = {
       const answers = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        sort: 'votes DESC',
         pagination: {
           page: 1,
           pageSize: 99,
