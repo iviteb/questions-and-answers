@@ -130,7 +130,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     searchQuestions,
   ] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      if (res) { setState({ ...state, questionList: res.search }) }
+      if (res && res.search !== search) { setState({ ...state, questionList: res.search }) }
     }
   })
 
@@ -179,34 +179,35 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
 
   const handleSearch = (e: any) => {
-    setState({ ...state, search: e.target.value })
-
+    const { value } = e.target
+    setState({ ...state, search: value })
     clearTimeout(timeout)
     timeout = setTimeout(() => {
-      searchCaller()
+      searchQuestions({
+        variables: {
+          keyword: value,
+        },
+      })
     }, 1000)
   }
 
-  const searchCaller = () => {
-    console.log("search =>", search)
-    // searchQuestions({
-    //   variables: {
-    //     keyword: search
-    //   }
-    // })
-  }
-
   const clearSearch = () => {
-    setState({ ...state, search: '', questionList: questionsData.questions })
+    if (!search) {return}
+    setState({ ...state, search: '', questionList: questionsData.questions.filter((_: any, index: any) => {
+      return (
+        showAllQuestions ? true : index < 3
+      )
+    }) })
   }
 
-  let answerArray: any = []
+  let answerArray:any = []
 
   const createAnswerArray = (question: any) => {
     if (showAllAnswers[question.id]) {
       answerArray = question.answers
     } else if (question.answers) {
-      answerArray = [question.answers[0]]
+      const sortedAnswers = question.answers.reduce((prev:any, current:any) => (prev.votes > current.votes) ? prev : current)
+      answerArray = [sortedAnswers]
     } else {
       answerArray = []
     }
@@ -222,6 +223,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       answers[questionId] = true
       setState({ ...state, showAllAnswers: answers })
     }
+  }
+
+  const sortByVotes = (items:any) => {
+    items.sort((a:any, b:any) => {
+      return b.votes - a.votes
+    })
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -241,7 +248,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   if (!config) return null
 
-  if (product && !questionsCalled) {
+  if (product && !questionsCalled && !search) {
     getQuestions({
       variables: {
         productId: product.productId,
@@ -249,13 +256,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     })
   }
 
-  if (questionsData && !questionList) {
+  if (questionsData && !questionList && !search) {
+    let newQuestionList = questionsData.questions.filter((_: any, index: any) => {
+      return (
+        showAllQuestions ? true : index < 3
+      )
+    })
+    sortByVotes(newQuestionList)
     setState({
-      ...state, questionList: questionsData.questions.filter((_: any, index: any) => {
-        return (
-          showAllQuestions ? true : index < 3
-        )
-      })
+      ...state, questionList: newQuestionList
     })
   }
 
@@ -275,17 +284,21 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   return (
-    <div>
-      <h2 className={styles['qna-header']}>{config.title}</h2>
+    <div className="ma4">
+      <div className="ma4">
+        <h2 className={styles['qna-header']}>{config.title}</h2>
+      </div>
 
       {config.search && (
-        <InputSearch
-          placeholder="Have a question? Search for answers"
-          value={search}
-          size="regular"
-          onChange={(e: any) => { handleSearch(e) }}
-          onClear={() => { clearSearch() }}
-        />
+        <div className="ma4">
+          <InputSearch
+            placeholder="Have a question? Search for answers"
+            value={search}
+            size="regular"
+            onChange={(e: any) => { handleSearch(e) }}
+            onClear={() => { clearSearch() }}
+          />
+        </div>
       )}
 
       {loadingQuestions && <Spinner />}
@@ -396,7 +409,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               </span>
                             </div>
                             <div className={styles['answer-item-button-container']}>
-                              {answerItem.votes || ansVotes[answerItem.id] && (
+                              {(answerItem.votes || ansVotes[answerItem.id]) && (
                                 <div className="mt4">
                                   {ansVotes[answerItem.id] || answerItem.votes}
                                   {" "}
@@ -592,13 +605,14 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             )
           })}
 
-          {!showAllQuestions && (questionsData?.questions.length > 3) && (
+          {!showAllQuestions && !search && (questionsData?.questions.length > 3 && questionList.length !== questionsData.questions.length) && (
             <div className="ml8">
               <Button
                 size="regular"
                 variation="danger-tertiary"
                 onClick={() => {
-                  setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
+                  const sortedQuestions = sortByVotes(questionsData.questions)
+                  setState({ ...state, showAllQuestions: true, questionList: sortedQuestions })
                 }}
               >
                 <FormattedMessage
@@ -609,7 +623,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             </div>
           )}
 
-          {showAllQuestions && (
+          {showAllQuestions && !search && (
             <div className="ml8">
               <Button
                 size="small"
