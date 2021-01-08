@@ -248,7 +248,7 @@ export const resolvers = {
     }
   },
   Mutation: {
-    addQuestion: (_:any, args: any, ctx: Context) => {
+    addQuestion: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
           masterdata
@@ -261,7 +261,6 @@ export const resolvers = {
         }).catch((err: any) => {
           return err.response.message
         })
-
     },
     addAnswer: async (_:any, args: any, ctx: Context) => {
       const {
@@ -289,7 +288,6 @@ export const resolvers = {
       })
 
       const answers = question.answers ?? []
-      console.log(answers)
       answers.push({...args, id: result})
 
       const headers = defaultHeaders(authToken)

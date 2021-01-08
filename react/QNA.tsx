@@ -105,12 +105,52 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const [
     addQuestion,
     { loading: addLoading, called: questionCalled, error: questionError },
-  ] = useMutation(ADD_QUESTION)
+  ] = useMutation(ADD_QUESTION, {
+    onCompleted: (questionId) => {
+      const newQuestionList = questionList
+      newQuestionList.push({
+        name,
+        email,
+        question,
+        id: questionId,
+        anonymous: anonymousCheck,
+        votes: 0,
+        allowed: true
+      })
+      setState({ ...state, questionList: newQuestionList })
+    }
+  })
 
   const [
     addAnswer,
     { loading: ansLoading, called: answerCalled, error: answerError },
-  ] = useMutation(ADD_ANSWER)
+  ] = useMutation(ADD_ANSWER, {
+    onCompleted: (answerId) => {
+      // CurrentQuestion
+      console.log(currentQuestion)
+      const newQuestionList = questionList.map((q:any) => {
+        if (q.id === currentQuestion.id) {
+          if (!q.answers) {
+            q.answers = []
+          }
+          q.answers.push({
+            name,
+            email,
+            answer,
+            id: answerId,
+            anonymous: answerAnonymousCheck,
+            votes: 0,
+            allowed: true,
+            questionId: q.id
+          })
+        }
+
+        return q
+      })
+
+      setState({ ...state, questionList: newQuestionList })
+    }
+  })
 
   const [voteQuestion] = useMutation(VOTE_QUESTION, {
     onCompleted: (res: any) => {
@@ -126,28 +166,21 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const [voteAnswer] = useMutation(VOTE_ANSWER, {
     onCompleted: (res: any) => {
-      console.log('res =>', res)
       const newVotes = state.ansVotes
       newVotes[res.voteAnswer.id] = res.voteAnswer.votes
-      console.log('onCompleted =>', res.voteAnswer)
       setState({
         ...state,
         ansVotes: newVotes,
       })
       localStore.setItem(res.voteAnswer.id, 'true')
       refetch()
-      console.log('Mutation response =>', res)
-      console.log('state =>', state)
     },
   })
 
   const [searchQuestions] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      console.log("searchQuestions =>", res)
-      console.log("search =>", search)
       if (res && res.search.length && res.search !== questionList) {
         setState({ ...state, questionList: res.search })
-        console.log("res.search =>", res.search)
       }
     },
   })
@@ -250,7 +283,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     })
   }
 
-  console.log('QuestionsAndAnswers =>', ProductContext)
   const { product } = useContext(ProductContext) as any
 
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
@@ -264,6 +296,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   console.log('Config =>', config)
   console.log('Product =>', product)
   console.log('questionsData =>', questionsData)
+  console.log('state =>', state)
 
   if (!config) return null
 
@@ -293,8 +326,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   console.log('questionsData =>', questionsData)
-
-  console.log('sessionResponse =>', sessionResponse)
 
   if (sessionResponse?.namespaces?.profile?.email?.value && !email) {
     setState({
@@ -329,6 +360,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       {!loadingQuestions && questionList?.length && (
         <div className={handles.questionsList}>
           {questionList.map((row: any) => {
+            console.log("questionList =>", questionList)
             return (
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
