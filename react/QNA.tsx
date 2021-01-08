@@ -143,8 +143,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const [searchQuestions] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      if (res && res.search !== search) {
+      console.log("searchQuestions =>", res)
+      console.log("search =>", search)
+      if (res && res.search.length && res.search !== questionList) {
         setState({ ...state, questionList: res.search })
+        console.log("res.search =>", res.search)
       }
     },
   })
@@ -210,9 +213,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     setState({
       ...state,
       search: '',
-      questionList: questionsData.questions.filter((_: any, index: any) => {
-        return showAllQuestions ? true : index < 3
-      }),
+      questionList: questionsData.questions
     })
   }
 
@@ -667,7 +668,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           {showAllQuestions && !search && (
             <div className="ml8">
               <Button
-                size="small"
+                size="regular"
                 variation="danger-tertiary"
                 onClick={() => {
                   setState({
