@@ -294,8 +294,8 @@ export const resolvers = {
 
       const headers = defaultHeaders(authToken)
       await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers: answers
-      }, headers).then(() => {``
+        answers
+      }, headers).then(() => {
         return answers
       }).catch(() => {
         return answers
@@ -349,7 +349,7 @@ export const resolvers = {
       const answer:any = await masterdata.getDocument({
         dataEntity: 'answer',
         id: args.id,
-        fields: ['votes']
+        fields: ['votes','questionId']
       })
 
       const votes:number = answer?.votes ?? 0
@@ -372,14 +372,12 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `questionId=${args.questionId}`,
+        where: `questionId=${answer.questionId}`,
         schema: SCHEMA_VERSION,
       })
 
-      console.log(answers)
-
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers: answers
+      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${answer.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+        answers
       }, headers).then((e) => {
         console.log("contents =>", e)
         return answers

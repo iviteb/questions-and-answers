@@ -3,7 +3,6 @@ import React, { FC, useContext, useState, useEffect } from 'react'
 import { compose, graphql, useMutation, useLazyQuery } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 import { FormattedMessage } from 'react-intl'
-
 import { ProductContext } from 'vtex.product-context'
 import {
   Button,
@@ -15,11 +14,11 @@ import {
   ButtonWithIcon,
   IconCaretUp,
   IconCaretDown,
-  InputSearch
+  InputSearch,
 } from 'vtex.styleguide'
 import { useCssHandles } from 'vtex.css-handles'
-import { getSession } from './modules/session'
 
+import { getSession } from './modules/session'
 import QUERY_CONFIG from './queries/config.gql'
 import ADD_QUESTION from './queries/addQuestion.gql'
 import ADD_ANSWER from './queries/addAnswer.gql'
@@ -29,10 +28,8 @@ import MODERATE_QUESTION from './queries/moderateQuestion.gql'
 import MODERATE_ANSWER from './queries/moderateAnswer.gql'
 import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
-
 import storageFactory from './utils/storage'
 import styles from './qnastyle.css'
-import { date } from 'faker'
 
 const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon'] as const
 let timeout: any = null
@@ -47,7 +44,7 @@ const useSessionResponse = () => {
       return
     }
 
-    sessionPromise.then(sessionResponse => {
+    sessionPromise.then((sessionResponse) => {
       const { response } = sessionResponse
 
       setSession(response)
@@ -68,19 +65,41 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     email: '',
     name: '',
     isAnswerModalOpen: false,
-    answer: "",
+    answer: '',
     currentQuestion: null,
     questionList: null,
     showAllQuestions: false,
     showAllAnswers: {},
     search: '',
   })
+  const {
+    isModalOpen,
+    question,
+    showAllAnswers,
+    currentQuestion,
+    votes,
+    search,
+    email,
+    name,
+    ansVotes,
+    anonymousCheck,
+    isAnswerModalOpen,
+    answer,
+    showAllQuestions,
+    answerAnonymousCheck,
+    questionList,
+  } = state
 
   const [
     getQuestions,
-    { loading: loadingQuestions, data: questionsData, called: questionsCalled, refetch },
+    {
+      loading: loadingQuestions,
+      data: questionsData,
+      called: questionsCalled,
+      refetch,
+    },
   ] = useLazyQuery(QUERY_GET_QUESTIONS, {
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
   })
 
   const [
@@ -93,9 +112,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER)
 
-  const [
-    voteQuestion,
-  ] = useMutation(VOTE_QUESTION, {
+  const [voteQuestion] = useMutation(VOTE_QUESTION, {
     onCompleted: (res: any) => {
       const newVotes = state.votes
       newVotes[res.voteQuestion.id] = res.voteQuestion.votes
@@ -107,9 +124,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     },
   })
 
-  const [
-    voteAnswer
-  ] = useMutation(VOTE_ANSWER, {
+  const [voteAnswer] = useMutation(VOTE_ANSWER, {
     onCompleted: (res: any) => {
       console.log('res =>', res)
       const newVotes = state.ansVotes
@@ -126,12 +141,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     },
   })
 
-  const [
-    searchQuestions,
-  ] = useLazyQuery(SEARCH_QUESTIONS, {
+  const [searchQuestions] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      if (res && res.search !== search) { setState({ ...state, questionList: res.search }) }
-    }
+      if (res && res.search !== search) {
+        setState({ ...state, questionList: res.search })
+      }
+    },
   })
 
   const [
@@ -155,8 +170,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
 
-  const { isModalOpen, question, showAllAnswers, currentQuestion, votes, search, email, name, ansVotes, anonymousCheck, isAnswerModalOpen, answer, showAllQuestions, answerAnonymousCheck, questionList } = state
-
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
   }
@@ -169,10 +182,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     setState({ ...state, isAnswerModalOpen: true, currentQuestion: row })
   }
 
-  const hideAnswerButton = (question: any) => {
-    if (question.answers && question.answers.length > 1) {
+  const hideAnswerButton = (q: any) => {
+    if (q.answers && q.answers.length > 1) {
       return true
     }
+
     return false
   }
 
@@ -190,22 +204,28 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   const clearSearch = () => {
-    if (!search) {return}
-    setState({ ...state, search: '', questionList: questionsData.questions.filter((_: any, index: any) => {
-      return (
-        showAllQuestions ? true : index < 3
-      )
-    }) })
+    if (!search) {
+      return
+    }
+    setState({
+      ...state,
+      search: '',
+      questionList: questionsData.questions.filter((_: any, index: any) => {
+        return showAllQuestions ? true : index < 3
+      }),
+    })
   }
 
-  let answerArray:any = []
+  let answerArray: any = []
 
-  const createAnswerArray = (questionItem: any) => {
-    if (showAllAnswers[questionItem.id]) {
-      answerArray = questionItem.answers
-    } else if (questionItem.answers) {
-      const firstAnswer = questionItem.answers[0]
-      answerArray = [firstAnswer]
+  const createAnswerArray = (q: any) => {
+    if (showAllAnswers[q.id]) {
+      answerArray = q.answers
+    } else if (q.answers) {
+      const sortedAnswers = q.answers.reduce((prev: any, current: any) =>
+        prev.votes > current.votes ? prev : current
+      )
+      answerArray = [sortedAnswers]
     } else {
       answerArray = []
     }
@@ -221,6 +241,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       answers[questionId] = true
       setState({ ...state, showAllAnswers: answers })
     }
+  }
+
+  const sortByVotes = (items: any) => {
+    items.sort((a: any, b: any) => {
+      return b.votes - a.votes
+    })
   }
 
   console.log('QuestionsAndAnswers =>', ProductContext)
@@ -249,12 +275,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   if (questionsData && !questionList && !search) {
+    const newQuestionList = questionsData.questions.filter(
+      (_: any, index: any) => {
+        return showAllQuestions ? true : index < 3
+      }
+    )
+    sortByVotes(newQuestionList)
     setState({
-      ...state, questionList: questionsData.questions.filter((_: any, index: any) => {
-        return (
-          showAllQuestions ? true : index < 3
-        )
-      })
+      ...state,
+      questionList: newQuestionList,
     })
   }
 
@@ -285,8 +314,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             placeholder="Have a question? Search for answers"
             value={search}
             size="regular"
-            onChange={(e: any) => { handleSearch(e) }}
-            onClear={() => { clearSearch() }}
+            onChange={(e: any) => {
+              handleSearch(e)
+            }}
+            onClear={() => {
+              clearSearch()
+            }}
           />
         </div>
       )}
@@ -303,9 +336,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       size="small"
                       variation="tertiary"
                       className={styles.increment}
-                      icon={
-                        <IconCaretUp />
-                      }
+                      icon={<IconCaretUp />}
                       onClick={() => {
                         if (!localStore.getItem(row.id)) {
                           voteQuestion({
@@ -336,9 +367,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       className={styles.decrement}
                       size="small"
                       variation="tertiary"
-                      icon={
-                        <IconCaretDown />
-                      }
+                      icon={<IconCaretDown />}
                       onClick={() => {
                         if (!localStore.getItem(row.id)) {
                           voteQuestion({
@@ -381,7 +410,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         <FormattedMessage
                           id="store/answer.label"
                           defaultMessage="No answers yet. Be the first!"
-                        />:
+                        />
+                        :
                       </div>
                     )}
                     <div className={styles['answer-items-container']}>
@@ -393,21 +423,27 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               {answerItem.answer}
                             </div>
                             <div className={styles['answer-item-info']}>
-                              By{" "}
+                              By{' '}
                               <span>
-                                {answerItem.anonymous ? "anonymous" : answerItem.name}
+                                {answerItem.anonymous
+                                  ? 'anonymous'
+                                  : answerItem.name}
                               </span>
                             </div>
-                            <div className={styles['answer-item-button-container']}>
-                              {(answerItem.votes || ansVotes[answerItem.id]) && (
+                            <div
+                              className={styles['answer-item-button-container']}
+                            >
+                              {(answerItem.votes ||
+                                ansVotes[answerItem.id]) && (
                                 <div className="mt4">
-                                  {ansVotes[answerItem.id] || answerItem.votes}
-                                  {" "}
+                                  {ansVotes[answerItem.id] || answerItem.votes}{' '}
                                   <FormattedMessage
                                     id="store/question.answer-helpful.text"
                                     defaultMessage="people have found this helpful"
                                     values={{
-                                      quantity: ansVotes[answerItem.id] || answerItem.votes,
+                                      quantity:
+                                        ansVotes[answerItem.id] ||
+                                        answerItem.votes,
                                     }}
                                   />
                                 </div>
@@ -424,17 +460,20 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                         variables: {
                                           id: answerItem.id,
                                           questionId: answerItem.questionId,
-                                          email
+                                          email,
                                         },
                                       })
                                     }
                                   }}
                                 >
                                   <span
-                                    className={`${handles.thumbsIcon} ${checkFill(answerItem.id) ? styles.fill : styles.outline
-                                      } ${styles.iconSize}`}
+                                    className={`${handles.thumbsIcon} ${
+                                      checkFill(answerItem.id)
+                                        ? styles.fill
+                                        : styles.outline
+                                    } ${styles.iconSize}`}
                                   />
-                                </ Button>
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -456,10 +495,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                           id="store/question.more-answers-button.label"
                           defaultMessage="Show all answers"
                           values={{
-                            quantity: !!showAllAnswers[row.id] ? 1 : 0,
+                            quantity: showAllAnswers[row.id] ? 1 : 0,
                           }}
-                        />
-                        {" "}{!showAllAnswers[row.id] && ('(' + (row.answers?.length - 1) + ')')}
+                        />{' '}
+                        {!showAllAnswers[row.id] &&
+                          `(${  row.answers?.length - 1  })`}
                       </Button>
                     </div>
                   )}
@@ -493,7 +533,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       }}
                     >
                       <div className={`${handles.formContainer} dark-gray`}>
-
                         <div className="answer-email-container">
                           <Input
                             placeholder=""
@@ -517,7 +556,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               defaultMessage: 'Email',
                             })}
                             onChange={(e: any) =>
-                              setState({ ...state, email: e.target.value.trim() })
+                              setState({
+                                ...state,
+                                email: e.target.value.trim(),
+                              })
                             }
                             value={email}
                             required={true}
@@ -543,12 +585,16 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             checked={answerAnonymousCheck}
                             id=""
                             label={intl.formatMessage({
-                              id: 'store/question.modal.answer-anonymous-check.label',
+                              id:
+                                'store/question.modal.answer-anonymous-check.label',
                               defaultMessage: 'Answer anonymously',
                             })}
                             name=""
                             onChange={() =>
-                              setState({ ...state, answerAnonymousCheck: !answerAnonymousCheck })
+                              setState({
+                                ...state,
+                                answerAnonymousCheck: !answerAnonymousCheck,
+                              })
                             }
                           />
                         </div>
@@ -587,30 +633,36 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         </div>
                       </div>
                     </Modal>
-
                   </div>
-
                 </div>
               </div>
             )
           })}
 
-          {!showAllQuestions && !search && (questionsData?.questions.length > 3 && questionList.length !== questionsData.questions.length) && (
-            <div className="ml8">
-              <Button
-                size="regular"
-                variation="danger-tertiary"
-                onClick={() => {
-                  setState({ ...state, showAllQuestions: true, questionList: questionsData.questions })
-                }}
-              >
-                <FormattedMessage
-                  id="store/question.more-questions.label"
-                  defaultMessage="See more answered questions"
-                />{' '}
-              </Button>
-            </div>
-          )}
+          {!showAllQuestions &&
+            !search &&
+            questionsData?.questions.length > 3 &&
+            questionList.length !== questionsData.questions.length && (
+              <div className="ml8">
+                <Button
+                  size="regular"
+                  variation="danger-tertiary"
+                  onClick={() => {
+                    const sortedQuestions = sortByVotes(questionsData.questions)
+                    setState({
+                      ...state,
+                      showAllQuestions: true,
+                      questionList: sortedQuestions,
+                    })
+                  }}
+                >
+                  <FormattedMessage
+                    id="store/question.more-questions.label"
+                    defaultMessage="See more answered questions"
+                  />{' '}
+                </Button>
+              </div>
+            )}
 
           {showAllQuestions && !search && (
             <div className="ml8">
@@ -618,7 +670,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 size="small"
                 variation="danger-tertiary"
                 onClick={() => {
-                  setState({ ...state, showAllQuestions: false, questionList: null })
+                  setState({
+                    ...state,
+                    showAllQuestions: false,
+                    questionList: null,
+                  })
                 }}
               >
                 <FormattedMessage
@@ -628,7 +684,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
               </Button>
             </div>
           )}
-
         </div>
       )}
       <div className={styles['create-question-container']}>
@@ -774,7 +829,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   defaultMessage="Post"
                 />
               </Button>
-
             </div>
           </div>
         </Modal>

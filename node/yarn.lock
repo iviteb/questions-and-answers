@@ -6591,10 +6591,6 @@ verror@1.10.0:
   version "0.9.7"
   resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.9.7/public/@types/vtex.product-context#4024c589f1ba318e92219a88bf18b4e3774dc85c"
 
-"vtex.questions-and-answers@https://tonysheng--sandboxusdev.myvtex.com/_v/private/typings/linked/v1/vtex.questions-and-answers@0.0.2+build1609868283/public/@types/vtex.questions-and-answers":
-  version "0.0.2"
-  resolved "https://tonysheng--sandboxusdev.myvtex.com/_v/private/typings/linked/v1/vtex.questions-and-answers@0.0.2+build1609868283/public/@types/vtex.questions-and-answers#14e671040804e2da729d31b7467ed0e2288a0b7a"
-
 "vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@7.42.0/public/@types/vtex.render-runtime":
   version "7.42.0"
   resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@7.42.0/public/@types/vtex.render-runtime#b76f76d8f763385cfc57452386bbd20ab6fe9e9b"
