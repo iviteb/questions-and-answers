@@ -26,6 +26,9 @@
   "store/question.answer-helpful.text": "store/question.answer-helpful.text",
   "store/question.helpful-button.label": "store/question.helpful-button.label",
   "store/question.less-questions.label": "store/question.less-questions.label",
+  "admin/question.menu.label": "admin/question.menu.label",
+  "admin/question.menu.keywords": "admin/question.menu.keywords",
+
   "admin-example.navigation.label": "Example admin",
   "admin-example.hello-world": "",
   "appframe.navigation.example": ""
