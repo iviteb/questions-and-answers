@@ -1,0 +1,12 @@
+query GetAllQuestions {
+  allQuestions{
+  	id
+    question
+    name
+    email
+    anonymous
+    votes
+    allowed
+    productId
+  }
+}

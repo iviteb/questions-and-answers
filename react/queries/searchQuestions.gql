@@ -1,5 +1,5 @@
-query SearchQuestions($keyword: String!) {
-  search(keyword: $keyword) {
+query SearchQuestions($keyword: String!, $productId: String!) {
+  search(keyword: $keyword, productId: $productId) {
     id
     question
     name

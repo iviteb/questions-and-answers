@@ -215,7 +215,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `question=*${args.keyword}*`,
+        where: `productId=${args.productId} AND question=*${args.keyword}*`,
         schema: SCHEMA_VERSION,
       })
 
@@ -290,6 +290,7 @@ export const resolvers = {
       const answers = question.answers ?? []
       answers.push({...args, id: result})
 
+      console.log(args)
       const headers = defaultHeaders(authToken)
       await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
         answers

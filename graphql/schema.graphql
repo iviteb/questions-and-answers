@@ -3,7 +3,7 @@ type Query {
     @cacheControl(scope: PRIVATE, maxAge: 0)
   answers(questionId: ID!): [Answer]
     @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
-  search(keyword: String): [Question] @cacheControl(scope: PRIVATE)
+  search(keyword: String, productId: String!): [Question] @cacheControl(scope: PRIVATE)
   config: Config @cacheControl(scope: PRIVATE)
 }
 

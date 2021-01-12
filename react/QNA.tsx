@@ -126,8 +126,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER, {
     onCompleted: (answerId) => {
-      // CurrentQuestion
-      console.log(currentQuestion)
       const newQuestionList = questionList.map((q:any) => {
         if (q.id === currentQuestion.id) {
           if (!q.answers) {
@@ -234,6 +232,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       searchQuestions({
         variables: {
           keyword: value,
+          productId: product.productId
         },
       })
     }, 1000)
@@ -243,10 +242,17 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     if (!search) {
       return
     }
-    setState({
+
+    const newQuestionList = questionsData.questions.filter(
+      (_: any, index: any) => {
+        return index < 3
+      })
+
+      setState({
       ...state,
       search: '',
-      questionList: questionsData.questions
+      showAllQuestions: false,
+      questionList: newQuestionList
     })
   }
 
@@ -360,7 +366,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       {!loadingQuestions && questionList?.length && (
         <div className={handles.questionsList}>
           {questionList.map((row: any) => {
-            console.log("questionList =>", questionList)
             return (
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
@@ -492,7 +497,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                       voteAnswer({
                                         variables: {
                                           id: answerItem.id,
-                                          questionId: answerItem.questionId,
+                                          questionId: row.id,
                                           email,
                                         },
                                       })
