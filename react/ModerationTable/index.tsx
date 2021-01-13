@@ -1,5 +1,5 @@
 import React, { FC, useState, useContext, Fragment } from 'react'
-import { compose, graphql, useLazyQuery } from 'react-apollo'
+import { compose, useLazyQuery, useMutation } from 'react-apollo'
 import { injectIntl } from 'react-intl'
 import {
   Table,
@@ -12,6 +12,8 @@ import {
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
+import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
+import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
 
 const ModerationTable: FC<any> = (data) => {
   const [state, setState] = useState<any>({
@@ -19,11 +21,11 @@ const ModerationTable: FC<any> = (data) => {
     tableDensity: 'low',
     searchValue: null,
     filterStatements: [],
-    questionApproved: {},
-    answerApproved: {},
+    questionCheck: {},
+    questionUpdate: ''
   })
 
-  const {tableDensity, questionApproved, answerApproved, searchValue, filterStatements} = state
+  const {tableDensity, questionCheck, questionUpdate, searchValue, filterStatements} = state
 
   const [
     getAllQuestions,
@@ -41,6 +43,25 @@ const ModerationTable: FC<any> = (data) => {
     },
   ] = useLazyQuery(GET_ALL_ANSWERS)
 
+  const [moderateQuestion] = useMutation(MODERATE_QUESTION, {
+    onCompleted: (res: any) => {
+      const newQC = questionCheck
+      newQC[res.moderateQuestion] = !newQC[res.moderateQuestion]
+      setState({
+        ...state,
+        questionCheck: newQC,
+      })
+    },
+  })
+
+  const [
+    moderateAnswer,
+    {
+      loading: moderateAnswerLoading,
+      called: moderateAnswerCalled,
+      error: moderateAnswerError,
+    },
+  ] = useMutation(MODERATE_ANSWER)
 
   if (!questionsCalled) {
     getAllQuestions()
@@ -50,9 +71,29 @@ const ModerationTable: FC<any> = (data) => {
     getAllAnswers()
   }
 
-  const handleQuestionCheck = (question:any) => {
-    // moderateQuestion
+  // const setUpQuestionCheck = () => {
+  //   questionsData.forEach((question:any) => {
+  //     if (question.allowed) {
+  //       const newQC = questionCheck
+  //       newQC[question.id] = true
+  //       setState({...state, questionCheck: newQC})
+  //     }
+  //   })
+  // }
 
+  const handleQuestionCheck = (question:any) => {
+    const random = Math.random().toString(36).substring(7)
+    setState({
+      ...state,
+      questionUpdate: random
+    })
+    moderateQuestion({
+      variables: {
+        id: question.id
+      },
+    })
+
+    console.log("state =>", state.questionCheck)
   }
 
   const questionItems = questionsData?.allQuestions || []
@@ -77,14 +118,10 @@ const ModerationTable: FC<any> = (data) => {
         width: 100,
         cellRenderer: (cellData:any) => {
           const question = cellData.rowData
-          console.log("question =>", question)
           return (
-            <div
-              onClick={e => {
-                e.stopPropagation()
-              }}>
+            <div>
               <Checkbox
-                checked={question.allowed}
+                checked={questionCheck[question.id] || question.allowed}
                 id="select-option"
                 name="select-option"
                 onChange={() => handleQuestionCheck(question)}
@@ -98,7 +135,7 @@ const ModerationTable: FC<any> = (data) => {
 
   const answerSchema = {
     properties: {
-      question: {
+      answer: {
         title: 'Answer',
         width: 400,
       },
@@ -115,7 +152,6 @@ const ModerationTable: FC<any> = (data) => {
         width: 100,
         cellRenderer: (cellData:any) => {
           const answer = cellData.rowData
-          console.log("answer =>", answer)
           return (
             <div
               onClick={e => {
@@ -143,7 +179,7 @@ const ModerationTable: FC<any> = (data) => {
         Questions
         <Table
           fullWidth
-          updateTableKey={tableDensity}
+          updateTableKey={questionUpdate}
           items={questionItems}
           density="low"
           schema={questionSchema}

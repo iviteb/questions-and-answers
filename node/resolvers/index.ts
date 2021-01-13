@@ -256,7 +256,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
-        sort: "allowed",
+        sort: "allowed DESC",
         pagination: {
           page: 1,
           pageSize: 99,
@@ -276,7 +276,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['id', 'answer','name', 'email', 'anonymous', 'votes', 'creationDate', 'allowed', 'questionId'],
-        sort: "allowed",
+        sort: "allowed DESC",
         pagination: {
           page: 1,
           pageSize: 99,
@@ -431,6 +431,7 @@ export const resolvers = {
     moderateQuestion: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
+          masterdata,
           hub,
         },
         vtex: {
@@ -439,14 +440,21 @@ export const resolvers = {
         }
       } = ctx
 
-      const headers = defaultHeaders(authToken)
-      const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: args.allowed
-      }, headers).then(() => {
-        return args.allowed
+      const question:any = await masterdata.getDocument({
+        dataEntity: 'qna',
+        id: args.id,
+        fields: ['allowed', 'id']
       })
 
-      return result
+      const allowed = !question.allowed
+      const headers = defaultHeaders(authToken)
+      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          allowed: allowed
+      }, headers).then(() => {
+        return allowed
+      })
+
+      return args.id
     },
     moderateAnswer: async (_:any, args: any, ctx: Context) => {
       const {

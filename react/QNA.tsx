@@ -24,8 +24,6 @@ import ADD_QUESTION from './queries/addQuestion.gql'
 import ADD_ANSWER from './queries/addAnswer.gql'
 import VOTE_QUESTION from './queries/voteQuestion.gql'
 import VOTE_ANSWER from './queries/voteAnswer.gql'
-import MODERATE_QUESTION from './queries/moderateQuestion.gql'
-import MODERATE_ANSWER from './queries/moderateAnswer.gql'
 import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
 import storageFactory from './utils/storage'
@@ -182,24 +180,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       }
     },
   })
-
-  const [
-    moderateQuestion,
-    {
-      loading: moderateQuestionLoading,
-      called: moderateQuestionCalled,
-      error: moderateQuestionError,
-    },
-  ] = useMutation(MODERATE_QUESTION)
-
-  const [
-    moderateAnswer,
-    {
-      loading: moderateAnswerLoading,
-      called: moderateAnswerCalled,
-      error: moderateAnswerError,
-    },
-  ] = useMutation(MODERATE_ANSWER)
 
   const sessionResponse: any = useSessionResponse()
   const handles = useCssHandles(CSS_HANDLES)
