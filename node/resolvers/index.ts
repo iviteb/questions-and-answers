@@ -256,6 +256,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        sort: "allowed",
         pagination: {
           page: 1,
           pageSize: 99,
@@ -275,6 +276,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['id', 'answer','name', 'email', 'anonymous', 'votes', 'creationDate', 'allowed', 'questionId'],
+        sort: "allowed",
         pagination: {
           page: 1,
           pageSize: 99,

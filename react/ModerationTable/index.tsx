@@ -19,13 +19,28 @@ const ModerationTable: FC<any> = (data) => {
     tableDensity: 'low',
     searchValue: null,
     filterStatements: [],
-    approved: {}
+    questionApproved: {},
+    answerApproved: {},
   })
 
-  const {tableDensity, approved, searchValue, filterStatements} = state
+  const {tableDensity, questionApproved, answerApproved, searchValue, filterStatements} = state
 
-  const [ getAllQuestions, { data: questionsData, called: questionsCalled, }, ] = useLazyQuery(GET_ALL_QUESTIONS)
-  const [ getAllAnswers, { data: answersData, called: answersCalled, }, ] = useLazyQuery(GET_ALL_QUESTIONS)
+  const [
+    getAllQuestions,
+    {
+      data: questionsData,
+      called: questionsCalled,
+    },
+  ] = useLazyQuery(GET_ALL_QUESTIONS)
+
+  const [
+    getAllAnswers,
+    {
+      data: answersData,
+      called: answersCalled,
+    },
+  ] = useLazyQuery(GET_ALL_ANSWERS)
+
 
   if (!questionsCalled) {
     getAllQuestions()
@@ -35,7 +50,13 @@ const ModerationTable: FC<any> = (data) => {
     getAllAnswers()
   }
 
-  const items = questionsData?.allQuestions || []
+  const handleQuestionCheck = (question:any) => {
+    // moderateQuestion
+
+  }
+
+  const questionItems = questionsData?.allQuestions || []
+  const answerItems = answersData?.allAnswers || []
 
   const questionSchema = {
     properties: {
@@ -56,6 +77,7 @@ const ModerationTable: FC<any> = (data) => {
         width: 100,
         cellRenderer: (cellData:any) => {
           const question = cellData.rowData
+          console.log("question =>", question)
           return (
             <div
               onClick={e => {
@@ -65,7 +87,45 @@ const ModerationTable: FC<any> = (data) => {
                 checked={question.allowed}
                 id="select-option"
                 name="select-option"
-                onChange={() => setState({ ...state, approved: !question.allowed })}
+                onChange={() => handleQuestionCheck(question)}
+              />
+            </div>
+          )
+        },
+      }
+    },
+  }
+
+  const answerSchema = {
+    properties: {
+      question: {
+        title: 'Answer',
+        width: 400,
+      },
+      name: {
+        title: 'Name',
+        width: 150,
+      },
+      email: {
+        title: 'Email',
+        width: 200,
+      },
+      approved: {
+        title: 'Approved',
+        width: 100,
+        cellRenderer: (cellData:any) => {
+          const answer = cellData.rowData
+          console.log("answer =>", answer)
+          return (
+            <div
+              onClick={e => {
+                e.stopPropagation()
+              }}>
+              <Checkbox
+                checked={answer.allowed}
+                id="select-option"
+                name="select-option"
+                onChange={() => setState({ ...state, answerApproved: !answer.allowed })}
               />
             </div>
           )
@@ -75,6 +135,8 @@ const ModerationTable: FC<any> = (data) => {
   }
 
   console.log("questionsData =>", questionsData)
+  console.log("answersData =>", answersData)
+
 
   return(
     <div>
@@ -82,11 +144,24 @@ const ModerationTable: FC<any> = (data) => {
         <Table
           fullWidth
           updateTableKey={tableDensity}
-          items={items}
+          items={questionItems}
           density="low"
           schema={questionSchema}
         />
+
+      <div className="mt8">
+        Answers
+        <Table
+          fullWidth
+          updateTableKey={tableDensity}
+          items={answerItems}
+          density="low"
+          schema={answerSchema}
+        />
       </div>
+    </div>
+
+
   )
 }
 
