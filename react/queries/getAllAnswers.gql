@@ -1,11 +1,12 @@
-query GetAllQuestions{
-  allQuestions{
+query GetAllAnswers{
+  allAnswers{
   	id
-    question
+    answer
     name
     email
     anonymous
     votes
     allowed
+    questionId
   }
 }

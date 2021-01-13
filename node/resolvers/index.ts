@@ -245,7 +245,45 @@ export const resolvers = {
       })
 
       return result
-    }
+    },
+    allQuestions: async (_: any, __: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'qna',
+        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
+
+      return result
+    },
+    allAnswers: async (_: any, __: any, ctx: Context) => {
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'answer',
+        fields: ['id', 'answer','name', 'email', 'anonymous', 'votes', 'creationDate', 'allowed', 'questionId'],
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
+
+      return result
+    },
   },
   Mutation: {
     addQuestion: async (_:any, args: any, ctx: Context) => {

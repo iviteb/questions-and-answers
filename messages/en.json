@@ -33,6 +33,7 @@
   "admin-example.navigation.search.kws": "test, mock, fake",
   "admin-example.navigation.details.search.kws": "details, mock, test, hello",
   "admin-example.navigation.table.search.kws": "table, mock, test, bye",
+  "admin/question.menu.title": "Questions and Answers",
   "admin-example.hello-world": "Example Admin",
   "admin/question.menu.label": "Questions and Answers",
   "admin/question.menu.keywords": "Questions, Answers, Q&A"

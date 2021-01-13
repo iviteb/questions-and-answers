@@ -27,6 +27,7 @@
   "store/question.less-questions.label": "",
   "store/question.modal.cancel-button.label": "Cancelar",
   "store/question.more-answers-button.label": "",
+  "admin/question.menu.title": "",
   "admin-example.navigation.label-group": "Admins de exemplo",
   "admin-example.navigation.label-details": "Exemplo de detalhes",
   "admin-example.navigation.label-table": "Exemplo de tabela",
