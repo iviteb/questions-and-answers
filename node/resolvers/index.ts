@@ -276,7 +276,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
         fields: ['id', 'answer','name', 'email', 'anonymous', 'votes', 'creationDate', 'allowed', 'questionId'],
-        sort: "allowed DESC",
+        sort: "allowed ASC",
         pagination: {
           page: 1,
           pageSize: 99,
@@ -459,6 +459,7 @@ export const resolvers = {
     moderateAnswer: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
+          masterdata,
           hub,
         },
         vtex: {
@@ -467,13 +468,47 @@ export const resolvers = {
         }
       } = ctx
 
-      const headers = defaultHeaders(authToken)
-      const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: args.allowed
-      }, headers).then(() => {
-        return args.allowed
+      const answer:any = await masterdata.getDocument({
+        dataEntity: 'answer',
+        id: args.answerId,
+        fields: ['allowed','questionId']
       })
-      return result
+
+      const newAllowed = !answer.allowed
+
+      const headers = defaultHeaders(authToken)
+      await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.answerId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+          allowed: newAllowed
+      }, headers).then(() => {
+        return newAllowed
+      })
+
+      const answers = await masterdata.searchDocuments({
+        dataEntity: 'answer',
+        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        sort: 'votes DESC',
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        where: `questionId=${answer.questionId}`,
+        schema: SCHEMA_VERSION,
+      })
+
+      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${answer.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
+        answers
+      }, headers).then((e) => {
+        console.log("contents =>", e)
+        return answers
+      }).catch((e) => {
+        console.log("error =>", e)
+        return answers
+      })
+
+      console.log("answer.id =>", answer.id)
+      console.log("args.id =>", args.answerId)
+
+      return args.answerId
 
     },
     deleteQuestion: (_:any, args: any, ctx: Context) => {

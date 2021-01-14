@@ -42,7 +42,7 @@ type Mutation {
   voteQuestion(email: String, id: ID, vote: Int): Votes
   voteAnswer(email: String, id: ID, questionId: ID): Votes
   moderateQuestion(id: ID): String
-  moderateAnswer(id: ID): String
+  moderateAnswer(answerId: ID): String
   deleteQuestion(id: ID): Boolean
   deleteAnswer(id: ID): Boolean
 }
