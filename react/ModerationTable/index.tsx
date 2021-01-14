@@ -4,26 +4,29 @@ import { injectIntl } from 'react-intl'
 import {
   Table,
   Checkbox,
-  IconArrowUp,
-  IconArrowDown,
-  IconShoppingCart,
-  Input,
+  Tab,
+  Tabs,
 } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
 import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
+// import QuestionTable from './questionTable'
+
 
 const ModerationTable: FC<any> = (data) => {
   const [state, setState] = useState<any>({
     questionCheck: {},
     answerCheck: {},
     questionUpdate: '',
-    answerUpdate: ''
+    answerUpdate: '',
+    approvedQuestions: [],
+    pendingQuestions: [],
+    currentTab: 1
   })
 
-  const { questionCheck, questionUpdate, answerCheck, answerUpdate} = state
+  const { questionCheck, questionUpdate, answerCheck, answerUpdate, currentTab} = state
 
   const [
     getAllQuestions,
@@ -106,6 +109,14 @@ const ModerationTable: FC<any> = (data) => {
   const questionItems = questionsData?.allQuestions || []
   const answerItems = answersData?.allAnswers || []
 
+  const seperateQuestions = () => {
+    let approvedQuestions = []
+    let pendingQuestions = []
+
+
+  }
+
+
   const questionSchema = {
     properties: {
       question: {
@@ -180,25 +191,42 @@ const ModerationTable: FC<any> = (data) => {
 
   return(
     <div>
-        Questions
-        <Table
-          fullWidth
-          updateTableKey={questionUpdate}
-          items={questionItems}
-          density="low"
-          schema={questionSchema}
-        />
+      <Tabs>
+        <Tab
+          label="Pending"
+          active={currentTab === 1}
+          onClick={() => setState({ ...state, currentTab: 1 })}>
+            <div>
+              Questions
+              <Table
+                fullWidth
+                updateTableKey={questionUpdate}
+                items={questionItems}
+                density="low"
+                schema={questionSchema}
+              />
+            </div>
 
-      <div className="mt8">
-        Answers
-        <Table
-          fullWidth
-          updateTableKey={answerUpdate}
-          items={answerItems}
-          density="low"
-          schema={answerSchema}
-        />
-      </div>
+            <div className="mt8">
+              Answers
+              <Table
+                fullWidth
+                updateTableKey={answerUpdate}
+                items={answerItems}
+                density="low"
+                schema={answerSchema}
+              />
+            </div>
+        </Tab>
+        <Tab
+          label="Approved"
+          active={currentTab === 2}
+          onClick={() => setState({ ...state, currentTab: 2 })}>
+          <p>Approved</p>
+        </Tab>
+      </Tabs>
+
+
     </div>
 
 
