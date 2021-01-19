@@ -23,10 +23,12 @@ const ModerationTable: FC<any> = (data) => {
     answerUpdate: '',
     approvedQuestions: [],
     pendingQuestions: [],
+    approvedAnswers: [],
+    pendingAnswers: [],
     currentTab: 1
   })
 
-  const { questionCheck, questionUpdate, answerCheck, answerUpdate, currentTab} = state
+  const { questionCheck, questionUpdate, answerCheck, answerUpdate, currentTab, approvedQuestions, pendingQuestions, approvedAnswers, pendingAnswers} = state
 
   const [
     getAllQuestions,
@@ -34,7 +36,11 @@ const ModerationTable: FC<any> = (data) => {
       data: questionsData,
       called: questionsCalled,
     },
-  ] = useLazyQuery(GET_ALL_QUESTIONS)
+  ] = useLazyQuery(GET_ALL_QUESTIONS, {
+    onCompleted: () => {
+      seperateQuestions()
+    }
+  })
 
   const [
     getAllAnswers,
@@ -42,22 +48,26 @@ const ModerationTable: FC<any> = (data) => {
       data: answersData,
       called: answersCalled,
     },
-  ] = useLazyQuery(GET_ALL_ANSWERS)
-
-  const [moderateQuestion] = useMutation(MODERATE_QUESTION, {
-    onCompleted: (res: any) => {
-      const newQC = questionCheck
-      newQC[res.moderateQuestion] = !newQC[res.moderateQuestion]
-      setState({
-        ...state,
-        questionCheck: newQC,
-      })
-    },
+  ] = useLazyQuery(GET_ALL_ANSWERS, {
+    onCompleted: () => {
+      seperateAnswers()
+    }
   })
+
+  const [moderateQuestion] = useMutation(MODERATE_QUESTION)
+  //   , {
+  //   onCompleted: (res: any) => {
+  //     const newQC = questionCheck
+  //     newQC[res.moderateQuestion] = !newQC[res.moderateQuestion]
+  //     setState({
+  //       ...state,
+  //       questionCheck: newQC,
+  //     })
+  //   },
+  // })
 
   const [moderateAnswer] = useMutation(MODERATE_ANSWER, {
     onCompleted: (res:any) => {
-      console.log("mutation oncomplete =>", res)
       const newAC = answerCheck
       newAC[res.moderateAnswer] = !newAC[res.moderateAnswer]
       setState({
@@ -67,6 +77,53 @@ const ModerationTable: FC<any> = (data) => {
     }
   })
 
+
+  const seperateQuestions = () => {
+    let newApproved:any = []
+    let newPending:any = []
+    const random = Math.random().toString(36).substring(7)
+
+    questionItems?.forEach((question:any) => {
+      if (question.allowed) {
+        newApproved.push(question)
+      } else {
+        newPending.push(question)
+      }
+    })
+
+    if (newApproved.length !== approvedQuestions.length || newPending.length !== pendingQuestions.length) {
+      setState({
+        ...state,
+        approvedQuestions: newApproved,
+        pendingQuestions: newPending,
+        questionUpdate: random
+      })
+    }
+  }
+
+  const seperateAnswers = () => {
+    let newApproved:any = []
+    let newPending:any = []
+    const random = Math.random().toString(36).substring(7)
+
+    answerItems?.forEach((answer:any) => {
+      if (answer.allowed) {
+        newApproved.push(answer)
+      } else {
+        newPending.push(answer)
+      }
+    })
+
+    if (newApproved.length !== approvedAnswers.length || newPending.length !== pendingAnswers.length) {
+      setState({
+        ...state,
+        approvedAnswers: newApproved,
+        pendingAnswers: newPending,
+        answerUpdate: random
+      })
+    }
+  }
+
   if (!questionsCalled) {
     getAllQuestions()
   }
@@ -75,47 +132,46 @@ const ModerationTable: FC<any> = (data) => {
     getAllAnswers()
   }
 
+  const questionItems = questionsData?.allQuestions || []
+  const answerItems = answersData?.allAnswers || []
+
+
   const handleQuestionCheck = (question:any) => {
     const random = Math.random().toString(36).substring(7)
-    setState({
-      ...state,
-      questionUpdate: random
-    })
+    const newQC = questionCheck
+    if (newQC[question.id]) {
+      newQC[question.id] = !newQC[question.id]
+    } else {
+      newQC[question.id] = !question.allowed
+    }
+
     moderateQuestion({
       variables: {
         id: question.id
       },
     })
 
-    console.log("state =>", state.questionCheck)
+    setState({
+      ...state,
+      questionCheck: newQC,
+      questionUpdate: random
+    })
+
+    console.log("state =>", state)
   }
 
   const handleAnswerCheck = (answer:any) => {
     const random = Math.random().toString(36).substring(7)
-    console.log("answer check=>", answer)
-    setState({
-      ...state,
-      answerUpdate: random
-    })
     moderateAnswer({
       variables: {
         answerId: answer.id
       }
     })
-    console.log("state =>", state.answerCheck)
-
+    setState({
+      ...state,
+      answerUpdate: random
+    })
   }
-
-  const questionItems = questionsData?.allQuestions || []
-  const answerItems = answersData?.allAnswers || []
-
-  const seperateQuestions = () => {
-    let approvedQuestions = []
-    let pendingQuestions = []
-
-
-  }
-
 
   const questionSchema = {
     properties: {
@@ -136,13 +192,21 @@ const ModerationTable: FC<any> = (data) => {
         width: 100,
         cellRenderer: (cellData:any) => {
           const question = cellData.rowData
+          let checked
+          if (questionCheck[question.id]) {
+            checked = questionCheck[question.id]
+          } else {
+            checked = question.allowed
+          }
           return (
             <div>
               <Checkbox
-                checked={questionCheck[question.id] || question.allowed || false}
+                checked={checked}
                 id="question-option"
                 name="question-option"
-                onChange={() => {handleQuestionCheck(question)}}
+                onChange={() => {
+                  handleQuestionCheck(question)
+                }}
               />
             </div>
           )
@@ -173,7 +237,7 @@ const ModerationTable: FC<any> = (data) => {
           return (
             <div>
               <Checkbox
-                checked={answerCheck[answer.id] || answer.allowed || false}
+                checked={answerCheck[answer.id] || answer.allowed}
                 id="answer-option"
                 name="answer-option"
                 onChange={() => {handleAnswerCheck(answer)}}
@@ -187,7 +251,7 @@ const ModerationTable: FC<any> = (data) => {
 
   console.log("questionsData =>", questionsData)
   console.log("answersData =>", answersData)
-
+  console.log("state =>", state)
 
   return(
     <div>
@@ -196,33 +260,52 @@ const ModerationTable: FC<any> = (data) => {
           label="Pending"
           active={currentTab === 1}
           onClick={() => setState({ ...state, currentTab: 1 })}>
-            <div>
-              Questions
+            <div className="mt8">
+              <h3>Pending Questions</h3>
               <Table
                 fullWidth
                 updateTableKey={questionUpdate}
-                items={questionItems}
+                items={pendingQuestions}
                 density="low"
                 schema={questionSchema}
               />
             </div>
 
             <div className="mt8">
-              Answers
+              <h3>Pending Answers</h3>
               <Table
                 fullWidth
                 updateTableKey={answerUpdate}
-                items={answerItems}
+                items={pendingAnswers}
                 density="low"
                 schema={answerSchema}
               />
             </div>
         </Tab>
         <Tab
-          label="Approved"
+          label="Approved Questions"
           active={currentTab === 2}
           onClick={() => setState({ ...state, currentTab: 2 })}>
-          <p>Approved</p>
+          <Table
+            fullWidth
+            updateTableKey={questionUpdate}
+            items={approvedQuestions}
+            density="low"
+            schema={questionSchema}
+          />
+        </Tab>
+
+        <Tab
+          label="Approved Answers"
+          active={currentTab === 3}
+          onClick={() => setState({ ...state, currentTab: 3 })}>
+          <Table
+            fullWidth
+            updateTableKey={answerUpdate}
+            items={approvedAnswers}
+            density="low"
+            schema={answerSchema}
+          />
         </Tab>
       </Tabs>
 

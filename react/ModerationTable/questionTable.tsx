@@ -13,9 +13,10 @@
 //   intl,
 // }) => {
 //   const [state, setState] = useState<any>({
-//     value: initialState.value,
-//     active: initialState.active,
+//     pendingQuestions: initialState.pendingQuestions,
 //   })
+
+//   const [pendingQuestions] = state
 
 //   return (
 //     <div>
@@ -23,7 +24,7 @@
 //     <Table
 //       fullWidth
 //       updateTableKey={questionUpdate}
-//       items={questionItems}
+//       items={pendingQuestions}
 //       density="low"
 //       schema={questionSchema}
 //     />
