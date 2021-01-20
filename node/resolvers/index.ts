@@ -186,7 +186,7 @@ export const resolvers = {
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
         sort: 'votes DESC',
-        where: `productId=${args.productId}`,
+        where: `productId=${args.productId} AND allowed=${true}`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -215,7 +215,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `productId=${args.productId} AND question=*${args.keyword}*`,
+        where: `productId=${args.productId} AND question=*${args.keyword}*  AND allowed=${true}`,
         schema: SCHEMA_VERSION,
       })
 
@@ -240,7 +240,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `questionId=${args.questionId}`,
+        where: `questionId=${args.questionId}  AND allowed=${true}`,
         schema: SCHEMA_VERSION,
       })
 
@@ -540,5 +540,27 @@ export const resolvers = {
         })
 
     },
+    saveSettings: async (_:any, args: any, ctx: Context) => {
+      const {
+        clients: {
+
+        },
+      } = ctx
+
+      const apps = new Apps(ctx.vtex)
+      const app: string = getAppId()
+      let settings = {
+        schema: null,
+        schemaVersion: SCHEMA_VERSION,
+        title: args.title,
+        anonymous: args.anonymous,
+        search: args.search,
+        maxQuestions: args.maxQuestions
+      }
+
+      await apps.saveAppSettings(app, settings)
+
+      return settings
+    }
   }
 }

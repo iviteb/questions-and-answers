@@ -2,13 +2,12 @@
 import React, { FC, useState, useContext, Fragment } from 'react'
 import { compose, useLazyQuery, useMutation } from 'react-apollo'
 import { injectIntl } from 'react-intl'
-import { Table, Checkbox, Tab, Tabs } from 'vtex.styleguide'
+import { Table, Checkbox, Tab, Tabs, Input } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
 import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
-// import QuestionTable from './questionTable'
 
 const ModerationTable: FC<any> = (data) => {
   const [state, setState] = useState<any>({
@@ -151,6 +150,15 @@ const ModerationTable: FC<any> = (data) => {
         : item
     })
 
+    const newPendingQuestions = pendingQuestions.map((item: any) => {
+      return item.id === question.id
+      ? {
+          ...item,
+          allowed: !item.allowed,
+        }
+      : item
+    })
+
     moderateQuestion({
       variables: {
         id: question.id,
@@ -160,14 +168,31 @@ const ModerationTable: FC<any> = (data) => {
     setState({
       ...state,
       approvedQuestions: newApprovedQuestions,
+      pendingQuestions: newPendingQuestions,
       questionUpdate: random,
     })
-
-    console.log('state =>', state)
   }
 
   const handleAnswerCheck = (answer: any) => {
     const random = Math.random().toString(36).substring(7)
+
+    const newApprovedAnswers = approvedAnswers.map((item: any) => {
+      return item.id === answer.id
+        ? {
+            ...item,
+            allowed: !item.allowed,
+          }
+        : item
+    })
+    const newPendingAnswers = pendingAnswers.map((item: any) => {
+      return item.id === answer.id
+      ? {
+          ...item,
+          allowed: !item.allowed,
+        }
+      : item
+    })
+
     moderateAnswer({
       variables: {
         answerId: answer.id,
@@ -175,6 +200,8 @@ const ModerationTable: FC<any> = (data) => {
     })
     setState({
       ...state,
+      approvedAnswers: newApprovedAnswers,
+      pendingAnswers: newPendingAnswers,
       answerUpdate: random,
     })
   }
@@ -198,12 +225,6 @@ const ModerationTable: FC<any> = (data) => {
         width: 100,
         cellRenderer: (cellData: any) => {
           const question = cellData.rowData
-          // let checked
-          // if (questionCheck[question.id]) {
-          //   checked = questionCheck[question.id]
-          // } else {
-          //   checked = question.allowed
-          // }
           return (
             <div>
               <Checkbox
@@ -243,7 +264,7 @@ const ModerationTable: FC<any> = (data) => {
           return (
             <div>
               <Checkbox
-                checked={answerCheck[answer.id] || answer.allowed}
+                checked={answer.allowed}
                 id="answer-option"
                 name="answer-option"
                 onChange={() => {
@@ -268,9 +289,21 @@ const ModerationTable: FC<any> = (data) => {
     <div>
       <Tabs>
         <Tab
-          label="Pending"
+          label="Configuration"
           active={currentTab === 1}
           onClick={() => setState({ ...state, currentTab: 1 })}
+        >
+          <div className="mt8">
+            <Input placeholder="Title" size="small" label="Title"/>
+            <Input />
+            <Checkbox />
+            <Checkbox />
+          </div>
+        </Tab>
+        <Tab
+          label="Pending"
+          active={currentTab === 2}
+          onClick={() => setState({ ...state, currentTab: 2 })}
         >
           <div className="mt8">
             <h3>Pending Questions</h3>
@@ -296,8 +329,8 @@ const ModerationTable: FC<any> = (data) => {
         </Tab>
         <Tab
           label="Approved Questions"
-          active={currentTab === 2}
-          onClick={() => setState({ ...state, currentTab: 2 })}
+          active={currentTab === 3}
+          onClick={() => setState({ ...state, currentTab: 3 })}
         >
           <Table
             fullWidth
@@ -310,8 +343,8 @@ const ModerationTable: FC<any> = (data) => {
 
         <Tab
           label="Approved Answers"
-          active={currentTab === 3}
-          onClick={() => setState({ ...state, currentTab: 3 })}
+          active={currentTab === 4}
+          onClick={() => setState({ ...state, currentTab: 4 })}
         >
           <Table
             fullWidth

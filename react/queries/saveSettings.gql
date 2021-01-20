@@ -1,0 +1,3 @@
+mutation SaveSettings($title: String, $anonymous: Boolean, $search: Boolean, maxQuestions: Int) {
+  saveSettings(title: $title, anonymous: $anonymous, search: $search, maxQuestions: $maxQuestions)
+}
