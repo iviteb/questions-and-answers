@@ -2,12 +2,13 @@
 import React, { FC, useState, useContext, Fragment } from 'react'
 import { compose, useLazyQuery, useMutation } from 'react-apollo'
 import { injectIntl } from 'react-intl'
-import { Table, Checkbox, Tab, Tabs, Input } from 'vtex.styleguide'
+import { Table, Checkbox, Tab, Tabs, Input, Button } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
 import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
+import SAVE_SETTINGS from '../queries/saveSettings.gql'
 
 const ModerationTable: FC<any> = (data) => {
   const [state, setState] = useState<any>({
@@ -20,6 +21,10 @@ const ModerationTable: FC<any> = (data) => {
     approvedAnswers: [],
     pendingAnswers: [],
     currentTab: 1,
+    title: '',
+    maxQuestions: null,
+    allowAnonymous: false,
+    allowSearch: false,
   })
 
   const {
@@ -32,6 +37,10 @@ const ModerationTable: FC<any> = (data) => {
     pendingQuestions,
     approvedAnswers,
     pendingAnswers,
+    title,
+    maxQuestions,
+    allowAnonymous,
+    allowSearch,
   } = state
 
   const [
@@ -53,16 +62,6 @@ const ModerationTable: FC<any> = (data) => {
   })
 
   const [moderateQuestion] = useMutation(MODERATE_QUESTION)
-  //   , {
-  //   onCompleted: (res: any) => {
-  //     const newQC = questionCheck
-  //     newQC[res.moderateQuestion] = !newQC[res.moderateQuestion]
-  //     setState({
-  //       ...state,
-  //       questionCheck: newQC,
-  //     })
-  //   },
-  // })
 
   const [moderateAnswer] = useMutation(MODERATE_ANSWER, {
     onCompleted: (res: any) => {
@@ -74,6 +73,11 @@ const ModerationTable: FC<any> = (data) => {
       })
     },
   })
+
+  const [
+    saveSettings,
+    { loading: saveLoading },
+  ] = useMutation(SAVE_SETTINGS)
 
   const seperateQuestions = () => {
     let newApproved: any = []
@@ -293,11 +297,65 @@ const ModerationTable: FC<any> = (data) => {
           active={currentTab === 1}
           onClick={() => setState({ ...state, currentTab: 1 })}
         >
-          <div className="mt8">
-            <Input placeholder="Title" size="small" label="Title"/>
-            <Input />
-            <Checkbox />
-            <Checkbox />
+          <div className="mt7">
+            <Input
+              size="small"
+              label="Title"
+              value={title}
+              onChange={(e: any) =>
+                setState({ ...state, title: e.target.value })
+              }
+            />
+          </div>
+          <div className="mt6">
+            <Input
+              size="small"
+              label="Max Number of Questions"
+              value={maxQuestions}
+              type="number"
+              onChange={(e: any) =>
+                setState({ ...state, maxQuestions: +e.target.value })
+              }
+            />
+          </div>
+          <div className="mt6">
+            <Checkbox
+              id="anonymous-option"
+              name="anonymous-option"
+              label="Allow Anonymous"
+              checked={allowAnonymous}
+              onChange={() => {
+                setState({...state, allowAnonymous: !allowAnonymous})
+              }}
+            />
+          </div>
+          <div className="mt4">
+            <Checkbox
+              id="search-option"
+              name="search-option"
+              label="Allow Search"
+              checked={allowSearch}
+              onChange={() => {
+                setState({...state, allowSearch: !allowSearch})
+              }}
+            />
+          </div>
+          <div className="mt6">
+            <Button
+              isLoading={saveLoading}
+              onClick={() => {
+                saveSettings({
+                  variables: {
+                    title,
+                    anonymous: allowAnonymous,
+                    search: allowSearch,
+                    maxQuestions,
+                  },
+                })
+              }}
+            >
+              Save
+            </Button>
           </div>
         </Tab>
         <Tab

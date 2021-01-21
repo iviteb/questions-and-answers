@@ -598,24 +598,27 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             className={styles['answer-text-box']}
                           />
                         </div>
-                        <div className="anonymousCheck mt4">
-                          <Checkbox
-                            checked={answerAnonymousCheck}
-                            id=""
-                            label={intl.formatMessage({
-                              id:
-                                'store/question.modal.answer-anonymous-check.label',
-                              defaultMessage: 'Answer anonymously',
-                            })}
-                            name=""
-                            onChange={() =>
-                              setState({
-                                ...state,
-                                answerAnonymousCheck: !answerAnonymousCheck,
-                              })
-                            }
-                          />
-                        </div>
+
+                        {config.anonymous && (
+                          <div className="anonymousCheck mt4">
+                            <Checkbox
+                              checked={answerAnonymousCheck}
+                              id=""
+                              label={intl.formatMessage({
+                                id:
+                                  'store/question.modal.answer-anonymous-check.label',
+                                defaultMessage: 'Answer anonymously',
+                              })}
+                              name=""
+                              onChange={() =>
+                                setState({
+                                  ...state,
+                                  answerAnonymousCheck: !answerAnonymousCheck,
+                                })
+                              }
+                            />
+                          </div>
+                        )}
 
                         <div className={styles['modal-buttons-container']}>
                           <Button
@@ -783,20 +786,22 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 className={styles['question-text-box']}
               />
             </div>
-            <div className="anonymousCheck mt4">
-              <Checkbox
-                checked={anonymousCheck}
-                id=""
-                label={intl.formatMessage({
-                  id: 'store/question.modal.anonymous-check.label',
-                  defaultMessage: 'Ask anonymously',
-                })}
-                name=""
-                onChange={() =>
-                  setState({ ...state, anonymousCheck: !anonymousCheck })
-                }
-              />
-            </div>
+            {config.anonymous && (
+              <div className="anonymousCheck mt4">
+                <Checkbox
+                  checked={anonymousCheck}
+                  id=""
+                  label={intl.formatMessage({
+                    id: 'store/question.modal.anonymous-check.label',
+                    defaultMessage: 'Ask anonymously',
+                  })}
+                  name=""
+                  onChange={() =>
+                    setState({ ...state, anonymousCheck: !anonymousCheck })
+                  }
+                />
+              </div>
+            )}
 
             <div
               className="mt4"

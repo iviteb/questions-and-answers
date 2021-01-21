@@ -560,7 +560,7 @@ export const resolvers = {
 
       await apps.saveAppSettings(app, settings)
 
-      return settings
+      return true
     }
   }
 }
