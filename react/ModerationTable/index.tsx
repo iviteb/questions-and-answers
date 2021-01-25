@@ -1,16 +1,18 @@
 /* eslint-disable no-console */
 import React, { FC, useState, useContext, Fragment } from 'react'
-import { compose, useLazyQuery, useMutation } from 'react-apollo'
+import { compose, graphql, useLazyQuery, useMutation } from 'react-apollo'
 import { injectIntl } from 'react-intl'
-import { Table, Checkbox, Tab, Tabs, Input, Button } from 'vtex.styleguide'
+import { Table, Checkbox, Tab, Tabs, Input, Button, Modal, IconCog, ButtonWithIcon } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
 import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
 import SAVE_SETTINGS from '../queries/saveSettings.gql'
+import QUERY_CONFIG from '../queries/config.gql'
 
-const ModerationTable: FC<any> = (data) => {
+
+const ModerationTable: FC<any> = ({data: {config}}) => {
   const [state, setState] = useState<any>({
     questionCheck: {},
     answerCheck: {},
@@ -21,10 +23,12 @@ const ModerationTable: FC<any> = (data) => {
     approvedAnswers: [],
     pendingAnswers: [],
     currentTab: 1,
-    title: '',
+    title: 'Q&A',
     maxQuestions: null,
-    allowAnonymous: false,
-    allowSearch: false,
+    allowAnonymous: null,
+    allowSearch: null,
+    allowModeration: null,
+    isModalOpen: false
   })
 
   const {
@@ -41,7 +45,11 @@ const ModerationTable: FC<any> = (data) => {
     maxQuestions,
     allowAnonymous,
     allowSearch,
+    allowModeration,
+    isModalOpen,
   } = state
+
+  const cog = <IconCog />
 
   const [
     getAllQuestions,
@@ -76,7 +84,7 @@ const ModerationTable: FC<any> = (data) => {
 
   const [
     saveSettings,
-    { loading: saveLoading },
+    { called: saveCalled, loading: saveLoading, error: saveError },
   ] = useMutation(SAVE_SETTINGS)
 
   const seperateQuestions = () => {
@@ -131,12 +139,30 @@ const ModerationTable: FC<any> = (data) => {
     }
   }
 
+  const handleModalToggle = () => {
+    setState({ ...state, isModalOpen: !isModalOpen })
+  }
+
   if (!questionsCalled) {
     getAllQuestions()
   }
 
   if (!answersCalled) {
     getAllAnswers()
+  }
+
+  if (config && allowAnonymous === null) {
+    setState({
+      ...state,
+      maxQuestions: config.maxQuestions,
+      allowAnonymous: config.anonymous,
+      allowSearch: config.search,
+      allowModeration: config.moderation
+    })
+  }
+
+  if (!saveLoading && saveCalled && !saveError && isModalOpen) {
+    setState({ ...state, isModalOpen: false })
   }
 
   const questionItems = questionsData?.allQuestions || []
@@ -291,130 +317,152 @@ const ModerationTable: FC<any> = (data) => {
 
   return (
     <div>
-      <Tabs>
-        <Tab
-          label="Configuration"
-          active={currentTab === 1}
-          onClick={() => setState({ ...state, currentTab: 1 })}
+      <ButtonWithIcon
+          onClick={() => handleModalToggle()}
+          icon={cog}
+          variation="secondary"
         >
-          <div className="mt7">
-            <Input
-              size="small"
-              label="Title"
-              value={title}
-              onChange={(e: any) =>
-                setState({ ...state, title: e.target.value })
-              }
-            />
-          </div>
-          <div className="mt6">
-            <Input
-              size="small"
-              label="Max Number of Questions"
-              value={maxQuestions}
-              type="number"
-              onChange={(e: any) =>
-                setState({ ...state, maxQuestions: +e.target.value })
-              }
-            />
-          </div>
-          <div className="mt6">
-            <Checkbox
-              id="anonymous-option"
-              name="anonymous-option"
-              label="Allow Anonymous"
-              checked={allowAnonymous}
-              onChange={() => {
-                setState({...state, allowAnonymous: !allowAnonymous})
-              }}
-            />
-          </div>
-          <div className="mt4">
-            <Checkbox
-              id="search-option"
-              name="search-option"
-              label="Allow Search"
-              checked={allowSearch}
-              onChange={() => {
-                setState({...state, allowSearch: !allowSearch})
-              }}
-            />
-          </div>
-          <div className="mt6">
-            <Button
-              isLoading={saveLoading}
-              onClick={() => {
-                saveSettings({
-                  variables: {
-                    title,
-                    anonymous: allowAnonymous,
-                    search: allowSearch,
-                    maxQuestions,
-                  },
-                })
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        </Tab>
-        <Tab
-          label="Pending"
-          active={currentTab === 2}
-          onClick={() => setState({ ...state, currentTab: 2 })}
-        >
-          <div className="mt8">
-            <h3>Pending Questions</h3>
+          Settings
+      </ButtonWithIcon>
+
+      <Modal
+        isOpen={isModalOpen}
+        centered
+        title="Settings"
+        onClose={() => {
+          handleModalToggle()
+        }}
+      >
+        <div className="mt7">
+          <Input
+            size="small"
+            label="Max Number of Questions"
+            value={maxQuestions || 10}
+            type="number"
+            onChange={(e: any) =>
+              setState({ ...state, maxQuestions: +e.target.value })
+            }
+          />
+        </div>
+        <div className="mt6">
+          <Checkbox
+            id="anonymous-option"
+            name="anonymous-option"
+            label="Allow Anonymous"
+            checked={allowAnonymous}
+            onChange={() => {
+              setState({...state, allowAnonymous: !allowAnonymous})
+            }}
+          />
+        </div>
+        <div className="mt4">
+          <Checkbox
+            id="search-option"
+            name="search-option"
+            label="Allow Search"
+            checked={allowSearch}
+            onChange={() => {
+              setState({...state, allowSearch: !allowSearch})
+            }}
+          />
+        <div className="mt4">
+          <Checkbox
+            id="moderation-option"
+            name="moderation-option"
+            label="Allow Moderation"
+            checked={allowModeration}
+            onChange={() => {
+              setState({...state, allowModeration: !allowModeration})
+            }}
+          />
+        </div>
+        </div>
+        <div className="mt6">
+          <Button
+            isLoading={saveLoading}
+            onClick={() => {
+              saveSettings({
+                variables: {
+                  title,
+                  anonymous: allowAnonymous,
+                  search: allowSearch,
+                  maxQuestions,
+                  moderation: allowModeration
+                },
+              })
+            }}
+          >
+            Save
+          </Button>
+        </div>
+      </Modal>
+
+      <div className="mt6">
+        <Tabs>
+          <Tab
+            label="Pending"
+            active={currentTab === 1}
+            onClick={() => setState({ ...state, currentTab: 1 })}
+          >
+            <div className="mt8">
+              <h3>Pending Questions</h3>
+              <Table
+                fullWidth
+                updateTableKey={questionUpdate}
+                items={pendingQuestions}
+                density="low"
+                schema={questionSchema}
+              />
+            </div>
+
+            <div className="mt8">
+              <h3>Pending Answers</h3>
+              <Table
+                fullWidth
+                updateTableKey={answerUpdate}
+                items={pendingAnswers}
+                density="low"
+                schema={answerSchema}
+              />
+            </div>
+          </Tab>
+          <Tab
+            label="Approved Questions"
+            active={currentTab === 2}
+            onClick={() => setState({ ...state, currentTab: 2 })}
+          >
             <Table
               fullWidth
               updateTableKey={questionUpdate}
-              items={pendingQuestions}
+              items={approvedQuestions}
               density="low"
               schema={questionSchema}
             />
-          </div>
+          </Tab>
 
-          <div className="mt8">
-            <h3>Pending Answers</h3>
+          <Tab
+            label="Approved Answers"
+            active={currentTab === 3}
+            onClick={() => setState({ ...state, currentTab: 3 })}
+          >
             <Table
               fullWidth
               updateTableKey={answerUpdate}
-              items={pendingAnswers}
+              items={approvedAnswers}
               density="low"
               schema={answerSchema}
             />
-          </div>
-        </Tab>
-        <Tab
-          label="Approved Questions"
-          active={currentTab === 3}
-          onClick={() => setState({ ...state, currentTab: 3 })}
-        >
-          <Table
-            fullWidth
-            updateTableKey={questionUpdate}
-            items={approvedQuestions}
-            density="low"
-            schema={questionSchema}
-          />
-        </Tab>
-
-        <Tab
-          label="Approved Answers"
-          active={currentTab === 4}
-          onClick={() => setState({ ...state, currentTab: 4 })}
-        >
-          <Table
-            fullWidth
-            updateTableKey={answerUpdate}
-            items={approvedAnswers}
-            density="low"
-            schema={answerSchema}
-          />
-        </Tab>
-      </Tabs>
+          </Tab>
+        </Tabs>
+      </div>
     </div>
   )
 }
 
-export default injectIntl(ModerationTable)
+export default injectIntl(
+  compose(
+    graphql(QUERY_CONFIG, {
+      options: { ssr: false },
+    })
+  )(ModerationTable)
+)

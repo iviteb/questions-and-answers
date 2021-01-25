@@ -127,7 +127,8 @@ export const resolvers = {
         title: 'Q&A',
         anonymous: false,
         search: true,
-        maxQuestions: 10
+        maxQuestions: 10,
+        moderation: true
       }
 
       if(!settings.title) {
@@ -552,10 +553,11 @@ export const resolvers = {
       let settings = {
         schema: null,
         schemaVersion: SCHEMA_VERSION,
-        title: args.title,
+        title: 'Q&A',
         anonymous: args.anonymous,
         search: args.search,
-        maxQuestions: args.maxQuestions
+        maxQuestions: args.maxQuestions || 10,
+        moderation: args.moderation
       }
 
       await apps.saveAppSettings(app, settings)

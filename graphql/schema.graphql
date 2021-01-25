@@ -20,6 +20,7 @@ type Config {
   anonymous: Boolean
   search: Boolean
   maxQuestions: Int
+  moderation: Boolean
 }
 
 type Mutation {
@@ -45,7 +46,7 @@ type Mutation {
   moderateAnswer(answerId: ID): String
   deleteQuestion(id: ID): Boolean
   deleteAnswer(id: ID): Boolean
-  saveSettings(title: String, anonymous: Boolean, search: Boolean, maxQuestions: Int): Boolean
+  saveSettings(title: String, anonymous: Boolean, search: Boolean, maxQuestions: Int, moderation: Boolean): Boolean
 }
 
 type Question {

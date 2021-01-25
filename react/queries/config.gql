@@ -4,5 +4,6 @@ query Config {
     anonymous
     search
     maxQuestions
+    moderation
   }
 }

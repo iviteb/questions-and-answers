@@ -28,6 +28,7 @@ import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
 import storageFactory from './utils/storage'
 import styles from './qnastyle.css'
+import { settings } from 'cluster'
 
 const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon'] as const
 let timeout: any = null
@@ -632,6 +633,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                   name,
                                   email,
                                   anonymous: answerAnonymousCheck,
+                                  allowed: !config.moderation
                                 },
                               })
                             }}
@@ -843,6 +845,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       name,
                       email,
                       anonymous: anonymousCheck,
+                      allowed: !config.moderation
                     },
                   })
                 }}
