@@ -36,5 +36,20 @@
   "admin-example.navigation.table.search.kws": "tabela, mock, test, tchau",
   "admin-example.hello-world": "Admin de ejemplo",
   "admin/question.menu.label": "Questions and Answers",
-  "admin/question.menu.keywords": "Questions, Answers, Q&A"
+  "admin/question.menu.keywords": "Questions, Answers, Q&A",
+  "admin/questions.settings.label": "",
+  "admin/questions.max-questions.label": "",
+  "admin/questions.anonymous.label": "",
+  "admin/questions.moderation.label": "",
+  "admin/questions.save.label": "",
+  "admin/questions.pending-questions.label": "",
+  "admin/questions.pending-answers.label": "",
+  "admin/questions.tab.pending.label": "",
+  "admin/questions.tab.approved-questions.label": "",
+  "admin/questions.tab.approved-answers.label": "",
+  "admin/questions.search.label": "",
+  "admin/questions.modal.max-questions.help": "",
+  "admin/questions.modal.anonymous.help": "",
+  "admin/questions.modal.moderation.help": "",
+  "admin/questions.modal.search.help": ""
 }

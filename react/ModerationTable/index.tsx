@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { FC, useState, useContext, Fragment } from 'react'
 import { compose, graphql, useLazyQuery, useMutation } from 'react-apollo'
-import { injectIntl } from 'react-intl'
+import { injectIntl, defineMessages } from 'react-intl'
 import { Table, Checkbox, Tab, Tabs, Input, Button, Modal, IconCog, ButtonWithIcon } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
@@ -12,7 +12,7 @@ import SAVE_SETTINGS from '../queries/saveSettings.gql'
 import QUERY_CONFIG from '../queries/config.gql'
 
 
-const ModerationTable: FC<any> = ({data: {config}}) => {
+const ModerationTable: FC<any> = ({data: {config}, intl}) => {
   const [state, setState] = useState<any>({
     questionCheck: {},
     answerCheck: {},
@@ -32,7 +32,6 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
   })
 
   const {
-    questionCheck,
     questionUpdate,
     answerCheck,
     answerUpdate,
@@ -50,6 +49,69 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
   } = state
 
   const cog = <IconCog />
+  const messages = defineMessages({
+    settings: {
+      id: 'admin/questions.settings.label',
+      defaultMessage: 'Settings',
+    },
+    maxQuestions: {
+      id: 'admin/questions.max-questions.label',
+      defaultMessage: 'Max Number of Questions',
+    },
+    anonymous: {
+      id: 'admin/questions.anonymous.label',
+      defaultMessage: 'Allow Anonymous',
+    },
+    search: {
+      id: 'admin/questions.search.label',
+      defaultMessage: 'Allow Search',
+    },
+    moderation: {
+      id: 'admin/questions.moderation.label',
+      defaultMessage: 'Allow Moderation',
+    },
+    save: {
+      id: 'admin/questions.save.label',
+      defaultMessage: 'Save',
+    },
+    pendingQuestions: {
+      id: 'admin/questions.pending-questions.label',
+      defaultMessage: 'Pending Questions',
+    },
+    pendingAnswers: {
+      id: 'admin/questions.pending-answers.label',
+      defaultMessage: 'Pending Answers',
+    },
+    pending: {
+      id: 'admin/questions.tab.pending.label',
+      defaultMessage: 'Pending',
+    },
+    approvedQuestions: {
+      id: 'admin/questions.tab.approved-questions.label',
+      defaultMessage: 'Approved Questions',
+    },
+    approvedAnswers: {
+      id: 'admin/questions.tab.approved-answers.label',
+      defaultMessage: 'Approved Answers',
+    },
+    helpMaxQuestions: {
+      id: 'admin/questions.modal.max-questions.help',
+      defaultMessage: 'Sets a maximum number of questions per page',
+    },
+    helpAnonymous: {
+      id: 'admin/questions.modal.anonymous.help',
+      defaultMessage: 'Allows users to ask and answer questions without showing their names',
+    },
+    helpModeration: {
+      id: 'admin/questions.modal.moderation.help',
+      defaultMessage: 'Require administrator approval before newly submitted questions or answers are displayed',
+    },
+    helpSearch: {
+      id: 'admin/questions.modal.search.help',
+      defaultMessage: 'Allows users to search through previously asked questions',
+    }
+  })
+
 
   const [
     getAllQuestions,
@@ -312,7 +374,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
   console.log('answersData =>', answersData)
   console.log('state =>', state)
 
-  console.log('approvedQuestions =>', approvedQuestions)
+  console.log('pendingQuestions =>', pendingQuestions)
   console.log('questionUpdate =>', questionUpdate)
 
   return (
@@ -322,7 +384,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
           icon={cog}
           variation="secondary"
         >
-          Settings
+          {intl.formatMessage(messages.settings)}
       </ButtonWithIcon>
 
       <Modal
@@ -336,9 +398,10 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
         <div className="mt7">
           <Input
             size="small"
-            label="Max Number of Questions"
+            label={intl.formatMessage(messages.maxQuestions)}
             value={maxQuestions || 10}
             type="number"
+            helpText={intl.formatMessage(messages.helpMaxQuestions)}
             onChange={(e: any) =>
               setState({ ...state, maxQuestions: +e.target.value })
             }
@@ -348,34 +411,40 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
           <Checkbox
             id="anonymous-option"
             name="anonymous-option"
-            label="Allow Anonymous"
+            label={intl.formatMessage(messages.anonymous)}
             checked={allowAnonymous}
             onChange={() => {
               setState({...state, allowAnonymous: !allowAnonymous})
             }}
           />
         </div>
+        <p className="t-small c-muted-1 mw9">{intl.formatMessage(messages.helpAnonymous)}</p>
+
         <div className="mt4">
           <Checkbox
             id="search-option"
             name="search-option"
-            label="Allow Search"
+            label={intl.formatMessage(messages.search)}
             checked={allowSearch}
             onChange={() => {
               setState({...state, allowSearch: !allowSearch})
             }}
           />
+        <p className="t-small c-muted-1 mw9">{intl.formatMessage(messages.helpSearch)}</p>
+
         <div className="mt4">
           <Checkbox
             id="moderation-option"
             name="moderation-option"
-            label="Allow Moderation"
+            label={intl.formatMessage(messages.moderation)}
             checked={allowModeration}
             onChange={() => {
               setState({...state, allowModeration: !allowModeration})
             }}
           />
         </div>
+        <p className="t-small c-muted-1 mw9">{intl.formatMessage(messages.helpModeration)}</p>
+
         </div>
         <div className="mt6">
           <Button
@@ -392,7 +461,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
               })
             }}
           >
-            Save
+            {intl.formatMessage(messages.save)}
           </Button>
         </div>
       </Modal>
@@ -400,12 +469,12 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
       <div className="mt6">
         <Tabs>
           <Tab
-            label="Pending"
+            label={intl.formatMessage(messages.pending)}
             active={currentTab === 1}
             onClick={() => setState({ ...state, currentTab: 1 })}
           >
             <div className="mt8">
-              <h3>Pending Questions</h3>
+              <h3>{intl.formatMessage(messages.pendingQuestions)}</h3>
               <Table
                 fullWidth
                 updateTableKey={questionUpdate}
@@ -416,7 +485,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
             </div>
 
             <div className="mt8">
-              <h3>Pending Answers</h3>
+              <h3>{intl.formatMessage(messages.pendingAnswers)}</h3>
               <Table
                 fullWidth
                 updateTableKey={answerUpdate}
@@ -427,7 +496,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
             </div>
           </Tab>
           <Tab
-            label="Approved Questions"
+            label={intl.formatMessage(messages.approvedQuestions)}
             active={currentTab === 2}
             onClick={() => setState({ ...state, currentTab: 2 })}
           >
@@ -441,7 +510,7 @@ const ModerationTable: FC<any> = ({data: {config}}) => {
           </Tab>
 
           <Tab
-            label="Approved Answers"
+            label={intl.formatMessage(messages.approvedAnswers)}
             active={currentTab === 3}
             onClick={() => setState({ ...state, currentTab: 3 })}
           >

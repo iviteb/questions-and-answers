@@ -344,7 +344,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       )}
 
       {loadingQuestions && <Spinner />}
-      {!loadingQuestions && questionList?.length && (
+      {!loadingQuestions && !!questionList?.length && (
         <div className={handles.questionsList}>
           {questionList.map((row: any) => {
             return (

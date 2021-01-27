@@ -29,6 +29,19 @@
   "admin/question.menu.label": "admin/question.menu.label",
   "admin/question.menu.keywords": "admin/question.menu.keywords",
   "admin/question.menu.title": "Questions and Answers",
-  "admin-example.hello-world": "",
-  "appframe.navigation.example": ""
+  "admin/questions.settings.label": "admin/questions.settings.label",
+  "admin/questions.max-questions.label": "admin/questions.max-questions.label",
+  "admin/questions.anonymous.label": "admin/questions.anonymous.label",
+  "admin/questions.moderation.label": "admin/questions.moderation.label",
+  "admin/questions.save.label": "admin/questions.save.label",
+  "admin/questions.pending-questions.label": "admin/questions.pending-questions.label",
+  "admin/questions.pending-answers.label": "admin/questions.pending-answers.label",
+  "admin/questions.tab.pending.label": "admin/questions.tab.pending.label",
+  "admin/questions.tab.approved-questions.label": "admin/questions.tab.approved-questions.label",
+  "admin/questions.tab.approved-answers.label": "admin/questions.tab.approved-answers.label",
+  "admin/questions.search.label": "admin/questions.search.label",
+  "admin/questions.modal.max-questions.help": "admin/questions.modal.max-questions.help",
+  "admin/questions.modal.anonymous.help": "admin/questions.modal.anonymous.help",
+  "admin/questions.modal.moderation.help": "admin/questions.modal.moderation.help",
+  "admin/questions.modal.search.help": "admin/questions.modal.search.help"
 }

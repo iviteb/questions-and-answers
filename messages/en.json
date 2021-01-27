@@ -36,5 +36,20 @@
   "admin/question.menu.title": "Questions and Answers",
   "admin-example.hello-world": "Example Admin",
   "admin/question.menu.label": "Questions and Answers",
-  "admin/question.menu.keywords": "Questions, Answers, Q&A"
+  "admin/question.menu.keywords": "Questions, Answers, Q&A",
+  "admin/questions.settings.label": "Settings",
+  "admin/questions.max-questions.label": "Max Number of Questions",
+  "admin/questions.anonymous.label": "Allow Anonymous",
+  "admin/questions.moderation.label": "Allow Moderation",
+  "admin/questions.save.label": "Save",
+  "admin/questions.pending-questions.label": "Pending Questions",
+  "admin/questions.pending-answers.label": "Pending Answers",
+  "admin/questions.tab.pending.label": "Pending",
+  "admin/questions.tab.approved-questions.label": "Approved Questions",
+  "admin/questions.tab.approved-answers.label": "Approved Answers",
+  "admin/questions.search.label": "Allow Search",
+  "admin/questions.modal.max-questions.help": "Sets a maximum number of questions per page",
+  "admin/questions.modal.anonymous.help": "Allows users to ask and answer questions without showing their names",
+  "admin/questions.modal.moderation.help": "Require administrator approval before newly submitted questions or answers are displayed",
+  "admin/questions.modal.search.help": "Allows users to search through previously asked questions"
 }
