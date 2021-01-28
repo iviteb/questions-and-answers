@@ -64,11 +64,11 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
     },
     search: {
       id: 'admin/questions.search.label',
-      defaultMessage: 'Allow Search',
+      defaultMessage: 'Show Search Bar',
     },
     moderation: {
       id: 'admin/questions.moderation.label',
-      defaultMessage: 'Allow Moderation',
+      defaultMessage: 'Require Admin Approval',
     },
     save: {
       id: 'admin/questions.save.label',

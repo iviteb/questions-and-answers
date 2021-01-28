@@ -128,7 +128,7 @@ export const resolvers = {
         anonymous: false,
         search: true,
         maxQuestions: 10,
-        moderation: true
+        moderation: false
       }
 
       if(!settings.title) {
