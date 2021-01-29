@@ -1,6 +1,11 @@
 {
   "section": "products",
-  "titleId": "admin/question.menu.label",
-  "searchKeyWordsHelpers": "admin/question.menu.keywords",
-  "path": "/admin/qna"
+  "subSection": "catalog",
+  "subSectionItems": [
+    {
+      "labelId": "admin/question.menu.label",
+      "searchKeyWordsHelpers": "admin/question.menu.keywords",
+      "path": "/admin/qna"
+    }
+  ]
 }
