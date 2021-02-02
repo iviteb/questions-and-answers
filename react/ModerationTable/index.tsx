@@ -10,6 +10,7 @@ import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
 import SAVE_SETTINGS from '../queries/saveSettings.gql'
 import QUERY_CONFIG from '../queries/config.gql'
+import ItemTable from './ItemTable'
 
 
 const ModerationTable: FC<any> = ({data: {config}, intl}) => {
@@ -482,6 +483,14 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
                 density="low"
                 schema={questionSchema}
               />
+              {/* <ItemTable
+                onChange={() => setState({...state, questionUpdate: Math.random().toString(36).substring(7)})}
+                initialState={{
+                  tableKey: questionUpdate,
+                  items: pendingQuestions,
+                  schema: questionSchema
+                }}
+              /> */}
             </div>
 
             <div className="mt8">

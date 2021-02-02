@@ -105,13 +105,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     addQuestion,
     { loading: addLoading, called: questionCalled, error: questionError },
   ] = useMutation(ADD_QUESTION, {
-    onCompleted: (questionId) => {
+    onCompleted: (questionRes) => {
       const newQuestionList = questionList
       newQuestionList.push({
         name,
         email,
         question,
-        id: questionId,
+        id: questionRes.addQuestion,
         anonymous: anonymousCheck,
         votes: 0,
         allowed: true
@@ -124,17 +124,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     addAnswer,
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER, {
-    onCompleted: (answerId) => {
+    onCompleted: (answerRes) => {
+      console.log("answerRes =>", answerRes)
       const newQuestionList = questionList.map((q:any) => {
         if (q.id === currentQuestion.id) {
           if (!q.answers) {
             q.answers = []
           }
+          console.log("q.id =>", q.id)
           q.answers.push({
             name,
             email,
             answer,
-            id: answerId,
+            id: answerRes.addAnswer,
             anonymous: answerAnonymousCheck,
             votes: 0,
             allowed: true,
@@ -626,6 +628,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             className={styles['submit-answer-button']}
                             isLoading={ansLoading}
                             onClick={() => {
+                              console.log("current question =>", currentQuestion)
                               addAnswer({
                                 variables: {
                                   questionId: currentQuestion.id,
@@ -761,7 +764,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             <div className="question-email-container mt4">
               <Input
                 placeholder=""
-                helpText="Get notified when someone replies"
                 label={intl.formatMessage({
                   id: 'store/question.modal.email.label',
                   defaultMessage: 'Email',
