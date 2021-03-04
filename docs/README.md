@@ -21,7 +21,7 @@ Using your terminal, log in to the desired VTEX account and run the following co
 
 ### Declaring the app's blocks in your store theme
 
-Once the app is configured, place the `questions-and-answers` block in your Store Theme app.
+Once the app is configured, place the `questions-and-answers` block in your Store Theme app. This block can be added to the product page template, which will show a list of questions and answers related to a specific product.
 
 ## Modus Operandi
 
