@@ -19,6 +19,10 @@ Using your terminal, log in to the desired VTEX account and run the following co
 
 `vtex install vtex.questions-and-answers@0.x`
 
+### Declaring the app's blocks in your store theme
+
+Once the app is configured, place the `questions-and-answers` block in your Store Theme app.
+
 ## Modus Operandi
 
 The app may be configured to use a **moderation interface** where an administrator is responsible for approving the reviews before they are displayed on the store website.

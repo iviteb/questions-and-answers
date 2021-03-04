@@ -167,6 +167,8 @@ export const resolvers = {
         settings.schema = !schemaError
         settings.schemaVersion = !schemaError ? SCHEMA_VERSION : null
 
+        console.log(settings)
+
         await apps.saveAppSettings(app, settings)
       }
 
