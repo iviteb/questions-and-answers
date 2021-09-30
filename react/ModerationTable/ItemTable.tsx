@@ -21,6 +21,7 @@ const ItemTable: FC<WrappedComponentProps & any> = ({
     <div>
       <Table
         fullWidth
+        dynamicRowHeight
         updateTableKey={tableKey}
         items={items}
         density="low"

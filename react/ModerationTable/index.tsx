@@ -304,6 +304,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
       question: {
         title: 'Question',
         width: 400,
+        cellRenderer: ({cellData}: any) => (
+          <div className="ws-normal mv2">{cellData}</div>
+        )
       },
       name: {
         title: 'Name',
@@ -316,10 +319,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
       approved: {
         title: 'Approved',
         width: 100,
-        cellRenderer: (cellData: any) => {
-          const question = cellData.rowData
+        cellRenderer: ({rowData: question}: any) => {
           return (
-            <div>
+            <div className="">
               <Checkbox
                 checked={question.allowed}
                 id="question-option"
@@ -340,6 +342,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
       answer: {
         title: 'Answer',
         width: 400,
+        cellRenderer: ({cellData}: any) => (
+          <div className="ws-normal mv2">{cellData}</div>
+        )
       },
       name: {
         title: 'Name',
@@ -478,6 +483,7 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
               <h3>{intl.formatMessage(messages.pendingQuestions)}</h3>
               <Table
                 fullWidth
+                dynamicRowHeight
                 updateTableKey={questionUpdate}
                 items={pendingQuestions}
                 density="low"
@@ -497,6 +503,7 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
               <h3>{intl.formatMessage(messages.pendingAnswers)}</h3>
               <Table
                 fullWidth
+                dynamicRowHeight
                 updateTableKey={answerUpdate}
                 items={pendingAnswers}
                 density="low"
@@ -511,6 +518,7 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
           >
             <Table
               fullWidth
+              dynamicRowHeight
               updateTableKey={questionUpdate}
               items={approvedQuestions}
               density="low"
@@ -525,6 +533,7 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
           >
             <Table
               fullWidth
+              dynamicRowHeight
               updateTableKey={answerUpdate}
               items={approvedAnswers}
               density="low"
