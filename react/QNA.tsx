@@ -329,7 +329,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <h2 className={styles['qna-header']}>{config.title}</h2>
       </div>
 
-      {(config.search && questionList?.length < 2) && (
+      {(config.search && questionList?.length > 1) && (
         <div className="ma4">
           <InputSearch
             placeholder="Have a question? Search for answers"
