@@ -10,7 +10,7 @@ import MODERATE_QUESTION from '../queries/moderateQuestion.gql'
 import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
 import SAVE_SETTINGS from '../queries/saveSettings.gql'
 import QUERY_CONFIG from '../queries/config.gql'
-import ItemTable from './ItemTable'
+// import ItemTable from './ItemTable'
 
 
 const ModerationTable: FC<any> = ({data: {config}, intl}) => {
@@ -113,6 +113,7 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
     }
   })
 
+  const [modalData, setModalData] = useState(null)
 
   const [
     getAllQuestions,
@@ -304,9 +305,6 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
       question: {
         title: 'Question',
         width: 400,
-        cellRenderer: ({cellData}: any) => (
-          <div className="ws-normal mv2">{cellData}</div>
-        )
       },
       name: {
         title: 'Name',
@@ -342,9 +340,6 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
       answer: {
         title: 'Answer',
         width: 400,
-        cellRenderer: ({cellData}: any) => (
-          <div className="ws-normal mv2">{cellData}</div>
-        )
       },
       name: {
         title: 'Name',
@@ -483,7 +478,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
               <h3>{intl.formatMessage(messages.pendingQuestions)}</h3>
               <Table
                 fullWidth
-                dynamicRowHeight
+                onRowClick={({ rowData: { question } }: any) => {
+                  setModalData(question)
+                }}
                 updateTableKey={questionUpdate}
                 items={pendingQuestions}
                 density="low"
@@ -503,7 +500,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
               <h3>{intl.formatMessage(messages.pendingAnswers)}</h3>
               <Table
                 fullWidth
-                dynamicRowHeight
+                onRowClick={({ rowData: { answer } }: any) => {
+                  setModalData(answer)
+                }}
                 updateTableKey={answerUpdate}
                 items={pendingAnswers}
                 density="low"
@@ -518,7 +517,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
           >
             <Table
               fullWidth
-              dynamicRowHeight
+              onRowClick={({ rowData: { question } }: any) => {
+                setModalData(question)
+              }}
               updateTableKey={questionUpdate}
               items={approvedQuestions}
               density="low"
@@ -533,7 +534,9 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
           >
             <Table
               fullWidth
-              dynamicRowHeight
+              onRowClick={({ rowData: { answer } }: any) => {
+                setModalData(answer)
+              }}
               updateTableKey={answerUpdate}
               items={approvedAnswers}
               density="low"
@@ -542,6 +545,15 @@ const ModerationTable: FC<any> = ({data: {config}, intl}) => {
           </Tab>
         </Tabs>
       </div>
+      <Modal
+        centered
+        isOpen={modalData !== null}
+        onClose={() => setModalData(null)}
+      >
+        <p>
+          {modalData}
+        </p>
+      </Modal>
     </div>
   )
 }
