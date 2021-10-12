@@ -2,6 +2,8 @@ import { Service, ClientsConfig, ParamsContext, RecorderState, ServiceContext } 
 
 import { Clients } from './clients'
 import { resolvers } from './resolvers'
+import { getAnswers, updateMultipleAnswers } from './resolvers/answers'
+import { getQuestions, updateMultipleQuestions } from './resolvers/questions'
 
 const clients: ClientsConfig<Clients> = {
   implementation: Clients,
@@ -21,6 +23,17 @@ declare global {
 export default new Service<Clients, RecorderState, ParamsContext>({
   clients,
   graphql: {
-    resolvers,
+    resolvers: {
+      Mutation: {
+        ...resolvers.Mutation,
+        moderateQuestions: updateMultipleQuestions,
+        moderateAnswers: updateMultipleAnswers
+      },
+      Query: {
+        ...resolvers.Query,
+        questionsV2: getQuestions,
+        answersV2: getAnswers
+      }
+    }
   },
 })

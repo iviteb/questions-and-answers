@@ -1,5 +1,5 @@
-query GetAllQuestions{
-  allQuestions{
+query GetAllQuestions($filter: QuestionsFilter){
+  questionsV2(filter: $filter){
   	id
     question
     name

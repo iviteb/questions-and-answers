@@ -5,8 +5,28 @@ type Query {
     @cacheControl(scope: SEGMENT, maxAge: MEDIUM)
   search(keyword: String, productId: String): [Question] @cacheControl(scope: PRIVATE)
   config: Config @cacheControl(scope: PRIVATE)
+  questionsV2(filter: QuestionsFilter): [Question]
+  answersV2(filter: AnswersFilter): [Answer]
+
+  # deprecated
   allQuestions: [Question] @cacheControl(scope: PRIVATE maxAge: Medium)
+    @deprecated(
+      reason: "query was not flexible, use questionsV2"
+    )
   allAnswers: [Answer] @cacheControl(scope: PRIVATE maxAge: Medium)
+    @deprecated(
+      reason: "query was not flexible, use answersV2"
+    )
+}
+
+input QuestionsFilter {
+  productId: String
+  allowed: Boolean
+}
+
+input AnswersFilter {
+  questionId: String
+  allowed: Boolean
 }
 
 type Votes {
@@ -42,11 +62,32 @@ type Mutation {
   ): String
   voteQuestion(email: String, id: ID, vote: Int): Votes
   voteAnswer(email: String, id: ID, questionId: ID): Votes
-  moderateQuestion(id: ID): String
-  moderateAnswer(answerId: ID): String
   deleteQuestion(id: ID): Boolean
   deleteAnswer(id: ID): Boolean
   saveSettings(title: String, anonymous: Boolean, search: Boolean, maxQuestions: Int, moderation: Boolean): Boolean
+  moderateQuestions(input: ModerateQuestionsInput): Boolean
+  moderateAnswers(input: ModerateAnswersInput): Boolean
+
+  # deprecated
+  moderateQuestion(id: ID): String
+    @deprecated(
+      reason: "mutation could not handle multiple updates, use moderateQuestions"
+    )
+
+  moderateAnswer(answerId: ID): String
+    @deprecated(
+      reason: "mutation could not handle multiple updates, use moderateAnswers"
+    )
+}
+
+input ModerateQuestionsInput {
+  ids: [ID],
+  allowed: Boolean
+}
+
+input ModerateAnswersInput {
+  ids: [ID],
+  allowed: Boolean
 }
 
 type Question {

@@ -125,13 +125,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER, {
     onCompleted: (answerRes) => {
-      console.log("answerRes =>", answerRes)
       const newQuestionList = questionList.map((q:any) => {
         if (q.id === currentQuestion.id) {
           if (!q.answers) {
             q.answers = []
           }
-          console.log("q.id =>", q.id)
           q.answers.push({
             name,
             email,
@@ -282,10 +280,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     setState({ ...state, isAnswerModalOpen: false })
   }
 
-  console.log('Config =>', config)
-  console.log('Product =>', product)
-  console.log('questionsData =>', questionsData)
-  console.log('state =>', state)
 
   if (!config) return null
 
@@ -314,7 +308,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     return !!localStore.getItem(answerId)
   }
 
-  console.log('questionsData =>', questionsData)
 
   if (sessionResponse?.namespaces?.profile?.email?.value && !email) {
     setState({
@@ -627,8 +620,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                           <Button
                             className={styles['submit-answer-button']}
                             isLoading={ansLoading}
+                            disabled={!(answer && name && email)}
                             onClick={() => {
-                              console.log("current question =>", currentQuestion)
                               addAnswer({
                                 variables: {
                                   questionId: currentQuestion.id,
@@ -839,6 +832,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
               <Button
                 className={styles['submit-question-button']}
                 isLoading={addLoading}
+                disabled={!(question && name && email)}
                 onClick={() => {
                   addQuestion({
                     variables: {

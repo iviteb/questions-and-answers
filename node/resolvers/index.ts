@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.9'
+export const SCHEMA_VERSION = 'v0.9'
 const schemaQuestions = {
   properties: {
     productId: {
