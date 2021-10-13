@@ -11,6 +11,7 @@
   "dependencies": {
     "vtex.styleguide": "9.x",
     "vtex.product-context": "0.x",
+    "vtex.catalog-graphql": "1.x",
     "vtex.css-handles": "0.x",
     "vtex.render-runtime": "7.x"
   },
@@ -34,17 +35,6 @@
       "*"
     ]
   },
-  "settingsSchema": {
-    "title": "SMS Link Settings",
-    "type": "object",
-    "properties": {
-      "subscriptionEmailTemplate": {
-        "title": "Subscription Email Template ID",
-        "description": "Leave empty to keep questions notification subscription system disabled.",
-        "type": "string"
-      }
-    }
-  },
   "policies": [
     {
       "name": "update-app-settings"
@@ -56,6 +46,9 @@
       "name": "ADMIN_DS"
     },
     {
+      "name": "vtex.catalog-graphql:resolve-graphql"
+    },
+    {
       "name": "outbound-access",
       "attrs": {
         "host": "api.vtex.com",
@@ -65,8 +58,8 @@
     {
       "name": "outbound-access",
       "attrs": {
-        "host": "mailservice.vtex.com.br",
-        "path": "/api/mail-service/pvt/sendmail"
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/*"
       }
     }
   ],

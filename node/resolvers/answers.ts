@@ -1,7 +1,8 @@
 import { SCHEMA_VERSION } from "."
+import subscriptionMail from "../utils/subscriptionMail"
 
 export const getAnswers = async (
-  _: any,
+  parent: any,
   data: any,
   ctx: Context
 ): Promise<any> => {
@@ -14,9 +15,16 @@ export const getAnswers = async (
   } = data
 
   let where = []
+  let sort = 'createdIn DESC'
 
-  if(filter?.allowed !== null) {
+  if(filter?.allowed !== undefined) {
     where.push(`allowed=${filter.allowed}`)
+  }
+
+  if(parent?.id) {
+    where.push(`questionId=${parent.id}`)
+    where.push('allowed=true')
+    sort = 'votes DESC'
   }
 
   return masterdata.searchDocuments({
@@ -24,7 +32,7 @@ export const getAnswers = async (
     schema: SCHEMA_VERSION,
     fields: ['_all'],
     where: where.join(' AND '),
-    sort: 'createdIn DESC',
+    sort,
     pagination: {
       page: 1,
       pageSize: 99
@@ -56,7 +64,29 @@ export const updateMultipleAnswers = async(
   }))
 
   return Promise.all(updates)
-    .then(() => true)
+    .then(async () => {
+      if(allowed) {
+        // send email to all subscribers of answered questions
+        const questionIds = await masterdata.searchDocuments({
+          dataEntity: 'answer',
+          schema: SCHEMA_VERSION,
+          where: `id=${ids.join(" OR id=")}`,
+          fields: ['questionId'],
+          pagination: {
+            page: 1,
+            pageSize: 999
+          }
+        })
+
+        const uniqueQuestionIds = [...new Set(questionIds.map((i:any)=>i.questionId))]
+
+        uniqueQuestionIds.forEach(id => {
+          // no need to wait for mail sent
+          subscriptionMail(ctx,id)
+        });
+      }
+      return true
+    })
     .catch((errors) => {
       console.log(errors)
       return false

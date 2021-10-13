@@ -239,21 +239,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     })
   }
 
-  let answerArray: any = []
-
-  const createAnswerArray = (q: any) => {
-    if (showAllAnswers[q.id]) {
-      answerArray = q.answers
-    } else if (q.answers) {
-      const sortedAnswers = q.answers.reduce((prev: any, current: any) =>
-        prev.votes > current.votes ? prev : current
-      )
-      answerArray = [sortedAnswers]
-    } else {
-      answerArray = []
-    }
-  }
-
   const toggleShowAnswers = (questionId: any) => {
     if (showAllAnswers[questionId]) {
       const answers = showAllAnswers
@@ -266,12 +251,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     }
   }
 
-  const sortByVotes = (items: any) => {
-    items.sort((a: any, b: any) => {
-      return b.votes - a.votes
-    })
-  }
-
   const { product } = useContext(ProductContext) as any
 
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
@@ -281,7 +260,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   if (!ansLoading && answerCalled && !answerError && isAnswerModalOpen) {
     setState({ ...state, isAnswerModalOpen: false })
   }
-
 
   if (!config) return null
 
@@ -299,7 +277,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         return showAllQuestions ? true : index < 3
       }
     )
-    sortByVotes(newQuestionList)
     setState({
       ...state,
       questionList: newQuestionList,
@@ -431,8 +408,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       </div>
                     )}
                     <div className={styles['answer-items-container']}>
-                      {createAnswerArray(row)}
-                      {answerArray?.map((answerItem: any, index: any) => {
+                      {row.answers.map((answerItem: any, index: any) => {
                         return (
                           <div className={styles['answer-item']} key={index}>
                             <div className={styles['answer-item-text']}>
@@ -669,11 +645,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   size="regular"
                   variation="danger-tertiary"
                   onClick={() => {
-                    const sortedQuestions = sortByVotes(questionsData.questions)
                     setState({
                       ...state,
                       showAllQuestions: true,
-                      questionList: sortedQuestions,
+                      questionList: questionsData.questions,
                     })
                   }}
                 >
@@ -872,7 +847,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           </div>
         </Modal>
       </div>
-      {product.productId}
     </div>
   )
 }

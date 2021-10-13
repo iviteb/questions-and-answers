@@ -1,3 +1,17 @@
-mutation SaveSettings($title: String, $anonymous: Boolean, $search: Boolean, $maxQuestions: Int, $moderation: Boolean) {
-  saveSettings(title: $title, anonymous: $anonymous, search: $search, maxQuestions: $maxQuestions, moderation: $moderation)
+mutation SaveSettings(
+  $title: String,
+  $anonymous: Boolean,
+  $search: Boolean,
+  $maxQuestions: Int,
+  $moderation: Boolean,
+  $subscriptionEmailTemplate: String
+) {
+  saveSettings(
+    title: $title,
+    anonymous: $anonymous,
+    search: $search,
+    maxQuestions: $maxQuestions,
+    moderation: $moderation,
+    subscriptionEmailTemplate: $subscriptionEmailTemplate
+  )
 }

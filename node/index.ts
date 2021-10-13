@@ -34,6 +34,9 @@ export default new Service<Clients, RecorderState, ParamsContext>({
         ...resolvers.Query,
         questionsV2: getQuestions,
         answersV2: getAnswers
+      },
+      Question: {
+        answers: getAnswers
       }
     }
   },
