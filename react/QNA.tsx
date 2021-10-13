@@ -70,6 +70,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     showAllQuestions: false,
     showAllAnswers: {},
     search: '',
+    subscribeCheck: false,
   })
   const {
     isModalOpen,
@@ -85,8 +86,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     isAnswerModalOpen,
     answer,
     showAllQuestions,
-    answerAnonymousCheck,
+    subscribeCheck,
     questionList,
+    answerAnonymousCheck,
   } = state
 
   const [
@@ -767,6 +769,20 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 value={email}
                 required={true}
               />
+              <Checkbox
+                checked={subscribeCheck}
+                label={intl.formatMessage({
+                  id:
+                    'store/question.modal.question-subscribe-check.label',
+                  defaultMessage: 'Subscribe to answers',
+                })}
+                onChange={() =>
+                  setState({
+                    ...state,
+                    subscribeCheck: !subscribeCheck,
+                  })
+                }
+              />
             </div>
 
             <div className="mt4">
@@ -841,7 +857,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       name,
                       email,
                       anonymous: anonymousCheck,
-                      allowed: !config.moderation
+                      allowed: !config.moderation,
+                      subscribed: subscribeCheck
                     },
                   })
                 }}
@@ -855,6 +872,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
           </div>
         </Modal>
       </div>
+      {product.productId}
     </div>
   )
 }

@@ -48,6 +48,7 @@ type Mutation {
     question: String
     name: String
     email: String
+    subscribed: Boolean
     anonymous: Boolean
     allowed: Boolean
     productId: String!

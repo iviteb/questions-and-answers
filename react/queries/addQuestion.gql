@@ -1,3 +1,19 @@
-mutation AddQuestion($productId: String!, $question: String, $name: String, $email: String, $anonymous: Boolean, $allowed: Boolean) {
-  addQuestion(productId: $productId, question: $question, name: $name, email: $email, anonymous: $anonymous, allowed: $allowed)
+mutation AddQuestion(
+  $productId: String!,
+  $question: String,
+  $name: String,
+  $email: String,
+  $anonymous: Boolean,
+  $allowed: Boolean,
+  $subscribed: Boolean
+) {
+  addQuestion(
+    productId: $productId,
+    question: $question,
+    name: $name,
+    email: $email,
+    anonymous: $anonymous,
+    allowed: $allowed,
+    subscribed: $subscribed
+  )
 }

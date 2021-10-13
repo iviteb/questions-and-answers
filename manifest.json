@@ -2,7 +2,7 @@
   "name": "questions-and-answers",
   "vendor": "vtex",
   "version": "0.0.2",
-  "title": "Example Admin App",
+  "title": "Questions and Answers",
   "description": "",
   "mustUpdateAt": "2022-08-28",
   "scripts": {
@@ -34,6 +34,17 @@
       "*"
     ]
   },
+  "settingsSchema": {
+    "title": "SMS Link Settings",
+    "type": "object",
+    "properties": {
+      "subscriptionEmailTemplate": {
+        "title": "Subscription Email Template ID",
+        "description": "Leave empty to keep questions notification subscription system disabled.",
+        "type": "string"
+      }
+    }
+  },
   "policies": [
     {
       "name": "update-app-settings"
@@ -49,6 +60,13 @@
       "attrs": {
         "host": "api.vtex.com",
         "path": "/api/dataentities/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "mailservice.vtex.com.br",
+        "path": "/api/mail-service/pvt/sendmail"
       }
     }
   ],
