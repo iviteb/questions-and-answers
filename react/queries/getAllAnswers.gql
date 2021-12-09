@@ -1,5 +1,5 @@
-query GetAllAnswers{
-  allAnswers{
+query GetAllAnswers($filter: AnswersFilter){
+  answersV2(filter: $filter){
   	id
     answer
     name
