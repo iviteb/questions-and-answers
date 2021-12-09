@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import { Apps } from '@vtex/api'
+import subscriptionMail from '../utils/subscriptionMail'
 
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-export const SCHEMA_VERSION = 'v0.9'
+export const SCHEMA_VERSION = 'v0.10'
 const schemaQuestions = {
   properties: {
     productId: {
@@ -85,21 +86,43 @@ const schemaAnswers = {
   'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
+const schemaSubscriptions = {
+  properties: {
+    questionId: {
+      type: 'string',
+      title: 'Question ID',
+    },
+    email: {
+      type: 'string',
+      title: 'Email',
+    },
+  },
+  'v-indexed': ['email', 'questionId'],
+  'v-default-fields': ['email', 'questionId'],
+  'v-cache': false,
+}
 
 const routes = {
   baseUrl: (account: string) =>
     `http://${account}.vtexcommercestable.com.br/api`,
-    questionEntity: (account: string) =>
+
+  questionEntity: (account: string) =>
     `${routes.baseUrl(account)}/dataentities/qna`,
 
-    answerEntity: (account: string) =>
+  answerEntity: (account: string) =>
     `${routes.baseUrl(account)}/dataentities/answer`,
+
+  subscriptionsEntity: (account: string) =>
+    `${routes.baseUrl(account)}/dataentities/subscriptions`,
 
   saveSchemaQuestion: (account: string) =>
     `${routes.questionEntity(account)}/schemas/${SCHEMA_VERSION}`,
 
-    saveSchemaAnswer: (account: string) =>
+  saveSchemaAnswer: (account: string) =>
     `${routes.answerEntity(account)}/schemas/${SCHEMA_VERSION}`,
+
+  saveSchemaSubscriptions: (account: string) =>
+    `${routes.subscriptionsEntity(account)}/schemas/${SCHEMA_VERSION}`,
 
 }
 
@@ -121,6 +144,7 @@ export const resolvers = {
       const apps = new Apps(ctx.vtex)
       const app: string = getAppId()
       let settings = await apps.getAppSettings(app)
+      console.log("🚀 ~ file: index.ts ~ line 139 ~ config: ~ settings", settings)
       const defaultSettings = {
         schema: false,
         schemaVersion: null,
@@ -128,7 +152,8 @@ export const resolvers = {
         anonymous: false,
         search: true,
         maxQuestions: 10,
-        moderation: false
+        moderation: false,
+        subscriptionEmailTemplate: null
       }
 
       if(!settings.title) {
@@ -141,7 +166,7 @@ export const resolvers = {
         try {
           const url = routes.saveSchemaQuestion(account)
           const headers = defaultHeaders(authToken)
-
+          console.log("CREATING QUESTIONS SCHEMA")
           await hub.put(url, schemaQuestions, headers)
 
         } catch (e) {
@@ -153,9 +178,12 @@ export const resolvers = {
         if(!schemaError) {
           try {
             const url = routes.saveSchemaAnswer(account)
+            const urlSubscriptions = routes.saveSchemaSubscriptions(account)
             const headers = defaultHeaders(authToken)
+            console.log("CREATING OTHER SCHEMAS")
 
             await hub.put(url, schemaAnswers, headers)
+            await hub.put(urlSubscriptions, schemaSubscriptions, headers)
 
           } catch (e) {
             if(e.response.status >= 400) {
@@ -298,8 +326,28 @@ export const resolvers = {
         },
       } = ctx
 
-      return masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
+      const {
+        subscribed,
+        ...fields
+      } = args
+
+
+
+      return masterdata.createDocument({
+        dataEntity: 'qna',
+        fields,
+        schema: SCHEMA_VERSION,
         }).then((res: any) => {
+          console.log("🚀 ~ file: index.ts ~ line 339 ~ addQuestion: ~ res", res)
+          if(subscribed) {
+            masterdata.createDocument({
+              dataEntity: 'subscriptions',
+              fields: {
+                questionId: res.DocumentId,
+                email: fields.email
+              }
+            })
+          }
           return res.DocumentId
         }).catch((err: any) => {
           return err.response.message
@@ -309,13 +357,17 @@ export const resolvers = {
       const {
         clients: {
           masterdata,
-          hub
+          apps,
         },
-        vtex: {
-          account,
-          authToken
-        }
       } = ctx
+
+      const { moderation } = await apps.getAppSettings(
+        `${process.env.VTEX_APP_ID}`
+      )
+
+      if(!moderation) {
+        subscriptionMail(ctx, args.questionId)
+      }
 
       const result:any = await masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
@@ -323,25 +375,6 @@ export const resolvers = {
         }).catch((err: any) => {
           return err.response.message
         })
-
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.questionId,
-        fields: ['answers']
-      })
-
-      const answers = question.answers ?? []
-      answers.push({...args, id: result})
-
-      console.log(args)
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers
-      }, headers).then(() => {
-        return answers
-      }).catch(() => {
-        return answers
-      })
 
       return result
     },
@@ -363,7 +396,6 @@ export const resolvers = {
         fields: ['votes']
       })
       const votes:number = question?.votes ?? 0
-
       const newVote = votes + parseInt(args.vote, 10)
       const headers = defaultHeaders(authToken)
       const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
@@ -429,90 +461,6 @@ export const resolvers = {
       })
 
       return {votes: result, id: args.id}
-
-    },
-    moderateQuestion: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.id,
-        fields: ['allowed', 'id']
-      })
-
-      const allowed = !question.allowed
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: allowed
-      }, headers).then(() => {
-        return allowed
-      })
-
-      return args.id
-    },
-    moderateAnswer: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const answer:any = await masterdata.getDocument({
-        dataEntity: 'answer',
-        id: args.answerId,
-        fields: ['allowed','questionId']
-      })
-
-      const newAllowed = !answer.allowed
-
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.answerId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: newAllowed
-      }, headers).then(() => {
-        return newAllowed
-      })
-
-      const answers = await masterdata.searchDocuments({
-        dataEntity: 'answer',
-        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
-        sort: 'votes DESC',
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        where: `questionId=${answer.questionId}`,
-        schema: SCHEMA_VERSION,
-      })
-
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${answer.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers
-      }, headers).then((e) => {
-        console.log("contents =>", e)
-        return answers
-      }).catch((e) => {
-        console.log("error =>", e)
-        return answers
-      })
-
-      console.log("answer.id =>", answer.id)
-      console.log("args.id =>", args.answerId)
-
-      return args.answerId
-
     },
     deleteQuestion: (_:any, args: any, ctx: Context) => {
       const {
@@ -544,22 +492,17 @@ export const resolvers = {
 
     },
     saveSettings: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-
-        },
-      } = ctx
-
       const apps = new Apps(ctx.vtex)
       const app: string = getAppId()
-      let settings = {
-        schema: null,
+      const settings = {
+        schema: true,
         schemaVersion: SCHEMA_VERSION,
         title: 'Q&A',
         anonymous: args.anonymous,
         search: args.search,
         maxQuestions: args.maxQuestions || 10,
-        moderation: args.moderation
+        moderation: args.moderation,
+        subscriptionEmailTemplate: args.subscriptionEmailTemplate
       }
 
       await apps.saveAppSettings(app, settings)

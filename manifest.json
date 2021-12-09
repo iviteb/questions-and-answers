@@ -2,7 +2,7 @@
   "name": "questions-and-answers",
   "vendor": "vtex",
   "version": "0.0.2",
-  "title": "Example Admin App",
+  "title": "Questions and Answers",
   "description": "",
   "mustUpdateAt": "2022-08-28",
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "vtex.styleguide": "9.x",
     "vtex.product-context": "0.x",
+    "vtex.catalog-graphql": "1.x",
     "vtex.css-handles": "0.x",
     "vtex.render-runtime": "7.x"
   },
@@ -45,10 +46,20 @@
       "name": "ADMIN_DS"
     },
     {
+      "name": "vtex.catalog-graphql:resolve-graphql"
+    },
+    {
       "name": "outbound-access",
       "attrs": {
         "host": "api.vtex.com",
         "path": "/api/dataentities/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/*"
       }
     }
   ],

@@ -19,6 +19,10 @@ const messages = defineMessages({
     id: 'admin/questions.anonymous.label',
     defaultMessage: 'Allow Anonymous',
   },
+  subscriptionEmailTemplate: {
+    id: 'admin/questions.subscription.label',
+    defaultMessage: 'Question subscription email template',
+  },
   search: {
     id: 'admin/questions.search.label',
     defaultMessage: 'Show Search Bar',
@@ -55,6 +59,10 @@ const messages = defineMessages({
     id: 'admin/questions.modal.max-questions.help',
     defaultMessage: 'Sets a maximum number of questions per page',
   },
+  helpSubscriptionEmailTemplate: {
+    id: 'admin/questions.modal.subscription.help',
+    defaultMessage: 'Leave empty to keep questions notification subscription system disabled',
+  },
   helpAnonymous: {
     id: 'admin/questions.modal.anonymous.help',
     defaultMessage: 'Allows users to ask and answer questions without showing their names',
@@ -74,6 +82,7 @@ const SettingsTab = () => {
   const [state, setState] = useState<any>({
     maxQuestions: null,
     anonymous: null,
+    subscriptionEmailTemplate: null,
     search: null,
     moderation: null,
     isModalOpen: false
@@ -107,7 +116,8 @@ const SettingsTab = () => {
     anonymous,
     search,
     moderation,
-    title
+    title,
+    subscriptionEmailTemplate
   } = state
 
   return (
@@ -121,6 +131,18 @@ const SettingsTab = () => {
           helpText={intl.formatMessage(messages.helpMaxQuestions)}
           onChange={(e: any) =>
             setState({ ...state, maxQuestions: +e.target.value })
+          }
+        />
+      </div>
+      <div className="mt7">
+        <Input
+          size="small"
+          label={intl.formatMessage(messages.subscriptionEmailTemplate)}
+          value={subscriptionEmailTemplate || ''}
+          type="string"
+          helpText={intl.formatMessage(messages.helpSubscriptionEmailTemplate)}
+          onChange={(e: any) =>
+            setState({ ...state, subscriptionEmailTemplate: e.target.value })
           }
         />
       </div>
@@ -176,7 +198,8 @@ const SettingsTab = () => {
                 anonymous: anonymous,
                 search: search,
                 maxQuestions,
-                moderation: moderation
+                moderation: moderation,
+                subscriptionEmailTemplate
               },
             })
           }}

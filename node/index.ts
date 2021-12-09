@@ -1,9 +1,10 @@
-import { Service, ClientsConfig, ParamsContext, RecorderState, ServiceContext } from '@vtex/api'
+import { method, Service, ClientsConfig, ParamsContext, RecorderState, ServiceContext } from '@vtex/api'
 
 import { Clients } from './clients'
 import { resolvers } from './resolvers'
 import { getAnswers, updateMultipleAnswers } from './resolvers/answers'
 import { getQuestions, updateMultipleQuestions } from './resolvers/questions'
+import unsubscribeFromQuestion from './middleware/unsubscribeFromQuestion'
 
 const clients: ClientsConfig<Clients> = {
   implementation: Clients,
@@ -33,7 +34,15 @@ export default new Service<Clients, RecorderState, ParamsContext>({
         ...resolvers.Query,
         questionsV2: getQuestions,
         answersV2: getAnswers
+      },
+      Question: {
+        answers: getAnswers
       }
     }
   },
+  routes: {
+    unsubscribeFromQuestion: method({
+      GET: [unsubscribeFromQuestion],
+    }),
+  }
 })

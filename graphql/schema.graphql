@@ -41,6 +41,7 @@ type Config {
   search: Boolean
   maxQuestions: Int
   moderation: Boolean
+  subscriptionEmailTemplate: String
 }
 
 type Mutation {
@@ -48,6 +49,7 @@ type Mutation {
     question: String
     name: String
     email: String
+    subscribed: Boolean
     anonymous: Boolean
     allowed: Boolean
     productId: String!
@@ -64,11 +66,15 @@ type Mutation {
   voteAnswer(email: String, id: ID, questionId: ID): Votes
   deleteQuestion(id: ID): Boolean
   deleteAnswer(id: ID): Boolean
-  saveSettings(title: String, anonymous: Boolean, search: Boolean, maxQuestions: Int, moderation: Boolean): Boolean
   moderateQuestions(input: ModerateQuestionsInput): Boolean
   moderateAnswers(input: ModerateAnswersInput): Boolean
 
   # deprecated
+  saveSettings(title: String, anonymous: Boolean, search: Boolean, maxQuestions: Int, moderation: Boolean, subscriptionEmailTemplate: String): Boolean
+    @deprecated(
+      reason: "unnecessary method, use native vtex app settings; will be removed in next major"
+    )
+
   moderateQuestion(id: ID): String
     @deprecated(
       reason: "mutation could not handle multiple updates, use moderateQuestions"
