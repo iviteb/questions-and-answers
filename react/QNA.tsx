@@ -30,7 +30,8 @@ import storageFactory from './utils/storage'
 import styles from './qnastyle.css'
 import { settings } from 'cluster'
 
-const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon'] as const
+const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions',
+                     'lessQuestions', 'answerHelpful', 'thumbsIconContainer', 'questionAnswerContainer'] as const
 let timeout: any = null
 const localStore = storageFactory(() => sessionStorage)
 
@@ -376,7 +377,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   </div>
                 </div>
 
-                <div className={styles['question-answer-container']}>
+                <div className={`${handles.questionAnswerContainer}`}>
                   <div className={styles['question-container']}>
                     <div className={styles['question-label']}>
                       <FormattedMessage
@@ -427,7 +428,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             >
                               {(answerItem.votes ||
                                 ansVotes[answerItem.id]) && (
-                                <div className="mt4">
+                                <div className={`${handles.answerHelpful} mt4`}>
                                   {ansVotes[answerItem.id] || answerItem.votes}{' '}
                                   <FormattedMessage
                                     id="store/question.answer-helpful.text"
@@ -441,7 +442,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                 </div>
                               )}
 
-                              <div className="mt3">
+                              <div className={`${handles.thumbsIconContainer} mt3`}>
                                 <Button
                                   size="small"
                                   variation="tertiary"
@@ -496,7 +497,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     </div>
                   )}
 
-                  <div className="open-answer-modal-container ma6">
+                  <div className={`${handles.openAnswerModalContainer} open-answer-modal-container ma6`}>
                     <Button
                       onClick={() => {
                         updateCurrentQuestion(row)
@@ -640,7 +641,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             !search &&
             questionsData?.questions.length > 3 &&
             questionList.length !== questionsData.questions.length && (
-              <div className="ml8">
+              <div className={`${handles.moreQuestions} ml8`}>
                 <Button
                   size="regular"
                   variation="danger-tertiary"
@@ -661,7 +662,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             )}
 
           {showAllQuestions && !search && (
-            <div className="ml8">
+            <div className={`${handles.lessQuestions} ml8`}>
               <Button
                 size="regular"
                 variation="danger-tertiary"
