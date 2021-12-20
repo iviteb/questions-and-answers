@@ -30,8 +30,8 @@ import storageFactory from './utils/storage'
 import styles from './qnastyle.css'
 import { settings } from 'cluster'
 
-const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions',
-                     'lessQuestions', 'answerHelpful', 'thumbsIconContainer', 'questionAnswerContainer'] as const
+const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions','lessQuestions', 'answerHelpful',
+                     'thumbsIconContainer', 'questionAnswerContainer', 'qnaMainContainer', 'qnaTitle', 'qnaSearchBar', 'showAnswers', 'answerItemText'] as const
 let timeout: any = null
 const localStore = storageFactory(() => sessionStorage)
 
@@ -312,13 +312,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   return (
-    <div className="ma4">
-      <div className="ma4">
+    <div className={`${handles.qnaMainContainer} ma4`}>
+      <div className={`${handles.qnaTitle} ma4`}>
         <h2 className={styles['qna-header']}>{config.title}</h2>
       </div>
 
       {(config.search && questionList?.length >= 1) && (
-        <div className="ma4">
+        <div className={`${handles.qnaSearchBar} ma4`}>
           <InputSearch
             placeholder="Have a question? Search for answers"
             value={search}
@@ -428,7 +428,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       {answerArray?.map((answerItem: any, index: any) => {
                         return (
                           <div className={styles['answer-item']} key={index}>
-                            <div className={styles['answer-item-text']}>
+                            <div className={`${handles.answerItemText}`}>
                               {answerItem.answer}
                             </div>
                             <div className={styles['answer-item-info']}>
@@ -492,7 +492,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   </div>
 
                   {hideAnswerButton(row) && (
-                    <div className="ml6 mt4">
+                    <div className={`${handles.showAnswers} ml6 mt4`}>
                       <Button
                         size="small"
                         variation="tertiary"
