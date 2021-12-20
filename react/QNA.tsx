@@ -240,19 +240,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     })
   }
 
-  let answerArray: any = []
-
-  const createAnswerArray = (q: any) => {
-    if (showAllAnswers[q.id]) {
-      answerArray = q.answers
-    } else if (q.answers && q.answers.length) {
-      const sortedAnswers = q.answers.reduce((prev: any, current: any) =>
-        prev.votes > current.votes ? prev : current
-      )
-      answerArray = [sortedAnswers]
-    } else {
-      answerArray = []
+  const getAnswers = (row: any) => {
+    if (showAllAnswers[row.id] != undefined) {
+      return showAllAnswers[row.id] ? row.answers : Array.of(row.answers[0]) 
     }
+    return row.answers.length > 0 ? Array.of(row.answers[0]) : row.answers
   }
 
   const toggleShowAnswers = (questionId: any) => {
@@ -320,7 +312,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       {(config.search && questionList?.length >= 1) && (
         <div className={`${handles.qnaSearchBar} ma4`}>
           <InputSearch
-            placeholder="Have a question? Search for answers"
+            placeholder={intl.formatMessage({id: 'store/question.search.placeholder'})}
             value={search}
             size="regular"
             onChange={(e: any) => {
@@ -424,8 +416,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       </div>
                     )}
                     <div className={styles['answer-items-container']}>
-                      {createAnswerArray(row)}
-                      {answerArray?.map((answerItem: any, index: any) => {
+                      {getAnswers(row).map((answerItem: any, index: any) => {
                         return (
                           <div className={styles['answer-item']} key={index}>
                             <div className={`${handles.answerItemText}`}>
