@@ -1,34 +1,25 @@
 /* eslint-disable no-console */
-import React, { FC, useContext, useState, useEffect } from 'react'
-import { compose, graphql, useMutation, useLazyQuery } from 'react-apollo'
-import { injectIntl } from 'react-intl'
-import { FormattedMessage } from 'react-intl'
+import React, { FC, useContext, useEffect, useState } from 'react'
+import { compose, graphql, useLazyQuery, useMutation } from 'react-apollo'
+import { FormattedMessage, injectIntl } from 'react-intl'
+import { useCssHandles } from 'vtex.css-handles'
 import { ProductContext } from 'vtex.product-context'
 import {
-  Button,
-  Modal,
+  Button, ButtonWithIcon, Checkbox, IconCaretDown, IconCaretUp, Input, InputSearch, Modal,
   Spinner,
-  Textarea,
-  Input,
-  Checkbox,
-  ButtonWithIcon,
-  IconCaretUp,
-  IconCaretDown,
-  InputSearch,
+  Textarea
 } from 'vtex.styleguide'
-import { useCssHandles } from 'vtex.css-handles'
-
 import { getSession } from './modules/session'
-import QUERY_CONFIG from './queries/config.gql'
-import ADD_QUESTION from './queries/addQuestion.gql'
+import styles from './qnastyle.css'
 import ADD_ANSWER from './queries/addAnswer.gql'
-import VOTE_QUESTION from './queries/voteQuestion.gql'
-import VOTE_ANSWER from './queries/voteAnswer.gql'
+import ADD_QUESTION from './queries/addQuestion.gql'
+import QUERY_CONFIG from './queries/config.gql'
 import QUERY_GET_QUESTIONS from './queries/getQuestions.gql'
 import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
+import VOTE_ANSWER from './queries/voteAnswer.gql'
+import VOTE_QUESTION from './queries/voteQuestion.gql'
 import storageFactory from './utils/storage'
-import styles from './qnastyle.css'
-import { settings } from 'cluster'
+
 
 const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions','lessQuestions', 'answerHelpful',
                      'thumbsIconContainer', 'questionAnswerContainer', 'qnaMainContainer', 'qnaTitle', 'qnaSearchBar', 'showAnswers', 'answerItemText'] as const
@@ -128,7 +119,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER, {
     onCompleted: (answerRes) => {
-      const newQuestionList = questionList.map((q:any) => {
+      const newQuestionList = questionList?.map((q:any) => {
         if (q.id === currentQuestion.id) {
           if (!q.answers) {
             q.answers = []
@@ -242,9 +233,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const getAnswers = (row: any) => {
     if (showAllAnswers[row.id] != undefined) {
-      return showAllAnswers[row.id] ? row.answers : Array.of(row.answers[0]) 
+      return showAllAnswers[row.id] ? row?.answers : Array.of(row?.answers[0])
     }
-    return row.answers.length > 0 ? Array.of(row.answers[0]) : row.answers
+    return row?.answers?.length > 0 ? Array.of(row.answers[0]) : row.answers
   }
 
   const toggleShowAnswers = (questionId: any) => {
@@ -328,7 +319,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       {loadingQuestions && <Spinner />}
       {!loadingQuestions && !!questionList?.length && (
         <div className={handles.questionsList}>
-          {questionList.map((row: any) => {
+          {questionList?.map((row: any) => {
             return (
               <div key={row.id} className={styles['votes-question-container']}>
                 <div className={styles.votes}>
@@ -416,7 +407,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       </div>
                     )}
                     <div className={styles['answer-items-container']}>
-                      {getAnswers(row).map((answerItem: any, index: any) => {
+                      {getAnswers(row)?.map((answerItem: any, index: any) => {
                         return (
                           <div className={styles['answer-item']} key={index}>
                             <div className={`${handles.answerItemText}`}>

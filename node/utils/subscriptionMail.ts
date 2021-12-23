@@ -9,7 +9,8 @@ const subscriptionMail = async (ctx: Context, questionId: string) => {
       catalogGraphQL
     },
     vtex: {
-      host
+      host,
+      production
     }
   } = ctx
 
@@ -42,8 +43,8 @@ const subscriptionMail = async (ctx: Context, questionId: string) => {
         const options = {
           toEmail: subscription.email,
           questionText: question,
-          productUrl: `https://${host}/${product.linkId}/p`,
-          unsubscribeUrl: `https://${host}/qna/unsubscribe/${subscription.id}`,
+          productUrl: production ? `https://f64.ro/${product.linkId}/p` : `https://${host}/${product.linkId}/p`,
+          unsubscribeUrl: production ? `https://f64.ro/qna/unsubscribe/${subscription.id}` : `https://${host}/qna/unsubscribe/${subscription.id}`,
         }
         mail.send(options, subscriptionEmailTemplate)
       });
