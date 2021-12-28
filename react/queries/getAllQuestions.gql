@@ -7,5 +7,9 @@ query GetAllQuestions($filter: QuestionsFilter){
     anonymous
     votes
     allowed
+    product {
+    	Name
+      LinkId
+    }
   }
 }

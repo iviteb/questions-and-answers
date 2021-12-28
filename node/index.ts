@@ -4,7 +4,9 @@ import { Clients } from './clients'
 import { resolvers } from './resolvers'
 import { getAnswers, updateMultipleAnswers } from './resolvers/answers'
 import { getQuestions, updateMultipleQuestions } from './resolvers/questions'
+import { getProduct } from './resolvers/product'
 import unsubscribeFromQuestion from './middleware/unsubscribeFromQuestion'
+import { getQuestion } from './resolvers/question'
 
 const clients: ClientsConfig<Clients> = {
   implementation: Clients,
@@ -36,8 +38,13 @@ export default new Service<Clients, RecorderState, ParamsContext>({
         answersV2: getAnswers
       },
       Question: {
-        answers: getAnswers
+        answers: getAnswers,
+        product: getProduct
+      },
+      Answer: {
+        question: getQuestion
       }
+      
     }
   },
   routes: {

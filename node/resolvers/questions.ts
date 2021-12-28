@@ -16,7 +16,7 @@ export const getQuestions = async (
   let where = []
 
   if(filter?.allowed !== null) {
-    where.push(`allowed=${filter.allowed}`)
+    where.push(`allowed=${filter?.allowed}`)
   }
 
   return masterdata.searchDocuments({

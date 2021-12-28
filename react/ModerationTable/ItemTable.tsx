@@ -11,7 +11,8 @@ const ItemTable = ({
   textPath,
   bulkActionLabel,
 }: any) => {
-  const [modalData, setModalData] = useState<boolean|null>(null)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [modalData, setModalData] = useState<any>({})
   const [items, setItems] = useState<any[]>([])
   const [selectedRowsState, setSelectedRowsState] = useState([])
   const variables = { filter }
@@ -42,7 +43,8 @@ const ItemTable = ({
         density="low"
         schema={{...schema}} // fix for having 2 tables with same schema
         onRowClick={({ rowData }: any) => {
-          setModalData(rowData[textPath])
+          setIsModalOpen(true)
+          setModalData(rowData)
         }}
         bulkActions={{
           selectedRows: selectedRowsState,
@@ -83,10 +85,24 @@ const ItemTable = ({
       />
       <Modal
         centered
-        isOpen={modalData !== null}
-        onClose={() => setModalData(null)}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setModalData({})
+        }}
       >
-        {modalData}
+          {textPath == "question" ? 
+            <div>
+              <p>Question:&nbsp;<b>{modalData[textPath]}</b></p>
+              <p>Product Name:&nbsp;<b>{modalData.product?.Name}</b></p>
+            </div>
+           :
+            <div>
+              <p>Answer:&nbsp;<b>{modalData[textPath]}</b></p>
+              <p>Question:&nbsp;<b>{modalData.question?.questionText}</b></p>
+              <p>Product Name:&nbsp;<b>{modalData.question?.product?.Name}</b></p>
+            </div>
+          }
       </Modal>
     </>
   )

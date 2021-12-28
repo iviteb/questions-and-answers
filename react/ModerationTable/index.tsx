@@ -14,6 +14,14 @@ const questionSchema = {
   properties: {
     question: {
       title: 'Question',
+      width: 150,
+    },
+    product: {
+      title: 'Product',
+      cellRenderer: (data: any) => {
+        const { origin } = window.location;
+        return (<a href={`${origin}/${data.cellData.LinkId}/p`} onClick={e => e.stopPropagation()} target="_blank">{data.cellData.Name}</a>)
+      }
     },
     name: {
       title: 'Name',
@@ -31,6 +39,25 @@ const answerSchema = {
     answer: {
       title: 'Answer',
     },
+
+    question: {
+      title: 'Question',
+      width: 250,
+      cellRenderer: (data: any) => {
+          const { origin } = window.location;
+          return (
+            <div>
+              <div>{data.cellData.questionText}</div>
+              <div>
+                <a href={`${origin}/${data.cellData.product.LinkId}/p`} onClick={e => e.stopPropagation()} target="_blank">
+                 {data.cellData.product.Name}
+                </a>
+              </div>
+            </div>
+          )
+      }
+    },
+
     name: {
       title: 'Name',
       width: 150,

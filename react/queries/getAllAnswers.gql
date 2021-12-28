@@ -8,5 +8,12 @@ query GetAllAnswers($filter: AnswersFilter){
     votes
     allowed
     questionId
+    question {
+      questionText
+      product {
+        Name
+        LinkId
+      }
+    }
   }
 }
