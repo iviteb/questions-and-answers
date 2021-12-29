@@ -9,7 +9,7 @@ query GetAllAnswers($filter: AnswersFilter){
     allowed
     questionId
     question {
-      questionText
+      question
       product {
         Name
         LinkId

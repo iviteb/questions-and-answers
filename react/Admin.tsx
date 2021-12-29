@@ -9,6 +9,7 @@ import './styles.global.css'
 const AdminExample: FC = () => {
   return (
     <Layout
+      fullWidth
       pageHeader={
         <PageHeader
           title={<FormattedMessage id="admin/question.menu.title" />}

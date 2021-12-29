@@ -90,17 +90,23 @@ const ItemTable = ({
           setIsModalOpen(false)
           setModalData({})
         }}
+        bottomBar={
+          <div className="nowrap c-muted-1 f6">
+            Produs: {modalData.question?.product?.Name || modalData.product?.Name}
+          </div>
+        }
       >
-          {textPath == "question" ? 
+          {textPath === "question" ?
             <div>
-              <p>Question:&nbsp;<b>{modalData[textPath]}</b></p>
-              <p>Product Name:&nbsp;<b>{modalData.product?.Name}</b></p>
+              <h3>Intrebare:</h3>
+              <p>{modalData[textPath]}</p>
             </div>
            :
             <div>
-              <p>Answer:&nbsp;<b>{modalData[textPath]}</b></p>
-              <p>Question:&nbsp;<b>{modalData.question?.questionText}</b></p>
-              <p>Product Name:&nbsp;<b>{modalData.question?.product?.Name}</b></p>
+              <h3>Intrebare:</h3>
+              <p>{modalData.question?.question}</p>
+              <h3>Raspuns:</h3>
+              <p>{modalData[textPath]}</p>
             </div>
           }
       </Modal>

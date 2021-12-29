@@ -118,15 +118,10 @@ type Answer {
   email: String
   anonymous: Boolean
   allowed: Boolean
-  question: QuestionProduct
+  question: Question
 }
 
 type Product {
   Name: String
   LinkId: String
-}
-
-type QuestionProduct {
-  questionText: String
-  product: Product
 }
