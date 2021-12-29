@@ -1,4 +1,5 @@
 import { SCHEMA_VERSION } from "."
+// import { getProduct } from "./product"
 
 export const getQuestions = async (
   _: any,
@@ -16,7 +17,7 @@ export const getQuestions = async (
   let where = []
 
   if(filter?.allowed !== null) {
-    where.push(`allowed=${filter.allowed}`)
+    where.push(`allowed=${filter?.allowed}`)
   }
 
   return masterdata.searchDocuments({
@@ -29,6 +30,22 @@ export const getQuestions = async (
       page: 1,
       pageSize: 99
     }
+  })
+}
+
+export const getQuestion = async (
+  parent: any,
+  _data: any,
+  ctx: Context
+): Promise<any> => {
+  const {
+      clients: { masterdata },
+  } = ctx
+
+  return masterdata.getDocument({
+      dataEntity: 'qna',
+      fields: ['_all'],
+      id: parent?.questionId,
   })
 }
 

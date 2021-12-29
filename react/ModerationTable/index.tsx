@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { FC, useState } from 'react'
 import { useIntl, defineMessages } from 'react-intl'
-import { Tab, Tabs } from 'vtex.styleguide'
+import { Tab, Tabs, Link } from 'vtex.styleguide'
 
 import GET_ALL_QUESTIONS from '../queries/getAllQuestions.gql'
 import GET_ALL_ANSWERS from '../queries/getAllAnswers.gql'
@@ -10,10 +10,27 @@ import MODERATE_ANSWER from '../queries/moderateAnswer.gql'
 import ItemTable from './ItemTable'
 import SettingsTab from './SettingsTab'
 
+const { origin: LOCATION_ORIGIN } = window.location;
+const preventPropagation = (e: any) => e.stopPropagation()
+
 const questionSchema = {
   properties: {
     question: {
       title: 'Question',
+    },
+    product: {
+      title: 'Product',
+      width: 250,
+      cellRenderer: ({cellData}: any) => (
+        <div onClick={preventPropagation}>
+          <Link
+            title={cellData.Name}
+            href={`${LOCATION_ORIGIN}/${cellData.LinkId}/p`}
+            target="_blank">
+            {cellData.Name}
+          </Link>
+        </div>
+      )
     },
     name: {
       title: 'Name',
@@ -30,6 +47,25 @@ const answerSchema = {
   properties: {
     answer: {
       title: 'Answer',
+    },
+    question: {
+      title: 'Question',
+      width: 250,
+      cellRenderer: ({cellData}: any) => cellData.question
+    },
+    product: {
+      title: 'Product',
+      width: 250,
+      cellRenderer: ({rowData: { question: { product } }}: any) => (
+        <div onClick={preventPropagation}>
+          <Link
+            title={product.Name}
+            href={`${LOCATION_ORIGIN}/${product.LinkId}/p`}
+            target="_blank">
+            {product.Name}
+          </Link>
+        </div>
+      )
     },
     name: {
       title: 'Name',

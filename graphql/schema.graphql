@@ -106,6 +106,7 @@ type Question {
   votes: Int
   allowed: Boolean
   productId: String
+  product: Product
 }
 
 type Answer {
@@ -117,4 +118,10 @@ type Answer {
   email: String
   anonymous: Boolean
   allowed: Boolean
+  question: Question
+}
+
+type Product {
+  Name: String
+  LinkId: String
 }

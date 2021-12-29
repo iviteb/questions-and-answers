@@ -743,20 +743,22 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 value={email}
                 required={true}
               />
-              <Checkbox
-                checked={subscribeCheck}
-                label={intl.formatMessage({
-                  id:
-                    'store/question.modal.question-subscribe-check.label',
-                  defaultMessage: 'Subscribe to answers',
-                })}
-                onChange={() =>
-                  setState({
-                    ...state,
-                    subscribeCheck: !subscribeCheck,
-                  })
-                }
-              />
+              <div className='mt4'>
+                <Checkbox
+                  checked={subscribeCheck}
+                  label={intl.formatMessage({
+                    id:
+                      'store/question.modal.question-subscribe-check.label',
+                    defaultMessage: 'Subscribe to answers',
+                  })}
+                  onChange={() =>
+                    setState({
+                      ...state,
+                      subscribeCheck: !subscribeCheck,
+                    })
+                  }
+                />
+              </div>
             </div>
 
             <div className="mt4">
