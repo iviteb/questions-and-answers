@@ -36,37 +36,21 @@ const ItemTable = ({
   const [updateItems] = useMutation(mutation)
 
   const nextStatusMain = (filterStatus:any) => {
-    let nextStatus;
-
     switch(filterStatus) {
-      case STATUS.PENDING: 
-        nextStatus = STATUS.APPROVED
-        break
-      case STATUS.REJECTED:
-        nextStatus = STATUS.APPROVED
-        break
       case STATUS.APPROVED:
-        nextStatus = STATUS.REJECTED
-        break
+        return STATUS.REJECTED
+      default:
+        return STATUS.APPROVED
     }
-    return nextStatus
   }
 
   const nextStatusOther = (filterStatus:any) => {
-    let nextStatus;
-
     switch(filterStatus) {
-      case STATUS.PENDING: 
-        nextStatus = STATUS.REJECTED
-        break
-      case STATUS.REJECTED:
-        nextStatus = STATUS.PENDING
-        break
-      case STATUS.APPROVED:
-        nextStatus = STATUS.PENDING
-        break
+      case STATUS.PENDING:
+        return STATUS.REJECTED
+      default:
+        return STATUS.PENDING
     }
-    return nextStatus
   }
 
   const updateSelectedItems = (selectedRows: any, nextStatus: (filterStatus: any) => string | undefined) => {
