@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Table, Modal } from 'vtex.styleguide'
 import { useMutation, useQuery } from 'react-apollo'
+import { STATUS } from '../utils/constants'
 
 
 const ItemTable = ({
@@ -10,6 +11,7 @@ const ItemTable = ({
   filter,
   textPath,
   bulkActionLabel,
+  otherActionLabel,
 }: any) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [modalData, setModalData] = useState<any>({})
@@ -33,6 +35,39 @@ const ItemTable = ({
 
   const [updateItems] = useMutation(mutation)
 
+  const nextStatusMain = (filterStatus:any) => {
+    let nextStatus;
+
+    switch(filterStatus) {
+      case STATUS.PENDING: 
+        nextStatus = STATUS.APPROVED
+        break
+      case STATUS.REJECTED:
+        nextStatus = STATUS.APPROVED
+        break
+      case STATUS.APPROVED:
+        nextStatus = STATUS.REJECTED
+        break
+    }
+    return nextStatus
+  }
+
+  const nextStatusOther = (filterStatus:any) => {
+    let nextStatus;
+
+    switch(filterStatus) {
+      case STATUS.PENDING: 
+        nextStatus = STATUS.REJECTED
+        break
+      case STATUS.REJECTED:
+        nextStatus = STATUS.PENDING
+        break
+      case STATUS.APPROVED:
+        nextStatus = STATUS.PENDING
+        break
+    }
+    return nextStatus
+  }
 
   return(
     <>
@@ -47,6 +82,12 @@ const ItemTable = ({
           setModalData(rowData)
         }}
         bulkActions={{
+          texts: {
+            secondaryActionsLabel: 'Other actions',
+            rowsSelected: (qty: any) => (
+              <React.Fragment>Selected rows: {qty}</React.Fragment>
+            ),
+          },
           selectedRows: selectedRowsState,
           onChange: ({selectedRows}: any) => setSelectedRowsState(selectedRows),
           main: {
@@ -58,7 +99,7 @@ const ItemTable = ({
                 variables: {
                   input: {
                     ids: selectedIds,
-                    allowed: !filter.allowed
+                    status: nextStatusMain(filter.status)
                   }
                 },
                 optimisticResponse: true,
@@ -81,6 +122,41 @@ const ItemTable = ({
               setSelectedRowsState([])
             },
           },
+          others: [
+            {
+              label: otherActionLabel,
+              isDangerous: true,
+              handleCallback: ({ selectedRows }: any) => {
+                const selectedIds = selectedRows.map((item: any) => item.itemId)
+  
+                updateItems({
+                  variables: {
+                    input: {
+                      ids: selectedIds,
+                      status: nextStatusOther(filter.status)
+                    }
+                  },
+                  optimisticResponse: true,
+                  update(cache) {
+                    const cachedData: any = cache.readQuery({ query, variables })
+                    const queryName = Object.keys(cachedData)[0]
+  
+                    cache.writeQuery({
+                      data: {
+                        [queryName]: [
+                          ...(cachedData[queryName].filter((item: any) => !selectedIds.includes(item.id) ))
+                        ]
+                      },
+                      query,
+                      variables
+                    })
+                  }
+  
+                })
+                setSelectedRowsState([])
+              },
+            }
+          ]
         }}
       />
       <Modal

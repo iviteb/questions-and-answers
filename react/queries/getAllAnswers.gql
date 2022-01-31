@@ -7,6 +7,7 @@ query GetAllAnswers($filter: AnswersFilter){
     anonymous
     votes
     allowed
+    status
     questionId
     question {
       question

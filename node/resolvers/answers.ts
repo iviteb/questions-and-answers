@@ -1,5 +1,6 @@
 import { SCHEMA_VERSION } from "."
 import subscriptionMail from "../utils/subscriptionMail"
+import { STATUS } from '../utils/constants'
 
 export const getAnswers = async (
   parent: any,
@@ -13,17 +14,17 @@ export const getAnswers = async (
   const {
     filter
   } = data
-
+ 
   let where = []
   let sort = 'createdIn DESC'
 
-  if(filter?.allowed !== undefined) {
-    where.push(`allowed=${filter.allowed}`)
+  if(filter?.status !== undefined) {
+    where.push(`status=${filter.status}`)
   }
 
   if(parent?.id) {
     where.push(`questionId=${parent.id}`)
-    where.push('allowed=true')
+    where.push('status=APPROVED')
     sort = 'votes DESC'
   }
 
@@ -47,7 +48,7 @@ export const updateMultipleAnswers = async(
 ): Promise<any> => {
   const {
     ids,
-    allowed
+    status
   } = data.input
 
   const {
@@ -59,13 +60,13 @@ export const updateMultipleAnswers = async(
     schema: SCHEMA_VERSION,
     id,
     fields: {
-      allowed
+      status
     }
   }))
 
   return Promise.all(updates)
     .then(async () => {
-      if(allowed) {
+      if(status === STATUS.APPROVED) {
         // send email to all subscribers of answered questions
         const questionIds = await masterdata.searchDocuments({
           dataEntity: 'answer',
