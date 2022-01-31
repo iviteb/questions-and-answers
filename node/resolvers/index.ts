@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { Apps } from '@vtex/api'
 import subscriptionMail from '../utils/subscriptionMail'
+import { STATUS } from '../utils/constants'
 
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
@@ -225,7 +226,7 @@ export const resolvers = {
         dataEntity: 'qna',
         fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'status', 'productId'],
         sort: 'votes DESC',
-        where: `productId=${args.productId} AND status=APPROVED`,
+        where: `productId=${args.productId} AND status=${STATUS.APPROVED}`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -254,7 +255,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `productId=${args.productId} AND question=*${args.keyword}*  AND status=APPROVED`,
+        where: `productId=${args.productId} AND question=*${args.keyword}*  AND status=${STATUS.APPROVED}`,
         schema: SCHEMA_VERSION,
       })
 
@@ -279,7 +280,7 @@ export const resolvers = {
           page: 1,
           pageSize: 99,
         },
-        where: `questionId=${args.questionId}  AND status=APPROVED`,
+        where: `questionId=${args.questionId}  AND status=${STATUS.APPROVED}`,
         schema: SCHEMA_VERSION,
       })
       return result

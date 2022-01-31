@@ -24,7 +24,7 @@ export const getAnswers = async (
 
   if(parent?.id) {
     where.push(`questionId=${parent.id}`)
-    where.push('status=APPROVED')
+    where.push(`status=${STATUS.APPROVED}`)
     sort = 'votes DESC'
   }
 
