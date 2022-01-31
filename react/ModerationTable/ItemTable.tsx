@@ -82,35 +82,6 @@ const ItemTable = ({
     setSelectedRowsState([])
   }
 
-  const updateSelectedItems = (selectedRows: any, nextStatus: (filterStatus: any) => string | undefined) => {
-    const selectedIds = selectedRows.map((item: any) => item.itemId)
-  
-    updateItems({
-      variables: {
-        input: {
-          ids: selectedIds,
-          status: nextStatus(filter.status)
-        }
-      },
-      optimisticResponse: true,
-      update(cache) {
-        const cachedData: any = cache.readQuery({ query, variables })
-        const queryName = Object.keys(cachedData)[0]
-  
-        cache.writeQuery({
-          data: {
-            [queryName]: [
-              ...(cachedData[queryName].filter((item: any) => !selectedIds.includes(item.id)))
-            ]
-          },
-          query,
-          variables
-        })
-      }
-    })
-    setSelectedRowsState([])
-  }
-
   return(
     <>
       <Table
