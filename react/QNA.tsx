@@ -133,7 +133,8 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             anonymous: answerAnonymousCheck,
             votes: 0,
             status: STATUS.APPROVED,
-            questionId: q.id
+            questionId: q.id,
+            productId: product.productId,
           })
         }
 
@@ -603,6 +604,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               addAnswer({
                                 variables: {
                                   questionId: currentQuestion.id,
+                                  productId: product.productId,
                                   answer,
                                   name,
                                   email,

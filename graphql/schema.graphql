@@ -23,12 +23,14 @@ input QuestionsFilter {
   productId: String
   allowed: Boolean
   status: String
+  searchTerm: String
 }
 
 input AnswersFilter {
   questionId: String
   allowed: Boolean
   status: String
+  searchTerm: String
 }
 
 type Votes {
@@ -65,6 +67,7 @@ type Mutation {
     anonymous: Boolean
     allowed: Boolean
     status: String
+    productId: String
   ): String
   voteQuestion(email: String, id: ID, vote: Int): Votes
   voteAnswer(email: String, id: ID, questionId: ID): Votes
@@ -126,6 +129,7 @@ type Answer {
   anonymous: Boolean
   allowed: Boolean
   status: String
+  productId: String
   question: Question
 }
 
