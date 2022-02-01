@@ -242,6 +242,7 @@ const ModerationTable: FC<any> = () => {
             active={currentTab === 3}
             onClick={() => setState({ ...state, currentTab: 3 })}
           >
+            <div className="mt4">
               <ItemTable
                 query={GET_ALL_QUESTIONS}
                 mutation={MODERATE_QUESTION}
@@ -251,21 +252,24 @@ const ModerationTable: FC<any> = () => {
                 schema={questionSchema}
                 filter={{status: STATUS.APPROVED}}
               />
+            </div>
           </Tab>
           <Tab
             label={intl.formatMessage(messages.approvedAnswers)}
             active={currentTab === 4}
             onClick={() => setState({ ...state, currentTab: 4 })}
           >
-            <ItemTable
-              query={GET_ALL_ANSWERS}
-              mutation={MODERATE_ANSWER}
-              bulkActionLabel="Reject"
-              otherActionLabel="Pending"
-              textPath="answer"
-              schema={answerSchema}
-              filter={{status: STATUS.APPROVED}}
-            />
+            <div className="mt4">
+              <ItemTable
+                query={GET_ALL_ANSWERS}
+                mutation={MODERATE_ANSWER}
+                bulkActionLabel="Reject"
+                otherActionLabel="Pending"
+                textPath="answer"
+                schema={answerSchema}
+                filter={{status: STATUS.APPROVED}}
+              />
+            </div>
           </Tab>
           <Tab
             label={intl.formatMessage(messages.settings)}

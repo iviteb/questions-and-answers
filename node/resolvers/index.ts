@@ -6,7 +6,7 @@ import { STATUS } from '../utils/constants'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-export const SCHEMA_VERSION = 'v0.11'
+export const SCHEMA_VERSION = 'v0.12'
 const schemaQuestions = {
   properties: {
     productId: {
@@ -47,7 +47,7 @@ const schemaQuestions = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed', 'status', 'votes'],
+  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed', 'status', 'votes', 'name'],
   'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -56,6 +56,10 @@ const schemaAnswers = {
     questionId: {
       type: 'string',
       title: 'Question ID',
+    },
+    productId: {
+      type: 'string',
+      title: 'Product ID',
     },
     answer: {
       type: 'string',
@@ -91,7 +95,7 @@ const schemaAnswers = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate', 'status', 'votes'],
+  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate', 'status', 'votes', 'name', 'productId'],
   'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }

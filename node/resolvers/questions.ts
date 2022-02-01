@@ -17,9 +17,15 @@ export const getQuestions = async (
   let where = []
 
   if(filter?.status !== null) {
-     where.push(`status=${filter?.status}`)
+    where.push(`status=${filter?.status}`)
   }
 
+  if (filter?.searchTerm) {
+    where.push(`(name=*${filter?.searchTerm}* OR 
+                email=*${filter?.searchTerm}* OR
+                productId=*${filter?.searchTerm}*)`)
+  }
+  
   return masterdata.searchDocuments({
     dataEntity: 'qna',
     schema: SCHEMA_VERSION,
