@@ -248,7 +248,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     refetch,
   }
   = useQuery(QUERY_GET_QUESTIONS, {
-    variables: { productId: product.productId }
+    variables: { productId: product.productId }, ssr: false
   })
 
   useEffect(() => {
