@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { FC, useContext, useEffect, useState } from 'react'
-import { compose, graphql, useLazyQuery, useMutation } from 'react-apollo'
+import { compose, graphql, useLazyQuery, useMutation, useQuery } from 'react-apollo'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import { useCssHandles } from 'vtex.css-handles'
 import { ProductContext } from 'vtex.product-context'
@@ -82,18 +82,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     questionList,
     answerAnonymousCheck,
   } = state
-
-  const [
-    getQuestions,
-    {
-      loading: loadingQuestions,
-      data: questionsData,
-      called: questionsCalled,
-      refetch,
-    },
-  ] = useLazyQuery(QUERY_GET_QUESTIONS, {
-    fetchPolicy: 'network-only',
-  })
 
   const [
     addQuestion,
@@ -251,6 +239,29 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
   }
 
   const { product } = useContext(ProductContext) as any
+  const
+  {
+    loading: loadingQuestions,
+    data: questionsData,
+    refetch,
+  }
+  = useQuery(QUERY_GET_QUESTIONS, {
+    variables: { productId: product.productId }
+  })
+
+  useEffect(() => {
+      if (questionsData && !search) {
+        const newQuestionList = questionsData.questions.filter(
+          (_: any, index: any) => {
+            return showAllQuestions ? true : index < 3
+          }
+        )
+        setState({
+          ...state,
+          questionList: newQuestionList,
+        })
+      }
+    }, [questionsData])
 
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
     setState({ ...state, isModalOpen: false })
@@ -262,25 +273,6 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   if (!config) return null
 
-  if (product && !questionsCalled && !search) {
-    getQuestions({
-      variables: {
-        productId: product.productId,
-      },
-    })
-  }
-
-  if (questionsData && !questionList && !search) {
-    const newQuestionList = questionsData.questions.filter(
-      (_: any, index: any) => {
-        return showAllQuestions ? true : index < 3
-      }
-    )
-    setState({
-      ...state,
-      questionList: newQuestionList,
-    })
-  }
 
   const checkFill = (answerId: any) => {
     return !!localStore.getItem(answerId)
