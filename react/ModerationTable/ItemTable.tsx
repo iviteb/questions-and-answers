@@ -17,7 +17,11 @@ const ItemTable = ({
   const [modalData, setModalData] = useState<any>({})
   const [items, setItems] = useState<any[]>([])
   const [selectedRowsState, setSelectedRowsState] = useState([])
-  const variables = { filter }
+  const [searchTerm, setSearchTerm] = useState('')
+  const variables = { filter: {
+    ...filter,
+    searchTerm
+  }}
 
   const { data, loading } = useQuery(query, {
     variables,
@@ -114,6 +118,14 @@ const ItemTable = ({
               handleCallback: ({ selectedRows }: any) => updateSelectedItems(selectedRows, nextStatusOther),
             }
           ]
+        }}
+        toolbar={{
+          inputSearch: {
+            value: searchTerm,
+            placeholder: 'Search by Name, Email or ProductID',
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+            onClear: () => setSearchTerm('')
+          },
         }}
       />
       <Modal
