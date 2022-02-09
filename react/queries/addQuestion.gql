@@ -5,6 +5,7 @@ mutation AddQuestion(
   $email: String,
   $anonymous: Boolean,
   $allowed: Boolean,
+  $status: String,
   $subscribed: Boolean
 ) {
   addQuestion(
@@ -14,6 +15,7 @@ mutation AddQuestion(
     email: $email,
     anonymous: $anonymous,
     allowed: $allowed,
+    status: $status
     subscribed: $subscribed
   )
 }

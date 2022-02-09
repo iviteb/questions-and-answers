@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Table, Modal } from 'vtex.styleguide'
 import { useMutation, useQuery } from 'react-apollo'
+import { STATUS } from '../utils/constants'
 
 
 const ItemTable = ({
@@ -10,6 +11,7 @@ const ItemTable = ({
   filter,
   textPath,
   bulkActionLabel,
+  otherActionLabel,
 }: any) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [modalData, setModalData] = useState<any>({})
@@ -33,6 +35,52 @@ const ItemTable = ({
 
   const [updateItems] = useMutation(mutation)
 
+  const nextStatusMain = (filterStatus:any) => {
+    switch(filterStatus) {
+      case STATUS.APPROVED:
+        return STATUS.REJECTED
+      default:
+        return STATUS.APPROVED
+    }
+  }
+
+  const nextStatusOther = (filterStatus:any) => {
+    switch(filterStatus) {
+      case STATUS.PENDING:
+        return STATUS.REJECTED
+      default:
+        return STATUS.PENDING
+    }
+  }
+
+  const updateSelectedItems = (selectedRows: any, nextStatus: (filterStatus: any) => string | undefined) => {
+    const selectedIds = selectedRows.map((item: any) => item.itemId)
+  
+    updateItems({
+      variables: {
+        input: {
+          ids: selectedIds,
+          status: nextStatus(filter.status)
+        }
+      },
+      optimisticResponse: true,
+      update(cache) {
+        const cachedData: any = cache.readQuery({ query, variables })
+        const queryName = Object.keys(cachedData)[0]
+  
+        cache.writeQuery({
+          data: {
+            [queryName]: [
+              ...(cachedData[queryName].filter((item: any) => !selectedIds.includes(item.id)))
+            ]
+          },
+          query,
+          variables
+        })
+      }
+    })
+    setSelectedRowsState([])
+  }
 
   return(
     <>
@@ -47,40 +95,25 @@ const ItemTable = ({
           setModalData(rowData)
         }}
         bulkActions={{
+          texts: {
+            secondaryActionsLabel: 'Other actions',
+            rowsSelected: (qty: any) => (
+              <React.Fragment>Selected rows: {qty}</React.Fragment>
+            ),
+          },
           selectedRows: selectedRowsState,
           onChange: ({selectedRows}: any) => setSelectedRowsState(selectedRows),
           main: {
             label: bulkActionLabel,
-            handleCallback: ({ selectedRows }: any) => {
-              const selectedIds = selectedRows.map((item: any) => item.itemId)
-
-              updateItems({
-                variables: {
-                  input: {
-                    ids: selectedIds,
-                    allowed: !filter.allowed
-                  }
-                },
-                optimisticResponse: true,
-                update(cache) {
-                  const cachedData: any = cache.readQuery({ query, variables })
-                  const queryName = Object.keys(cachedData)[0]
-
-                  cache.writeQuery({
-                    data: {
-                      [queryName]: [
-                        ...(cachedData[queryName].filter((item: any) => !selectedIds.includes(item.id) ))
-                      ]
-                    },
-                    query,
-                    variables
-                  })
-                }
-
-              })
-              setSelectedRowsState([])
-            },
+            handleCallback: ({ selectedRows }: any) => updateSelectedItems(selectedRows, nextStatusMain),
           },
+          others: [
+            {
+              label: otherActionLabel,
+              isDangerous: true,
+              handleCallback: ({ selectedRows }: any) => updateSelectedItems(selectedRows, nextStatusOther),
+            }
+          ]
         }}
       />
       <Modal
@@ -115,3 +148,5 @@ const ItemTable = ({
 }
 
 export default ItemTable
+
+

@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
 import { Apps } from '@vtex/api'
 import subscriptionMail from '../utils/subscriptionMail'
+import { STATUS } from '../utils/constants'
 
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-export const SCHEMA_VERSION = 'v0.10'
+export const SCHEMA_VERSION = 'v0.11'
 const schemaQuestions = {
   properties: {
     productId: {
@@ -37,12 +38,16 @@ const schemaQuestions = {
       type: 'boolean',
       title: 'allowed',
     },
+    status: {
+      type: 'string',
+      title: 'status',
+    },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed', 'votes'],
+  'v-indexed': ['productId', 'email', 'question', 'creationDate', 'allowed', 'status', 'votes'],
   'v-default-fields': ['email', 'question', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -77,12 +82,16 @@ const schemaAnswers = {
       type: 'boolean',
       title: 'allowed',
     },
+    status: {
+      type: 'string',
+      title: 'status',
+    },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate', 'votes'],
+  'v-indexed': ['email', 'answer', 'questionId', 'allowed', 'creationDate', 'status', 'votes'],
   'v-default-fields': ['email', 'answer', 'creationDate', 'cartLifeSpan'],
   'v-cache': false,
 }
@@ -215,9 +224,9 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
-        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'status', 'productId'],
         sort: 'votes DESC',
-        where: `productId=${args.productId} AND allowed=${true}`,
+        where: `productId=${args.productId} AND status=${STATUS.APPROVED}`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -237,16 +246,16 @@ export const resolvers = {
           masterdata
         }
       } = ctx
-
+      
       const result = await masterdata.searchDocuments({
         dataEntity: 'qna',
-        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
+        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'status', 'productId'],
         sort: 'votes DESC',
         pagination: {
           page: 1,
           pageSize: 99,
         },
-        where: `productId=${args.productId} AND question=*${args.keyword}*  AND allowed=${true}`,
+        where: `productId=${args.productId} AND question=*${args.keyword}*  AND status=${STATUS.APPROVED}`,
         schema: SCHEMA_VERSION,
       })
 
@@ -265,16 +274,15 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'answer',
-        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
+        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'status'],
         sort: 'votes DESC',
         pagination: {
           page: 1,
           pageSize: 99,
         },
-        where: `questionId=${args.questionId}  AND allowed=${true}`,
+        where: `questionId=${args.questionId}  AND status=${STATUS.APPROVED}`,
         schema: SCHEMA_VERSION,
       })
-
       return result
     },
     allQuestions: async (_: any, __: any, ctx: Context) => {

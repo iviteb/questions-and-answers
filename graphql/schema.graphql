@@ -22,11 +22,13 @@ type Query {
 input QuestionsFilter {
   productId: String
   allowed: Boolean
+  status: String
 }
 
 input AnswersFilter {
   questionId: String
   allowed: Boolean
+  status: String
 }
 
 type Votes {
@@ -52,6 +54,7 @@ type Mutation {
     subscribed: Boolean
     anonymous: Boolean
     allowed: Boolean
+    status: String
     productId: String!
   ): String
   addAnswer(
@@ -61,6 +64,7 @@ type Mutation {
     email: String
     anonymous: Boolean
     allowed: Boolean
+    status: String
   ): String
   voteQuestion(email: String, id: ID, vote: Int): Votes
   voteAnswer(email: String, id: ID, questionId: ID): Votes
@@ -88,12 +92,14 @@ type Mutation {
 
 input ModerateQuestionsInput {
   ids: [ID],
-  allowed: Boolean
+  allowed: Boolean,
+  status: String
 }
 
 input ModerateAnswersInput {
   ids: [ID],
-  allowed: Boolean
+  allowed: Boolean,
+  status: String
 }
 
 type Question {
@@ -105,6 +111,7 @@ type Question {
   answers: [Answer]
   votes: Int
   allowed: Boolean
+  status: String
   productId: String
   product: Product
 }
@@ -118,6 +125,7 @@ type Answer {
   email: String
   anonymous: Boolean
   allowed: Boolean
+  status: String
   question: Question
 }
 

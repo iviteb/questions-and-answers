@@ -16,8 +16,8 @@ export const getQuestions = async (
 
   let where = []
 
-  if(filter?.allowed !== null) {
-    where.push(`allowed=${filter?.allowed}`)
+  if(filter?.status !== null) {
+     where.push(`status=${filter?.status}`)
   }
 
   return masterdata.searchDocuments({
@@ -56,9 +56,9 @@ export const updateMultipleQuestions = async(
 ): Promise<any> => {
   const {
     ids,
-    allowed
+    status
   } = data.input
-
+  
   const {
     clients: { masterdata }
   } = ctx
@@ -68,7 +68,7 @@ export const updateMultipleQuestions = async(
     schema: SCHEMA_VERSION,
     id,
     fields: {
-      allowed
+      status
     }
   }))
 

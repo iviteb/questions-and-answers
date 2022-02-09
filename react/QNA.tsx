@@ -19,6 +19,7 @@ import SEARCH_QUESTIONS from './queries/searchQuestions.gql'
 import VOTE_ANSWER from './queries/voteAnswer.gql'
 import VOTE_QUESTION from './queries/voteQuestion.gql'
 import storageFactory from './utils/storage'
+import { STATUS } from './utils/constants'
 
 
 const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions','lessQuestions', 'answerHelpful',
@@ -96,7 +97,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         id: questionRes.addQuestion,
         anonymous: anonymousCheck,
         votes: 0,
-        allowed: true
+        status: STATUS.APPROVED
       })
       setState({ ...state, questionList: newQuestionList })
     }
@@ -119,7 +120,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
             id: answerRes.addAnswer,
             anonymous: answerAnonymousCheck,
             votes: 0,
-            allowed: true,
+            status: STATUS.APPROVED,
             questionId: q.id
           })
         }
@@ -598,7 +599,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                   name,
                                   email,
                                   anonymous: answerAnonymousCheck,
-                                  allowed: !config.moderation
+                                  status: config.moderation ? STATUS.PENDING : STATUS.APPROVED,
                                 },
                               })
                             }}
@@ -825,7 +826,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       name,
                       email,
                       anonymous: anonymousCheck,
-                      allowed: !config.moderation,
+                      status: config.moderation ? STATUS.PENDING : STATUS.APPROVED,
                       subscribed: subscribeCheck
                     },
                   })
