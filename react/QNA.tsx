@@ -22,8 +22,8 @@ import storageFactory from './utils/storage'
 import { STATUS } from './utils/constants'
 
 
-const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions','lessQuestions', 'answerHelpful',
-                     'thumbsIconContainer', 'questionAnswerContainer', 'qnaMainContainer', 'qnaTitle', 'qnaSearchBar', 'showAnswers', 'answerItemText'] as const
+const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions', 'lessQuestions', 'answerHelpful',
+  'thumbsIconContainer', 'questionAnswerContainer', 'qnaMainContainer', 'qnaTitle', 'qnaSearchBar', 'showAnswers', 'answerItemText'] as const
 let timeout: any = null
 const localStore = storageFactory(() => sessionStorage)
 
@@ -108,7 +108,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     { loading: ansLoading, called: answerCalled, error: answerError },
   ] = useMutation(ADD_ANSWER, {
     onCompleted: (answerRes) => {
-      const newQuestionList = questionList?.map((q:any) => {
+      const newQuestionList = questionList?.map((q: any) => {
         if (q.id === currentQuestion.id) {
           if (!q.answers) {
             q.answers = []
@@ -213,7 +213,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         return index < 3
       })
 
-      setState({
+    setState({
       ...state,
       search: '',
       showAllQuestions: false,
@@ -242,28 +242,28 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const { product } = useContext(ProductContext) as any
   const
-  {
-    loading: loadingQuestions,
-    data: questionsData,
-    refetch,
-  }
-  = useQuery(QUERY_GET_QUESTIONS, {
-    variables: { productId: product.productId }, ssr: false
-  })
+    {
+      loading: loadingQuestions,
+      data: questionsData,
+      refetch,
+    }
+      = useQuery(QUERY_GET_QUESTIONS, {
+        variables: { productId: product.productId }, ssr: false
+      })
+
+  const limitVisibleQuestions = (list: any[], showAll: boolean) => list.filter(
+    (_: any, index: any) => showAll ? true : index < 3 
+  )
 
   useEffect(() => {
-      if (questionsData && !search) {
-        const newQuestionList = questionsData.questions.filter(
-          (_: any, index: any) => {
-            return showAllQuestions ? true : index < 3
-          }
-        )
-        setState({
-          ...state,
-          questionList: newQuestionList,
-        })
-      }
-    }, [questionsData])
+    if (questionsData && !search) {
+      const newQuestionList = limitVisibleQuestions(questionsData.questions, showAllQuestions)
+      setState({
+        ...state,
+        questionList: newQuestionList,
+      })
+    }
+  }, [questionsData, showAllQuestions])
 
   if (!addLoading && questionCalled && !questionError && isModalOpen) {
     setState({ ...state, isModalOpen: false })
@@ -297,7 +297,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       {(config.search && questionList?.length >= 1) && (
         <div className={`${handles.qnaSearchBar} ma4`}>
           <InputSearch
-            placeholder={intl.formatMessage({id: 'store/question.search.placeholder'})}
+            placeholder={intl.formatMessage({ id: 'store/question.search.placeholder' })}
             value={search}
             size="regular"
             onChange={(e: any) => {
@@ -408,7 +408,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               {answerItem.answer}
                             </div>
                             <div className={styles['answer-item-info']}>
-                              By{' '}
+                            <FormattedMessage
+                                id="store/answer.by.label"
+                                defaultMessage="By"
+                              />
+                              {' '}
                               <span>
                                 {answerItem.anonymous
                                   ? 'anonymous'
@@ -420,19 +424,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             >
                               {(answerItem.votes ||
                                 ansVotes[answerItem.id]) && (
-                                <div className={`${handles.answerHelpful} mt4`}>
-                                  {ansVotes[answerItem.id] || answerItem.votes}{' '}
-                                  <FormattedMessage
-                                    id="store/question.answer-helpful.text"
-                                    defaultMessage="people have found this helpful"
-                                    values={{
-                                      quantity:
-                                        ansVotes[answerItem.id] ||
-                                        answerItem.votes,
-                                    }}
-                                  />
-                                </div>
-                              )}
+                                  <div className={`${handles.answerHelpful} mt4`}>
+                                    {ansVotes[answerItem.id] || answerItem.votes}{' '}
+                                    <FormattedMessage
+                                      id="store/question.answer-helpful.text"
+                                      defaultMessage="people have found this helpful"
+                                      values={{
+                                        quantity:
+                                          ansVotes[answerItem.id] ||
+                                          answerItem.votes,
+                                      }}
+                                    />
+                                  </div>
+                                )}
 
                               <div className={`${handles.thumbsIconContainer} mt3`}>
                                 <Button
@@ -452,11 +456,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                   }}
                                 >
                                   <span
-                                    className={`${handles.thumbsIcon} ${
-                                      checkFill(answerItem.id)
+                                    className={`${handles.thumbsIcon} ${checkFill(answerItem.id)
                                         ? styles.fill
                                         : styles.outline
-                                    } ${styles.iconSize}`}
+                                      } ${styles.iconSize}`}
                                   />
                                 </Button>
                               </div>
@@ -484,7 +487,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                           }}
                         />{' '}
                         {!showAllAnswers[row.id] &&
-                          `(${  row.answers?.length - 1  })`}
+                          `(${row.answers?.length - 1})`}
                       </Button>
                     </div>
                   )}
@@ -663,7 +666,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   setState({
                     ...state,
                     showAllQuestions: false,
-                    questionList: null,
+                    questionList: limitVisibleQuestions(state.questionList, false),
                   })
                 }}
               >
