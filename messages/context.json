@@ -3,6 +3,7 @@
   "store/question.search.placeholder": "store/question.search.placeholder",
   "store/question.no-answer.text": "store/question.no-answer.text",
   "store/answer.label": "store/answer.label",
+  "store/answer.by.label": "store/answer.by.label", 
   "store/question.additional-info.by": "store/question.additional-info.by",
   "store/question.additional-info.on": "store/question.additional-info.on",
   "store/question.collapse.label": "store/question.collapse.label",

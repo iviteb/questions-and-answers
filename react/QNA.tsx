@@ -408,7 +408,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                               {answerItem.answer}
                             </div>
                             <div className={styles['answer-item-info']}>
-                              By{' '}
+                            <FormattedMessage
+                                id="store/answer.by.label"
+                                defaultMessage="By"
+                              />
+                              {' '}
                               <span>
                                 {answerItem.anonymous
                                   ? 'anonymous'

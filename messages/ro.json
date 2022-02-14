@@ -3,6 +3,7 @@
   "store/question.search.placeholder": "Ai o întrebare? Caută un răspuns",
   "store/question.no-answer.text": "Nu există nici un răspuns încă. Fii primul care scrie un răspuns!",
   "store/answer.label": "Răspunde",
+  "store/answer.by.label": "De către",
   "store/question.additional-info.by": "Până",
   "store/question.additional-info.on": "pe",
   "store/question.more-answers.label": "Vezi mai multe răspunsuri",

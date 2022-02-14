@@ -3,6 +3,7 @@
   "store/question.search.placeholder": "Tem uma pergunta? Veja se alguém já perguntou",
   "store/question.no-answer.text": "",
   "store/answer.label": "Responda",
+  "store/answer.by.label": "",
   "store/question.additional-info.by": "",
   "store/question.additional-info.on": "",
   "store/question.more-answers.label": "Veja mais respostas",

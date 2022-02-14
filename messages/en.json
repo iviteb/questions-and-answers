@@ -3,6 +3,7 @@
   "store/question.search.placeholder": "Have a question? Search for answers",
   "store/question.no-answer.text": "No answers yet. Be the first!",
   "store/answer.label": "Answer",
+  "store/answer.by.label": "By",
   "store/question.additional-info.by": "By",
   "store/question.additional-info.on": "on",
   "store/question.more-answers.label": "See more answers",
