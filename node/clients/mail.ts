@@ -25,9 +25,6 @@ export default class Mail extends JanusClient {
       account
     } = this.context
 
-    console.log("🚀 ~ file: mail.ts ~ line 23 ~ Mail ~ send ~ mailData", mailData)
-    console.log("🚀 ~ file: mail.ts ~ line 25 ~ Mail ~ send ~ this.context", this.context)
-
     return this.http.post(
       `http://${account}.vtexcommercestable.com.br/api/mail-service/pvt/sendmail`,
       mailData

@@ -157,7 +157,6 @@ export const resolvers = {
       const apps = new Apps(ctx.vtex)
       const app: string = getAppId()
       let settings = await apps.getAppSettings(app)
-      console.log("🚀 ~ file: index.ts ~ line 139 ~ config: ~ settings", settings)
       const defaultSettings = {
         schema: false,
         schemaVersion: null,
@@ -179,7 +178,6 @@ export const resolvers = {
         try {
           const url = routes.saveSchemaQuestion(account)
           const headers = defaultHeaders(authToken)
-          console.log("CREATING QUESTIONS SCHEMA")
           await hub.put(url, schemaQuestions, headers)
 
         } catch (e) {
@@ -193,7 +191,6 @@ export const resolvers = {
             const url = routes.saveSchemaAnswer(account)
             const urlSubscriptions = routes.saveSchemaSubscriptions(account)
             const headers = defaultHeaders(authToken)
-            console.log("CREATING OTHER SCHEMAS")
 
             await hub.put(url, schemaAnswers, headers)
             await hub.put(urlSubscriptions, schemaSubscriptions, headers)
@@ -207,8 +204,6 @@ export const resolvers = {
 
         settings.schema = !schemaError
         settings.schemaVersion = !schemaError ? SCHEMA_VERSION : null
-
-        console.log(settings)
 
         await apps.saveAppSettings(app, settings)
       }
@@ -350,7 +345,6 @@ export const resolvers = {
         fields,
         schema: SCHEMA_VERSION,
         }).then((res: any) => {
-          console.log("🚀 ~ file: index.ts ~ line 339 ~ addQuestion: ~ res", res)
           if(subscribed) {
             masterdata.createDocument({
               dataEntity: 'subscriptions',
