@@ -1,259 +1,249 @@
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-}
-
-div {
-    box-sizing: border-box;
-}
-
 .qna-header {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #0F1111;
-    font-size: 1.75em;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #0f1111;
+  font-size: 1.75em;
 }
 
 .qna-search-container {
-    width: 100%;
-    background-color: #fff;
-    height: 35px;
-    padding: 3px 15px;
+  width: 100%;
+  background-color: #fff;
+  height: 35px;
+  padding: 3px 15px;
 }
 
 .qna-search {
-    width: 100%;
-    background-color: #fff;
-    height: 31px;
-    padding: 3px 7px;
-    border: 1px solid #888C8C;
-    border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(15,17,17,.15) inset;
-    font: Arial, sans-serif;
-    font-size: 14px;
+  width: 100%;
+  background-color: #fff;
+  height: 31px;
+  padding: 3px 7px;
+  border: 1px solid #888c8c;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(15, 17, 17, 0.15) inset;
+  font: Arial, sans-serif;
+  font-size: 14px;
 }
 
 .votes-question-container {
-    display: flex;
-    margin: 15px;
-    min-height: 100px;
-    padding-top: 15px;
+  display: flex;
+  margin: 15px;
+  min-height: 100px;
+  padding-top: 15px;
 }
 
 .votes {
-    width: 65px;
-    height: 80px;
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-    text-align: center;
-    justify-content: space-evenly;
-    border-right: 1px solid #d1d4d4;
-    flex: none;
+  width: 65px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  text-align: center;
+  justify-content: space-evenly;
+  border-right: 1px solid #d1d4d4;
+  flex: none;
 }
 
-.button-container, .vote-count, .vote-text {
-    padding-bottom: 5px;
+.button-container,
+.vote-count,
+.vote-text {
+  padding-bottom: 5px;
 }
 
 .question-container {
-    display: flex;
+  display: flex;
 }
 
 .question-label {
-    width: 100px;
-    padding: 5px;
-    font-weight: 700;
-    flex: none;
+  width: 100px;
+  padding: 5px;
+  font-weight: 700;
+  flex: none;
 }
 
 .answer-label {
-    width: 100px;
-    padding: 5px;
-    font-weight: 700;
-    flex: none;
+  width: 100px;
+  padding: 5px;
+  font-weight: 700;
+  flex: none;
 }
 
-.no-answer{
-    margin-left: 100px;
-    padding: 5px;
-    margin-top: 5px;
-    font-size: 14px;
+.no-answer {
+  margin-left: 100px;
+  padding: 5px;
+  margin-top: 5px;
+  font-size: 14px;
 }
 
 .question-text {
-    font-size: 14px;
-    color: #007185;
-    border: none;
-    padding: 8px 5px 5px;
-    text-decoration: none;
+  font-size: 14px;
+  border: none;
+  padding: 8px 5px 5px;
+  text-decoration: none;
 }
 
-
 .answer-container {
-    display: flex;
+  display: flex;
 }
 
 .answer-label {
-    width: 100px;
-    padding: 10px 5px 5px;
-    font-weight: 700;
-    flex: none;
+  width: 100px;
+  padding: 10px 5px 5px;
+  font-weight: 700;
+  flex: none;
 }
 
 .answer-text {
-    padding: 10px 5px 5px;
-    flex-basis: auto;
+  padding: 10px 5px 5px;
+  flex-basis: auto;
 }
 
 .additional-info {
-    padding: 10px 5px 5px;
-    margin-left: 100px;
-    color: #565959;
-    font-size: 14px;
+  padding: 10px 5px 5px;
+  margin-left: 100px;
+  color: #565959;
+  font-size: 14px;
 }
 
 .questions-dropdown {
-    font-size: 14px;
-    color: #007185;
-    border: none;
-    margin-left: 100px;
-    padding: 8px 5px 5px;
-    text-decoration: none;
-    display: block;
+  font-size: 14px;
+  color: #007185;
+  border: none;
+  margin-left: 100px;
+  padding: 8px 5px 5px;
+  text-decoration: none;
+  display: block;
 }
 
 .questions-dropdown:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .collapse-button {
-    margin-left: 105px;
-    margin-top: 10px;
-    font: 400 13.3333px Arial;
-    background-color: transparent;
-    border-radius: 3px;
-    border-width: 1px;
-    border-color: #ADB1B8;
-    border-style: solid;
-    padding: 7px 10px;
-    text-decoration: none;
-    outline: none;
-
+  margin-left: 105px;
+  margin-top: 10px;
+  font: 400 13.3333px Arial;
+  background-color: transparent;
+  border-radius: 3px;
+  border-width: 1px;
+  border-color: #adb1b8;
+  border-style: solid;
+  padding: 7px 10px;
+  text-decoration: none;
+  outline: none;
 }
 
 .collapse-button:hover {
-    background: #e7e9ec;
-    cursor: pointer;
+  background: #e7e9ec;
+  cursor: pointer;
 }
 
 .more-questions-button {
-    margin-top: 30px;
-    margin-left: 185px;
-    font-size: 13px;
-    padding: 7px 10px;
-    border-radius: 3px;
-    border-width: 1px;
-    border-color: #ADB1B8;
-    border-style: solid;
-    outline: none;
+  margin-top: 30px;
+  margin-left: 185px;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 3px;
+  border-width: 1px;
+  border-color: #adb1b8;
+  border-style: solid;
+  outline: none;
 }
 
 .more-questions-button:hover {
-    background: #e7e9ec;
-    cursor: pointer;
+  background: #e7e9ec;
+  cursor: pointer;
 }
 
 .create-question-container {
-    background: #f0f2f2;
-    padding: 20px;
-    margin: 20px;
-    display: flex;
-    border-radius: 8px;
-    height: 80px;
+  background: #f0f2f2;
+  padding: 20px;
+  margin: 20px;
+  display: flex;
+  border-radius: 8px;
+  height: 80px;
 }
 
 .create-question-text {
-    font-size: 14px;
-    font-weight: 700;
-    margin: auto 0;
-    padding-left: 10px;
-    margin-right: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  margin: auto 0;
+  padding-left: 10px;
+  margin-right: 20px;
 }
 
 .open-modal-button {
-    font-size: 12px;
-    padding: 5px 10px;
-    border: none;
+  font-size: 12px;
+  padding: 5px 10px;
+  border: none;
 }
 
 .question-text-box {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .modal-buttons-container {
-    margin-top: 20px;
-    padding: 5px;
+  margin-top: 20px;
+  padding: 5px;
 }
 
 .submit-question-button {
-    float: right;
-    font-size: 13px;
-    padding: 5px 5px;
-    background-color: #123e99;
-    width: 60px;
-    color: white;
-    border-radius: 3px;
-    border: none;
-    height: 30px;
+  float: right;
+  font-size: 13px;
+  padding: 5px 5px;
+  background-color: #123e99;
+  width: 60px;
+  color: white;
+  border-radius: 3px;
+  border: none;
+  height: 30px;
 }
 
 .close-modal-button {
-    float: right;
-    margin-right: 10px;
-    background-color: f1f2f5;
-    font-size: 13px;
-    padding: 5px 5px;
-    width: 60px;
-    height: 30px;
+  float: right;
+  margin-right: 10px;
+  background-color: f1f2f5;
+  font-size: 13px;
+  padding: 5px 5px;
+  width: 60px;
+  height: 30px;
 }
 
 .submit-question-button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .close-modal-button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .answer-item {
-    margin-top: 5px;
-    margin-bottom: 3px;
-    /* margin-left: 100px; */
-    padding: 8px 5px 5px;
+  margin-top: 5px;
+  margin-bottom: 3px;
+  /* margin-left: 100px; */
+  padding: 8px 5px 5px;
 }
 
 .answer-item-info {
-    margin-top: 4px;
-    color: #565959;
+  margin-top: 4px;
+  color: #565959;
 }
 
 .answer-container {
-    display: flex;
+  display: flex;
 }
 
 .iconSize {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
 }
 .fill {
-    background: url('data:image/svg+xml;utf,<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" data-name="Layer 1" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>heart-glyph</title><path d="M362.67,21.33A149,149,0,0,0,256,66.19,149,149,0,0,0,149.33,21.33C67,21.33,0,88.32,0,170.67a148.45,148.45,0,0,0,43.08,104.9L240.51,484a21.33,21.33,0,0,0,31,0L468.75,275.74A148.45,148.45,0,0,0,512,170.67C512,88.32,445,21.33,362.67,21.33Z"/></svg>');
+  background: url('data:image/svg+xml;utf,<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" data-name="Layer 1" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>heart-glyph</title><path d="M362.67,21.33A149,149,0,0,0,256,66.19,149,149,0,0,0,149.33,21.33C67,21.33,0,88.32,0,170.67a148.45,148.45,0,0,0,43.08,104.9L240.51,484a21.33,21.33,0,0,0,31,0L468.75,275.74A148.45,148.45,0,0,0,512,170.67C512,88.32,445,21.33,362.67,21.33Z"/></svg>');
 }
 .outline {
-    background: url('data:image/svg+xml;utf,<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" data-name="Layer 1" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>heart-other</title><path d="M256,489.24a5.69,5.69,0,0,1-4.13-1.78L41.15,265A141.37,141.37,0,0,1,0,165C0,86.56,63.8,22.76,142.22,22.76A141.94,141.94,0,0,1,256,79.71a141.94,141.94,0,0,1,113.78-57C448.2,22.76,512,86.56,512,165A141.38,141.38,0,0,1,470.81,265L260.13,487.47A5.69,5.69,0,0,1,256,489.24ZM142.22,34.13C70.07,34.13,11.38,92.83,11.38,165A130.09,130.09,0,0,0,49.28,257l.08.09L256,475.28,462.63,257.13a130.18,130.18,0,0,0,38-92.16c0-72.14-58.69-130.84-130.84-130.84a130.66,130.66,0,0,0-109,58.58,5.9,5.9,0,0,1-9.48,0A130.66,130.66,0,0,0,142.22,34.13Z"/></svg>');
+  background: url('data:image/svg+xml;utf,<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" data-name="Layer 1" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>heart-other</title><path d="M256,489.24a5.69,5.69,0,0,1-4.13-1.78L41.15,265A141.37,141.37,0,0,1,0,165C0,86.56,63.8,22.76,142.22,22.76A141.94,141.94,0,0,1,256,79.71a141.94,141.94,0,0,1,113.78-57C448.2,22.76,512,86.56,512,165A141.38,141.38,0,0,1,470.81,265L260.13,487.47A5.69,5.69,0,0,1,256,489.24ZM142.22,34.13C70.07,34.13,11.38,92.83,11.38,165A130.09,130.09,0,0,0,49.28,257l.08.09L256,475.28,462.63,257.13a130.18,130.18,0,0,0,38-92.16c0-72.14-58.69-130.84-130.84-130.84a130.66,130.66,0,0,0-109,58.58,5.9,5.9,0,0,1-9.48,0A130.66,130.66,0,0,0,142.22,34.13Z"/></svg>');
 }
 
 .clearLink {
-    text-decoration: inherit;
-    color: inherit;
+  text-decoration: inherit;
+  color: inherit;
 }
