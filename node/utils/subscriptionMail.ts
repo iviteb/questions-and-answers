@@ -43,8 +43,8 @@ const subscriptionMail = async (ctx: Context, questionId: string) => {
         const options = {
           toEmail: subscription.email,
           questionText: question,
-          productUrl: production ? `https://f64.ro/${product.linkId}/p` : `https://${host}/${product.linkId}/p`,
-          unsubscribeUrl: production ? `https://f64.ro/qna/unsubscribe/${subscription.id}` : `https://${host}/qna/unsubscribe/${subscription.id}`,
+          productUrl: production ? `https://pentruanimale.ro/${product.linkId}/p` : `https://${host}/${product.linkId}/p`,
+          unsubscribeUrl: production ? `https://pentruanimale.ro/qna/unsubscribe/${subscription.id}` : `https://${host}/qna/unsubscribe/${subscription.id}`,
         }
         mail.send(options, subscriptionEmailTemplate)
       });
