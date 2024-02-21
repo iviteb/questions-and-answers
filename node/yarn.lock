@@ -1319,10 +1319,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@vtex/api@6.45.22":
-  version "6.45.22"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-6.45.22.tgz#fa9bbfde1a4d4fbbaf6cce9f6dbc9bb9ee929ba3"
-  integrity sha512-g5cGUDhF4FADgSMpQmce/bnIZumwGlPG2cabwbQKIQ+cCFMZqOEM/n+YQb1+S8bCyHkzW3u/ZABoyCKi5/nxxg==
+"@vtex/api@6.46.1":
+  version "6.46.1"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-6.46.1.tgz#55a8755ae48f5400e7f1ed1921cd547950bb7a2a"
+  integrity sha512-geoxVvyWoQpOQ70Zmx3M8SBkRoGOS/bp9Gy26M+iCue63jofVSwmFz1zf66EaHA1PKOJNRgQPFwY+oeDE1U2lQ==
   dependencies:
     "@types/koa" "^2.11.0"
     "@types/koa-compose" "^3.2.3"
@@ -5238,6 +5238,10 @@ path-type@^3.0.0:
   dependencies:
     pify "^3.0.0"
 
+"pentruanimalero.questions-and-answers@http://pentruanimalero.vtexassets.com/_v/public/typings/v1/pentruanimalero.questions-and-answers@0.0.2/public/@types/pentruanimalero.questions-and-answers":
+  version "0.0.2"
+  resolved "http://pentruanimalero.vtexassets.com/_v/public/typings/v1/pentruanimalero.questions-and-answers@0.0.2/public/@types/pentruanimalero.questions-and-answers#3aa1625707b6a370c670196c340bb867944fa719"
+
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
@@ -6048,7 +6052,7 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"stats-lite@github:vtex/node-stats-lite#dist":
+stats-lite@vtex/node-stats-lite#dist:
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
@@ -6632,17 +6636,21 @@ verror@1.10.0:
   version "1.102.3"
   resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.catalog-graphql@1.102.3/public/@types/vtex.catalog-graphql#ce99343170d314d3231612357ef62e3356b50d81"
 
-"vtex.css-handles@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@0.4.4/public/@types/vtex.css-handles":
-  version "0.4.4"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@0.4.4/public/@types/vtex.css-handles#8c45c6decf9acd2b944e07261686decff93d6422"
+"vtex.css-handles@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@1.0.1/public/@types/vtex.css-handles":
+  version "1.0.1"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@1.0.1/public/@types/vtex.css-handles#9444e64afad49e3ace3461f170b7d28f29b78d07"
 
-"vtex.product-context@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.10.0/public/@types/vtex.product-context":
-  version "0.10.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.10.0/public/@types/vtex.product-context#c5e2a97b404004681ee12f4fff7e6b62157786cc"
+"vtex.product-context@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.10.1/public/@types/vtex.product-context":
+  version "0.10.1"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.10.1/public/@types/vtex.product-context#86ceba68085420edcf54749f07e51a257d2e5d94"
 
-"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@7.45.0/public/@types/vtex.render-runtime":
-  version "7.45.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@7.45.0/public/@types/vtex.render-runtime#d9c9c4bbe8efe698a6b6566cc22e9dd7687a2442"
+"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.134.2/public/@types/vtex.render-runtime":
+  version "8.134.2"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.134.2/public/@types/vtex.render-runtime#ae69e2b2a471291c6c6b155e17510150fbfc2d0e"
+
+"vtex.rich-text@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.rich-text@0.16.0/public/@types/vtex.rich-text":
+  version "0.16.0"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.rich-text@0.16.0/public/@types/vtex.rich-text#0cdcaccffb37ae0d025894ba7055f69bc3c9aa30"
 
 "vtex.styleguide@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.146.9/public/@types/vtex.styleguide":
   version "9.146.9"

@@ -23,6 +23,7 @@
   "store/question.create-answer-button.label": "Răspunde la întrebare",
   "store/answer.modal.title": "Scrie răspunsul tău",
   "store/answer.modal.search.placeholder": "Scrie răspunsul tău",
+  "store/answer.modal.preview.title": "Previzualizare răspuns",
   "store/question.modal.answer-anonymous-check.label": "Răspunde sub anonimat",
   "store/question.answer-helpful.text": "{quantity, plural, =1{persoană a găsit acest răspuns util}other{persoane au găsit acest răspuns util}}",
   "store/question.helpful-button.label": "Util",
