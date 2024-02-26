@@ -22,6 +22,7 @@
   "store/question.create-answer-button.label": "",
   "store/answer.modal.title": "",
   "store/answer.modal.search.placeholder": "",
+  "store/answer.modal.preview.title": "Answer preview",
   "store/question.modal.answer-anonymous-check.label": "",
   "store/question.answer-helpful.text": "{quantity, plural, =1{person found this question helpful} other {people found this question helpful}}",
   "store/question.helpful-button.label": "",

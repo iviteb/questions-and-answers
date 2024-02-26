@@ -223,7 +223,7 @@
 }
 
 .answer-item-info {
-  margin-top: 4px;
+  margin-top: 0.5rem;
   color: #565959;
 }
 
@@ -246,4 +246,30 @@
 .clearLink {
   text-decoration: inherit;
   color: inherit;
+}
+
+.paragraph:first-child,
+.list:first-child,
+.heading:first-child {
+  margin-top: unset;
+}
+
+.paragraph:last-child,
+.list:last-child,
+.heading:last-child {
+  margin-bottom: unset;
+}
+
+.list {
+  padding-left: 1rem;
+}
+
+.link {
+  color: inherit;
+  transition: color 0.25s ease-in-out;
+}
+
+.link:hover,
+.link:focus {
+  color: #f95a02;
 }

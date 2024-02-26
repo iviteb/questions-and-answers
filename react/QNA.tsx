@@ -1,14 +1,29 @@
 /* eslint-disable no-console */
 import React, { FC, useContext, useEffect, useState } from 'react'
-import { compose, graphql, useLazyQuery, useMutation, useQuery } from 'react-apollo'
+import {
+  compose,
+  graphql,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from 'react-apollo'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import { useCssHandles } from 'vtex.css-handles'
 import { ProductContext } from 'vtex.product-context'
 import {
-  Button, ButtonWithIcon, Checkbox, IconCaretDown, IconCaretUp, Input, InputSearch, Modal,
+  Button,
+  ButtonWithIcon,
+  Checkbox,
+  IconCaretDown,
+  IconCaretUp,
+  Input,
+  InputSearch,
+  Modal,
   Spinner,
-  Textarea
+  Textarea,
 } from 'vtex.styleguide'
+import { index as RichText } from 'vtex.rich-text'
+
 import { getSession } from './modules/session'
 import styles from './qnastyle.css'
 import ADD_ANSWER from './queries/addAnswer.gql'
@@ -21,9 +36,23 @@ import VOTE_QUESTION from './queries/voteQuestion.gql'
 import storageFactory from './utils/storage'
 import { STATUS } from './utils/constants'
 
-
-const CSS_HANDLES = ['formContainer', 'questionsList', 'thumbsIcon', 'openAnswerModalContainer', 'moreQuestions', 'lessQuestions', 'answerHelpful',
-  'thumbsIconContainer', 'questionAnswerContainer', 'qnaMainContainer', 'qnaTitle', 'qnaSearchBar', 'showAnswers', 'answerItemText'] as const
+const CSS_HANDLES = [
+  'formContainer',
+  'questionsList',
+  'thumbsIcon',
+  'openAnswerModalContainer',
+  'moreQuestions',
+  'lessQuestions',
+  'answerHelpful',
+  'thumbsIconContainer',
+  'questionAnswerContainer',
+  'qnaMainContainer',
+  'qnaTitle',
+  'qnaSearchBar',
+  'showAnswers',
+  'answerItemText',
+  'answerPreviewBox',
+] as const
 let timeout: any = null
 const localStore = storageFactory(() => sessionStorage)
 
@@ -97,11 +126,13 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         id: questionRes.addQuestion,
         anonymous: anonymousCheck,
         votes: 0,
-        status: STATUS.APPROVED
+        status: STATUS.APPROVED,
       })
       setState({ ...state, questionList: newQuestionList })
-    }
+    },
   })
+
+  const { product } = useContext(ProductContext) as any
 
   const [
     addAnswer,
@@ -130,7 +161,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       })
 
       setState({ ...state, questionList: newQuestionList })
-    }
+    },
   })
 
   const [voteQuestion] = useMutation(VOTE_QUESTION, {
@@ -144,6 +175,14 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       localStore.setItem(res.voteQuestion.id, 'true')
     },
   })
+
+  const { loading: loadingQuestions, data: questionsData, refetch } = useQuery(
+    QUERY_GET_QUESTIONS,
+    {
+      variables: { productId: product.productId },
+      ssr: false,
+    }
+  )
 
   const [voteAnswer] = useMutation(VOTE_ANSWER, {
     onCompleted: (res: any) => {
@@ -160,14 +199,14 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   const [searchQuestions] = useLazyQuery(SEARCH_QUESTIONS, {
     onCompleted: (res: any) => {
-      if (res && res.search.length && res.search !== questionList) {
+      if (res?.search.length && res.search !== questionList) {
         setState({ ...state, questionList: res.search })
       }
     },
   })
 
   const sessionResponse: any = useSessionResponse()
-  const handles = useCssHandles(CSS_HANDLES)
+  const { handles } = useCssHandles(CSS_HANDLES)
 
   const handleModalToggle = () => {
     setState({ ...state, isModalOpen: !isModalOpen })
@@ -197,7 +236,7 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
       searchQuestions({
         variables: {
           keyword: value,
-          productId: product.productId
+          productId: product.productId,
         },
       })
     }, 1000)
@@ -211,18 +250,19 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     const newQuestionList = questionsData.questions.filter(
       (_: any, index: any) => {
         return index < 3
-      })
+      }
+    )
 
     setState({
       ...state,
       search: '',
       showAllQuestions: false,
-      questionList: newQuestionList
+      questionList: newQuestionList,
     })
   }
 
   const getAnswers = (row: any) => {
-    if (showAllAnswers[row.id] != undefined) {
+    if (showAllAnswers[row.id] !== undefined) {
       return showAllAnswers[row.id] ? row?.answers : Array.of(row?.answers[0])
     }
     return row?.answers?.length > 0 ? Array.of(row.answers[0]) : row.answers
@@ -240,24 +280,15 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
     }
   }
 
-  const { product } = useContext(ProductContext) as any
-  const
-    {
-      loading: loadingQuestions,
-      data: questionsData,
-      refetch,
-    }
-      = useQuery(QUERY_GET_QUESTIONS, {
-        variables: { productId: product.productId }, ssr: false
-      })
-
-  const limitVisibleQuestions = (list: any[], showAll: boolean) => list.filter(
-    (_: any, index: any) => showAll ? true : index < 3 
-  )
+  const limitVisibleQuestions = (list: any[], showAll: boolean) =>
+    list.filter((_: any, index: any) => (showAll ? true : index < 3))
 
   useEffect(() => {
     if (questionsData && !search) {
-      const newQuestionList = limitVisibleQuestions(questionsData.questions, showAllQuestions)
+      const newQuestionList = limitVisibleQuestions(
+        questionsData.questions,
+        showAllQuestions
+      )
       setState({
         ...state,
         questionList: newQuestionList,
@@ -275,11 +306,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
 
   if (!config) return null
 
-
   const checkFill = (answerId: any) => {
     return !!localStore.getItem(answerId)
   }
-
 
   if (sessionResponse?.namespaces?.profile?.email?.value && !email) {
     setState({
@@ -294,10 +323,12 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
         <h2 className={styles['qna-header']}>{config.title}</h2>
       </div>
 
-      {(config.search && questionList?.length >= 1) && (
+      {config.search && questionList?.length >= 1 && (
         <div className={`${handles.qnaSearchBar} ma4`}>
           <InputSearch
-            placeholder={intl.formatMessage({ id: 'store/question.search.placeholder' })}
+            placeholder={intl.formatMessage({
+              id: 'store/question.search.placeholder',
+            })}
             value={search}
             size="regular"
             onChange={(e: any) => {
@@ -405,14 +436,16 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                         return (
                           <div className={styles['answer-item']} key={index}>
                             <div className={`${handles.answerItemText}`}>
-                              {answerItem.answer}
+                              <RichText
+                                text={answerItem.answer}
+                                font="t-small"
+                              />
                             </div>
                             <div className={styles['answer-item-info']}>
-                            <FormattedMessage
+                              <FormattedMessage
                                 id="store/answer.by.label"
                                 defaultMessage="By"
-                              />
-                              {' '}
+                              />{' '}
                               <span>
                                 {answerItem.anonymous
                                   ? 'anonymous'
@@ -424,21 +457,23 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             >
                               {(answerItem.votes ||
                                 ansVotes[answerItem.id]) && (
-                                  <div className={`${handles.answerHelpful} mt4`}>
-                                    {ansVotes[answerItem.id] || answerItem.votes}{' '}
-                                    <FormattedMessage
-                                      id="store/question.answer-helpful.text"
-                                      defaultMessage="people have found this helpful"
-                                      values={{
-                                        quantity:
-                                          ansVotes[answerItem.id] ||
-                                          answerItem.votes,
-                                      }}
-                                    />
-                                  </div>
-                                )}
+                                <div className={`${handles.answerHelpful} mt4`}>
+                                  {ansVotes[answerItem.id] || answerItem.votes}{' '}
+                                  <FormattedMessage
+                                    id="store/question.answer-helpful.text"
+                                    defaultMessage="people have found this helpful"
+                                    values={{
+                                      quantity:
+                                        ansVotes[answerItem.id] ||
+                                        answerItem.votes,
+                                    }}
+                                  />
+                                </div>
+                              )}
 
-                              <div className={`${handles.thumbsIconContainer} mt3`}>
+                              <div
+                                className={`${handles.thumbsIconContainer} mt3`}
+                              >
                                 <Button
                                   size="small"
                                   variation="tertiary"
@@ -456,10 +491,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                   }}
                                 >
                                   <span
-                                    className={`${handles.thumbsIcon} ${checkFill(answerItem.id)
+                                    className={`${handles.thumbsIcon} ${
+                                      checkFill(answerItem.id)
                                         ? styles.fill
                                         : styles.outline
-                                      } ${styles.iconSize}`}
+                                    } ${styles.iconSize}`}
                                   />
                                 </Button>
                               </div>
@@ -492,7 +528,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                     </div>
                   )}
 
-                  <div className={`${handles.openAnswerModalContainer} open-answer-modal-container ma6`}>
+                  <div
+                    className={`${handles.openAnswerModalContainer} open-answer-modal-container ma6`}
+                  >
                     <Button
                       onClick={() => {
                         updateCurrentQuestion(row)
@@ -568,6 +606,16 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                             className={styles['answer-text-box']}
                           />
                         </div>
+                        <p className="mb3 t-small">
+                          {intl.formatMessage({
+                            id: 'store/answer.modal.preview.title',
+                          })}
+                        </p>
+                        <div
+                          className={`${handles.answerPreviewBox} mt4 pa5 br2 ba b--muted-4`}
+                        >
+                          <RichText text={answer} font="t-small" />
+                        </div>
 
                         {config.anonymous && (
                           <div className="anonymousCheck mt4">
@@ -604,7 +652,9 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                                   name,
                                   email,
                                   anonymous: answerAnonymousCheck,
-                                  status: config.moderation ? STATUS.PENDING : STATUS.APPROVED,
+                                  status: config.moderation
+                                    ? STATUS.PENDING
+                                    : STATUS.APPROVED,
                                 },
                               })
                             }}
@@ -666,7 +716,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                   setState({
                     ...state,
                     showAllQuestions: false,
-                    questionList: limitVisibleQuestions(state.questionList, false),
+                    questionList: limitVisibleQuestions(
+                      state.questionList,
+                      false
+                    ),
                   })
                 }}
               >
@@ -741,12 +794,11 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                 value={email}
                 required={true}
               />
-              <div className='mt4'>
+              <div className="mt4">
                 <Checkbox
                   checked={subscribeCheck}
                   label={intl.formatMessage({
-                    id:
-                      'store/question.modal.question-subscribe-check.label',
+                    id: 'store/question.modal.question-subscribe-check.label',
                     defaultMessage: 'Subscribe to answers',
                   })}
                   onChange={() =>
@@ -831,8 +883,10 @@ const QuestionsAndAnswers: FC<any> = ({ data: { config }, intl }) => {
                       name,
                       email,
                       anonymous: anonymousCheck,
-                      status: config.moderation ? STATUS.PENDING : STATUS.APPROVED,
-                      subscribed: subscribeCheck
+                      status: config.moderation
+                        ? STATUS.PENDING
+                        : STATUS.APPROVED,
+                      subscribed: subscribeCheck,
                     },
                   })
                 }}
