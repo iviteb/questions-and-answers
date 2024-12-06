@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.0] - 2024-12-06
+
 ### Changed
 
 - Node builder upgrade from `6.x` to `7.x`
