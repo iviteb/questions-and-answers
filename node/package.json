@@ -16,7 +16,7 @@
     "querystring": "^0.2.0",
     "ramda": "^0.26.1",
     "slugify": "^1.2.6",
-    "typescript": "3.9.7"
+    "typescript": "5.5.3"
   },
   "devDependencies": {
     "@types/atob": "^2.1.2",
@@ -26,22 +26,26 @@
     "@types/graphql": "^14.5.0",
     "@types/jest": "^24.0.18",
     "@types/koa": "^2.0.46",
-    "@types/node": "^12.0.0",
+    "@types/node": "^20.0.0",
     "@types/qs": "^6.5.1",
     "@types/ramda": "^0.26.21",
-    "@vtex/api": "6.46.1",
+    "@vtex/api": "6.48.0",
     "@vtex/test-tools": "^1.2.0",
     "@vtex/tsconfig": "^0.2.0",
     "eslint": "^6.8.0",
     "eslint-config-vtex": "^12.1.1",
-    "pentruanimalero.questions-and-answers": "http://pentruanimalero.vtexassets.com/_v/public/typings/v1/pentruanimalero.questions-and-answers@0.0.2/public/@types/pentruanimalero.questions-and-answers",
+    "pentruanimalero.questions-and-answers": "http://pentruanimalero.vtexassets.com/_v/public/typings/v1/pentruanimalero.questions-and-answers@0.0.3/public/@types/pentruanimalero.questions-and-answers",
     "prettier": "^1.16.4",
-    "vtex.catalog-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.catalog-graphql@1.102.3/public/@types/vtex.catalog-graphql",
+    "vtex.catalog-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.catalog-graphql@1.103.1/public/@types/vtex.catalog-graphql",
     "vtex.css-handles": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@1.0.1/public/@types/vtex.css-handles",
     "vtex.product-context": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.product-context@0.10.1/public/@types/vtex.product-context",
-    "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.134.2/public/@types/vtex.render-runtime",
+    "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.134.11/public/@types/vtex.render-runtime",
     "vtex.rich-text": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.rich-text@0.16.0/public/@types/vtex.rich-text",
-    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.146.9/public/@types/vtex.styleguide"
+    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.146.13/public/@types/vtex.styleguide"
   },
-  "version": "3.1.2"
+  "resolutions": {
+    "@types/testing-library__dom": "6.12.1",
+    "@types/express": "4.16.0",
+    "@types/express-serve-static-core": "4.16.0"
+  }
 }
